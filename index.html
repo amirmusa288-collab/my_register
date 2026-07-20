@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#3D0F0F">
+<title>My Register — کھولیں، لکھیں، بند کریں</title>
+<meta name="description" content="A digital register just like the real thing — open it, write on numbered pages by hand or keyboard, in Urdu or English, then close it and remember the page number.">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Noto+Nastaliq+Urdu:wght@500;700&family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --cover:#3D0F0F;
+  --cover-2:#5A1818;
+  --gold:#C9A24B;
+  --paper:#F6EFDD;
+  --paper-line:#D9CBA3;
+  --paper-shadow:#E8DCBB;
+  --ink:#2A2118;
+  --muted:#8A7C5F;
+  --accent:#7A2E2E;
+  --green:#2F5D42;
+}
+html,body{height:100%;overflow:hidden;}
+html{height:100dvh;}
+body{
+  font-family:'Inter',sans-serif;
+  background:#1A0808;
+  color:var(--ink);
+  -webkit-user-select:none;user-select:none;
+  touch-action:manipulation;
+  height:100dvh;
+  width:100vw;
+  overscroll-behavior:none;
+}
+.screen{
+  position:fixed;inset:0;display:none;
+  flex-direction:column;
+  height:100dvh;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right);
+}
+.screen.active{display:flex;}
+
+/* ============ COVER ============ */
+#screenCover{
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  align-items:stretch;justify-content:flex-start;
+  background:
+    radial-gradient(ellipse at 30% 20%, var(--cover-2), var(--cover) 60%);
+}
+.cover-hero{
+  min-height:100dvh;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;padding:20px;
+}
+.cover-article{
+  background:var(--paper);color:var(--ink);
+  padding:36px 22px 60px;
+  max-width:680px;margin:0 auto;
+}
+.cover-article h2{
+  font-family:'Fraunces',serif;font-size:clamp(22px,5vw,28px);font-weight:800;
+  color:var(--accent);margin-bottom:16px;line-height:1.3;
+}
+.cover-article h3{
+  font-family:'Fraunces',serif;font-size:18px;font-weight:700;
+  color:var(--ink);margin:26px 0 10px;
+}
+.cover-article p{
+  font-family:'Inter',sans-serif;font-size:15px;line-height:1.85;color:#4A4030;margin-bottom:14px;
+}
+.cover-article ul{padding-left:20px;margin-bottom:14px;}
+.cover-article li{font-size:15px;line-height:1.8;color:#4A4030;margin-bottom:6px;}
+.book{
+  width:min(320px,80vw);aspect-ratio:3/4;
+  background:linear-gradient(135deg,#4A1414,#2E0B0B);
+  border:3px solid var(--gold);border-radius:6px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6), inset 0 0 0 6px rgba(201,162,75,0.15);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;position:relative;
+  transition:transform .25s;
+}
+.book:active{transform:scale(0.97);}
+.book-orn{width:56px;height:56px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;}
+.book-title{font-family:'Fraunces',serif;font-weight:900;font-size:26px;color:var(--gold);letter-spacing:.02em;text-align:center;padding:0 20px;}
+.book-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#C9A24B99;}
+.book-vol{position:absolute;bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#C9A24B77;}
+.tap-hint{margin-top:26px;color:#C9A24B88;font-size:12px;letter-spacing:.05em;font-family:'Inter',sans-serif;}
+
+/* ============ INDEX ============ */
+#screenIndex{background:var(--paper);}
+.topbar{
+  background:var(--cover);color:var(--gold);
+  padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  flex-shrink:0;
+}
+.topbar-btn{
+  background:rgba(201,162,75,0.12);border:1px solid rgba(201,162,75,0.4);color:var(--gold);
+  border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;
+}
+.topbar-title{font-family:'Fraunces',serif;font-weight:700;font-size:16px;}
+.index-body{flex:1;overflow-y:auto;padding:14px;}
+.search-box{
+  width:100%;padding:11px 14px;border:1px solid var(--paper-line);border-radius:10px;
+  background:#fff;font-size:14px;margin-bottom:14px;font-family:'Inter',sans-serif;
+}
+.index-section-label{
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin:16px 4px 8px;
+}
+.tagged-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
+.tagged-row{
+  display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--paper-line);
+  border-radius:8px;padding:10px 12px;cursor:pointer;
+}
+.tagged-num{
+  width:34px;height:34px;border-radius:50%;background:var(--cover);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:12px;flex-shrink:0;
+}
+.tagged-label{flex:1;font-size:14px;font-weight:600;color:var(--ink);}
+.tagged-empty{padding:20px;text-align:center;color:var(--muted);font-size:13px;}
+
+.page-grid{
+  display:grid;grid-template-columns:repeat(8,1fr);gap:6px;
+}
+.page-cell{
+  aspect-ratio:1;border-radius:6px;border:1px solid var(--paper-line);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);
+  background:#fff;cursor:pointer;
+}
+.page-cell.filled{background:var(--cover);color:var(--gold);border-color:var(--cover);}
+.jump-row{display:flex;gap:8px;margin-bottom:4px;}
+.jump-row input{flex:1;padding:10px 12px;border:1px solid var(--paper-line);border-radius:8px;font-size:14px;}
+.jump-row button{padding:10px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:700;font-size:13px;cursor:pointer;}
+
+/* ============ PAGE EDITOR ============ */
+#screenPage{background:var(--paper);}
+.page-toolbar{
+  background:var(--cover);padding:10px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;
+}
+.nav-btn{
+  background:rgba(201,162,75,0.14);border:1px solid rgba(201,162,75,0.4);color:var(--gold);
+  border-radius:8px;width:36px;height:36px;font-size:16px;cursor:pointer;flex-shrink:0;
+}
+.page-num-badge{
+  font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:13px;font-weight:700;
+  flex:1;text-align:center;min-width:70px;
+}
+.mode-toggle{display:flex;border:1px solid rgba(201,162,75,0.4);border-radius:8px;overflow:hidden;}
+.mode-btn{
+  padding:8px 12px;font-size:12px;font-weight:700;background:transparent;color:var(--gold);border:none;cursor:pointer;font-family:'Inter',sans-serif;
+}
+.mode-btn.active{background:var(--gold);color:var(--cover);}
+
+.sub-toolbar{
+  background:#EADFC1;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;
+  border-bottom:1px solid var(--paper-line);
+}
+.sub-toolbar select, .sub-toolbar input[type=text]{
+  padding:6px 8px;border:1px solid var(--paper-line);border-radius:6px;font-size:12px;background:#fff;
+}
+.mini-btn{
+  padding:6px 10px;border:1px solid var(--paper-line);border-radius:6px;background:#fff;font-size:12px;cursor:pointer;font-weight:600;
+}
+.mini-btn.danger{color:#A03B2C;}
+.color-dot{width:20px;height:20px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--paper-line);cursor:pointer;flex-shrink:0;}
+.color-dot.active{box-shadow:0 0 0 2px var(--ink);}
+
+.page-content{flex:1;position:relative;overflow:hidden;perspective:1400px;}
+.flip-leaf{
+  position:absolute;inset:0;z-index:30;
+  transform-style:preserve-3d;backface-visibility:hidden;
+  background:var(--paper);
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
+  padding:24px 20px;font-size:19px;line-height:34px;color:var(--ink);font-family:'Inter',sans-serif;
+  overflow:hidden;white-space:pre-wrap;
+  box-shadow:0 0 40px rgba(0,0,0,0.25);
+  transition:transform .55s cubic-bezier(.4,.1,.3,1), box-shadow .55s;
+}
+.flip-leaf.urdu{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;text-align:right;font-size:22px;line-height:44px;}
+.flip-leaf::after{
+  content:'';position:absolute;inset:0;background:linear-gradient(90deg, rgba(0,0,0,0.25), transparent 40%);
+  opacity:0;transition:opacity .55s;pointer-events:none;
+}
+.flip-leaf.flip-next{transform-origin:left center;}
+.flip-leaf.flip-prev{transform-origin:right center;}
+.flip-leaf.flip-next.animating{transform:rotateY(-160deg);box-shadow:0 0 60px rgba(0,0,0,0.4);}
+.flip-leaf.flip-prev.animating{transform:rotateY(160deg);box-shadow:0 0 60px rgba(0,0,0,0.4);}
+.flip-leaf.animating::after{opacity:1;}
+#drawCanvas{
+  position:absolute;inset:0;width:100%;height:100%;touch-action:none;
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
+}
+#typeArea{
+  position:absolute;inset:0;width:100%;height:100%;border:none;outline:none;resize:none;
+  padding:24px 20px;font-size:19px;line-height:34px;color:var(--ink);
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
+  background-attachment:local;
+  font-family:'Inter',sans-serif;
+}
+#typeArea.urdu{
+  font-family:'Noto Nastaliq Urdu',serif;direction:rtl;text-align:right;font-size:22px;line-height:44px;
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 43px, var(--paper-line) 44px);
+}
+
+.tag-bar{
+  background:#EADFC1;padding:8px 12px;display:flex;gap:8px;flex-shrink:0;border-top:1px solid var(--paper-line);
+}
+.tag-bar input{
+  flex:1;padding:9px 12px;border:1px solid var(--paper-line);border-radius:8px;font-size:13px;background:#fff;
+}
+.tag-bar .save-status{font-size:11px;color:var(--muted);align-self:center;white-space:nowrap;padding:0 6px;}
+
+#bookmarkBtn.active{background:var(--gold);color:var(--cover);}
+.ribbon{
+  position:absolute;top:0;right:14px;width:16px;height:26px;
+  background:var(--gold);
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);
+  z-index:5;
+}
+.tagged-row{position:relative;}
+
+/* MILESTONE TOAST */
+.milestone-toast{
+  position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:linear-gradient(135deg,var(--cover),var(--cover-2));
+  border:1.5px solid var(--gold);border-radius:14px;
+  padding:14px 22px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 14px 40px rgba(0,0,0,0.5);z-index:200;
+  opacity:0;transition:all .35s ease;pointer-events:none;max-width:90vw;
+}
+.milestone-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.milestone-icon{font-size:28px;}
+.milestone-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);}
+.milestone-text{font-family:'Fraunces',serif;font-size:14px;color:#F3EFDD;font-weight:700;}
+.calc-drawer{
+  position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--accent);
+  padding:14px;transform:translateY(100%);transition:transform .25s;z-index:20;
+  box-shadow:0 -8px 24px rgba(0,0,0,0.15);
+}
+.calc-drawer.open{transform:translateY(0);}
+.calc-row{display:flex;gap:8px;margin-bottom:10px;align-items:center;}
+.calc-row select{padding:9px;border:1px solid var(--paper-line);border-radius:8px;font-size:13px;background:#fff;}
+.calc-row input{flex:1;padding:9px;border:1px solid var(--paper-line);border-radius:8px;font-size:15px;font-family:'IBM Plex Mono',monospace;min-width:0;}
+.calc-op{display:flex;gap:6px;margin-bottom:10px;}
+.calc-op button{flex:1;padding:8px;border:1px solid var(--paper-line);border-radius:8px;background:#F6EFDD;font-weight:700;cursor:pointer;font-size:15px;}
+.calc-op button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.calc-result{
+  font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;text-align:center;
+  padding:10px;background:var(--paper);border-radius:8px;margin-bottom:10px;color:var(--green);
+}
+.calc-actions{display:flex;gap:8px;}
+.calc-actions button{flex:1;padding:10px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;}
+.calc-actions .insert{background:var(--accent);color:#fff;}
+.calc-actions .close{background:#E8E1CF;color:var(--ink);}
+</style>
+</head>
+<body>
+
+<!-- ============ COVER SCREEN ============ -->
+<div class="screen active" id="screenCover">
+  <div class="cover-hero" onclick="openBook()">
+    <div class="book">
+      <div class="book-orn">📖</div>
+      <div class="book-title">My<br>Register</div>
+      <div class="book-sub">Hand-written &amp; typed ledger</div>
+      <div class="book-vol" id="volLabel">Volume 1</div>
+    </div>
+    <div class="tap-hint">tap the register to open it</div>
+  </div>
+
+  <div class="cover-article">
+    <h2>How to Use My Register — A Digital Notebook That Works Like a Real One</h2>
+
+    <p>Most note-taking apps ask you to create folders, tags, and endless nested pages until your notes are technically organized but practically impossible to find. My Register takes the opposite approach. It works the way a physical register or accounts book has worked for generations: you open it, you find a free page, you write something down, and you remember the page number. That's it. No folders, no sign-up, no cloud account — just a book that lives entirely on your own device.</p>
+
+    <h3>Opening the Register</h3>
+    <p>When you first arrive, you'll see the register closed, sitting in the middle of the screen exactly like a real notebook waiting on a desk. Tap or click anywhere on it to open it. The first thing you'll see is the Index — a list of every page you've already written something on, along with the short label you gave it, plus a grid of all 100 numbered pages so you can see at a glance which ones are still empty.</p>
+
+    <h3>Writing By Hand or By Keyboard</h3>
+    <p>Open any page and you'll find two ways to write on it. The Type mode gives you a proper keyboard text area, styled like ruled paper, where you can type in either English or Urdu — just tap the EN or اردو button at the top and the page will switch its font and writing direction automatically, so Urdu text flows right-to-left in a proper Nastaliq-style font instead of looking like a browser default. The Hand mode turns the page into a small canvas where you can write or draw using your finger on a touchscreen, or your mouse on a laptop, exactly like putting a pen to paper. You can change the ink color, switch between a fine or bold pen, use the eraser, or clear the page and start again.</p>
+
+    <h3>Turning Pages Like a Real Book</h3>
+    <p>This is the detail that makes My Register feel different from a typical app. Instead of a boring instant page switch, turning a page plays a short animation of the page physically lifting and flipping to the other side, along with a soft paper-turning sound, just like flicking through a real register. You can turn pages using the arrow buttons at the top of the screen, or simply swipe — dragging your finger (or your mouse, if you're on a laptop) from left to right moves you forward through the register, page after page, and dragging from right to left brings you back.</p>
+
+    <h3>Giving Each Page a Label</h3>
+    <p>At the bottom of every page there's a small field called the Index Label. This is the single most useful habit to build when you start using My Register. Whatever you just wrote on that page — a person's phone number, a list of today's expenses, an idea you don't want to forget — type a short two or three word label describing it, like "Ali's number" or "July grocery list." That label is what shows up back on the Index page, next to the page number, so months later you don't have to flip through pages one by one. You just glance at the Index, see the label, and know exactly which page number to jump to.</p>
+
+    <h3>Doing the Math — With Any Currency</h3>
+    <p>Because a register is so often used to keep accounts, every page in Type mode has a small currency calculator built in. Tap the Currency Calc button, choose from Pakistani Rupees, Indian Rupees, US Dollars, Euros, British Pounds, Saudi Riyals, UAE Dirhams, or Japanese Yen, enter two amounts, and pick add, subtract, multiply, or divide. The result — along with the full working — can be inserted straight into your page as a written line, so your calculation becomes part of the permanent record on that page, not something you did separately and then had to copy over by hand.</p>
+
+    <h3>Jumping Straight to a Page</h3>
+    <p>If you already know the page number you're looking for — because you memorized it the way people always have with real registers — the Index screen has a simple "Jump to Page" box. Type in any number from 1 to 100 and you'll be taken straight there, without having to flip through everything in between.</p>
+
+    <h3>Your Data Stays With You</h3>
+    <p>Nothing you write in My Register is uploaded anywhere. Every page, whether typed or hand-drawn, is saved directly on your own phone or computer the moment you write it, and it's still there the next time you open the register — even without an internet connection. There's no login because there's no account to log into. The trade-off is that if you clear your browser's data or switch to a different device, your register won't follow you automatically, so if you're keeping something important, it's worth being mindful of that the same way you'd be careful with a physical notebook you don't want to lose.</p>
+
+    <h3>When the Register Is Full</h3>
+    <p>A register only has 100 pages, on purpose — just like a real one. When every page has something written on it, you'll see a message inviting you to start a new volume, exactly the way anyone who has filled up a physical accounts book simply reaches for the next one and keeps going, remembering which volume held which year or which set of records.</p>
+
+    <h3>A Few Habits Worth Building</h3>
+    <p>My Register works best when you treat it a little like the real thing rather than a normal app. Try not to jump straight to a random empty page every time — use the "+ New Entry" button on the Index screen and it will automatically find and open the next free page for you, in order, the same way you'd naturally move forward through a physical notebook rather than skipping around it. If you're recording something you might need again, spend the extra five seconds filling in the Index Label before you move on; it costs almost nothing in the moment and saves real time later. And if you switch between Hand and Type mode on the same page, remember they're independent — a page can hold either handwriting or typed text depending on which mode you were in last, so pick the one that suits what you're writing before you start.</p>
+
+    <h3>Who This Is For</h3>
+    <p>My Register isn't trying to replace a full accounting app or a note-taking suite with reminders and cloud sync. It's built for the smaller, everyday moments a physical register has always been used for — jotting down someone's phone number when you don't have paper handy, writing a quick account of what you spent today, keeping a short list you'll want to check later, or simply having somewhere private to write in your own language without opening an account first. If that sounds like the kind of notebook you used to keep in a drawer, this is the same idea, just carried in your pocket.</p>
+
+    <div style="display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:30px;padding-top:20px;border-top:1px solid var(--paper-line);">
+      <a href="/about.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">About</a>
+      <a href="/contact.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Contact</a>
+      <a href="/privacy.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Privacy Policy</a>
+      <a href="/terms.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Terms</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ INDEX SCREEN ============ -->
+<div class="screen" id="screenIndex">
+  <div class="topbar">
+    <button class="topbar-btn" onclick="closeBook()">✕ Close Register</button>
+    <div class="topbar-title">Index</div>
+    <button class="topbar-btn" onclick="goToNextEmptyPage()">+ New Entry</button>
+  </div>
+  <div class="index-body">
+    <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search by name or note..." oninput="renderIndex()">
+
+    <div class="index-section-label">📑 Written Pages</div>
+    <div class="tagged-list" id="taggedList"></div>
+
+    <div class="index-section-label">🔢 Jump to Page</div>
+    <div class="jump-row">
+      <input type="number" id="jumpInput" min="1" max="100" placeholder="Page number (1–100)">
+      <button onclick="jumpToPage()">Open</button>
+    </div>
+
+    <div class="index-section-label">All 100 Pages</div>
+    <div class="page-grid" id="pageGrid"></div>
+  </div>
+</div>
+
+<!-- ============ PAGE EDITOR SCREEN ============ -->
+<div class="screen" id="screenPage">
+  <div class="page-toolbar">
+    <button class="nav-btn" onclick="navPage(-1)">‹</button>
+    <div class="page-num-badge" id="pageNumBadge">Page 1</div>
+    <button class="nav-btn" onclick="navPage(1)">›</button>
+    <div class="mode-toggle">
+      <button class="mode-btn" id="modeTypeBtn" onclick="setMode('type')">⌨️ Type</button>
+      <button class="mode-btn" id="modeDrawBtn" onclick="setMode('draw')">✍️ Hand</button>
+    </div>
+    <button class="nav-btn" id="bookmarkBtn" onclick="toggleBookmark()" title="Bookmark this page">🔖</button>
+    <button class="nav-btn" onclick="backToIndex()" title="Close page">✕</button>
+  </div>
+
+  <div class="sub-toolbar" id="typeSubToolbar">
+    <div class="mode-toggle">
+      <button class="mode-btn" id="langEnBtn" onclick="setLang('en')">EN</button>
+      <button class="mode-btn" id="langUrBtn" onclick="setLang('ur')">اردو</button>
+    </div>
+    <button class="mini-btn" onclick="toggleCalc()">🧮 Currency Calc</button>
+  </div>
+
+  <div class="sub-toolbar" id="drawSubToolbar" style="display:none;">
+    <div class="color-dot active" style="background:#2A2118" data-color="#2A2118" onclick="setPenColor(this)"></div>
+    <div class="color-dot" style="background:#7A2E2E" data-color="#7A2E2E" onclick="setPenColor(this)"></div>
+    <div class="color-dot" style="background:#1F5D46" data-color="#1F5D46" onclick="setPenColor(this)"></div>
+    <div class="color-dot" style="background:#1B4F91" data-color="#1B4F91" onclick="setPenColor(this)"></div>
+    <select id="penWidth" onchange="setPenWidth()">
+      <option value="2">Fine</option>
+      <option value="3.5" selected>Medium</option>
+      <option value="6">Bold</option>
+    </select>
+    <button class="mini-btn" onclick="setEraser()">🩹 Eraser</button>
+    <button class="mini-btn danger" onclick="clearCanvas()">↩ Undo Last</button>
+  </div>
+
+  <div class="page-content">
+    <textarea id="typeArea" placeholder="Write anything here — a note, a name, someone's number, an account of what you spent today..." oninput="onTypeInput()"></textarea>
+    <canvas id="drawCanvas" style="display:none;"></canvas>
+
+    <div class="calc-drawer" id="calcDrawer">
+      <div class="calc-row">
+        <select id="calcCurrency">
+          <option value="Rs">Rs — Pakistani Rupee</option>
+          <option value="₹">₹ — Indian Rupee</option>
+          <option value="$">$ — US Dollar</option>
+          <option value="€">€ — Euro</option>
+          <option value="£">£ — British Pound</option>
+          <option value="﷼">﷼ — Saudi Riyal</option>
+          <option value="د.إ">د.إ — UAE Dirham</option>
+          <option value="¥">¥ — Japanese Yen</option>
+        </select>
+      </div>
+      <div class="calc-row">
+        <input type="number" id="calcA" placeholder="Amount 1">
+      </div>
+      <div class="calc-op">
+        <button data-op="+" class="active" onclick="setOp(this)">+</button>
+        <button data-op="−" onclick="setOp(this)">−</button>
+        <button data-op="×" onclick="setOp(this)">×</button>
+        <button data-op="÷" onclick="setOp(this)">÷</button>
+      </div>
+      <div class="calc-row">
+        <input type="number" id="calcB" placeholder="Amount 2 (optional)">
+      </div>
+      <div class="calc-result" id="calcResult">—</div>
+      <div class="calc-actions">
+        <button class="insert" onclick="insertCalcResult()">Insert into page</button>
+        <button class="close" onclick="toggleCalc()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tag-bar">
+    <input type="text" id="tagInput" placeholder="Index label — e.g. 'Ali's number', 'July expenses'..." oninput="onTagInput()">
+    <span class="save-status" id="saveStatus">saved</span>
+  </div>
+</div>
+
+<div class="milestone-toast" id="milestoneToast">
+  <div class="milestone-icon" id="milestoneIcon">🎉</div>
+  <div>
+    <div class="milestone-title">Milestone</div>
+    <div class="milestone-text" id="milestoneText">—</div>
+  </div>
+</div>
+
+<script>
+const TOTAL_PAGES = 100;
+let currentVolume = parseInt(localStorage.getItem('myreg_volume') || '1');
+let currentPage = 1;
+let currentMode = 'type';
+let currentLang = 'en';
+let penColor = '#2A2118';
+let penWidth = 3.5;
+let isErasing = false;
+let drawing = false;
+let calcOp = '+';
+let saveTimer = null;
+
+function volKey(){ return 'myreg_pages_v' + currentVolume; }
+
+function getPages() {
+  try { return JSON.parse(localStorage.getItem(volKey()) || '{}'); }
+  catch(e){ return {}; }
+}
+function savePages(obj) {
+  localStorage.setItem(volKey(), JSON.stringify(obj));
+}
+function getPage(n) {
+  const pages = getPages();
+  return pages[n] || null;
+}
+function setPage(n, data) {
+  const pages = getPages();
+  pages[n] = data;
+  savePages(pages);
+}
+
+/* ============ NAVIGATION BETWEEN SCREENS ============ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function openBook() {
+  showScreen('screenIndex');
+  renderIndex();
+}
+function closeBook() {
+  showScreen('screenCover');
+  document.getElementById('volLabel').textContent = 'Volume ' + currentVolume;
+}
+function backToIndex() {
+  showScreen('screenIndex');
+  renderIndex();
+}
+
+/* ============ INDEX RENDERING ============ */
+function renderIndex() {
+  const pages = getPages();
+  const query = document.getElementById('searchBox').value.trim().toLowerCase();
+
+  // tagged list
+  const taggedList = document.getElementById('taggedList');
+  let entries = Object.keys(pages).map(n => ({n: parseInt(n), ...pages[n]}))
+    .filter(e => e.tag && e.tag.trim());
+  if (query) {
+    entries = entries.filter(e => e.tag.toLowerCase().includes(query));
+  }
+  entries.sort((a,b) => a.n - b.n);
+
+  if (!entries.length) {
+    taggedList.innerHTML = `<div class="tagged-empty">${query ? 'No matching pages found.' : 'Nothing labeled yet. Open a page and add a label so you can find it again.'}</div>`;
+  } else {
+    entries.sort((a,b) => (b.bookmarked?1:0) - (a.bookmarked?1:0) || a.n - b.n);
+    taggedList.innerHTML = entries.map(e => `
+      <div class="tagged-row" onclick="openPage(${e.n})">
+        <div class="tagged-num">${e.n}</div>
+        <div class="tagged-label">${escapeHtml(e.tag)}</div>
+        ${e.bookmarked ? '<div class="ribbon" style="position:static;width:auto;height:auto;background:none;clip-path:none;font-size:16px;">🔖</div>' : ''}
+      </div>
+    `).join('');
+  }
+
+  // page grid
+  const grid = document.getElementById('pageGrid');
+  let gridHtml = '';
+  for (let i=1;i<=TOTAL_PAGES;i++) {
+    const filled = pages[i] && ((pages[i].text && pages[i].text.trim()) || pages[i].draw);
+    gridHtml += `<div class="page-cell ${filled?'filled':''}" onclick="openPage(${i})">${i}</div>`;
+  }
+  grid.innerHTML = gridHtml;
+}
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+function jumpToPage() {
+  const n = parseInt(document.getElementById('jumpInput').value);
+  if (n >= 1 && n <= TOTAL_PAGES) openPage(n);
+}
+function goToNextEmptyPage() {
+  const pages = getPages();
+  for (let i=1;i<=TOTAL_PAGES;i++) {
+    const filled = pages[i] && ((pages[i].text && pages[i].text.trim()) || pages[i].draw);
+    if (!filled) { openPage(i); return; }
+  }
+  alert('This register is full! Close it and start a new Volume from the cover screen options.');
+}
+
+/* ============ PAGE EDITOR ============ */
+let ctx;
+let pendingDrawData = null;
+function openPage(n) {
+  currentPage = n;
+  showScreen('screenPage');
+  document.getElementById('pageNumBadge').textContent = 'Page ' + n;
+
+  const data = getPage(n) || {mode:'type', lang:'en', text:'', draw:null, tag:'', bookmarked:false};
+  currentMode = data.mode || 'type';
+  currentLang = data.lang || 'en';
+
+  document.getElementById('typeArea').value = data.text || '';
+  document.getElementById('tagInput').value = data.tag || '';
+  document.getElementById('bookmarkBtn').classList.toggle('active', !!data.bookmarked);
+  pendingDrawData = data.draw || null;
+
+  setMode(currentMode, true);
+  setLang(currentLang, true);
+  setupCanvas();
+  setStatus('saved');
+}
+
+function toggleBookmark() {
+  const data = getPage(currentPage) || {mode:currentMode, lang:currentLang, text:'', draw:null, tag:''};
+  data.bookmarked = !data.bookmarked;
+  setPage(currentPage, data);
+  document.getElementById('bookmarkBtn').classList.toggle('active', data.bookmarked);
+}
+
+function setupCanvas() {
+  strokeHistory = [];
+  const canvas = document.getElementById('drawCanvas');
+  // use the parent container's size, since the canvas itself may be display:none right now
+  const rect = canvas.parentElement.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) return; // not visible yet, try again later
+  canvas.width = rect.width * devicePixelRatio;
+  canvas.height = rect.height * devicePixelRatio;
+  ctx = canvas.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  if (pendingDrawData) {
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img, 0, 0, rect.width, rect.height);
+    img.src = pendingDrawData;
+  }
+}
+
+function setMode(mode, skipSave) {
+  currentMode = mode;
+  document.getElementById('modeTypeBtn').classList.toggle('active', mode==='type');
+  document.getElementById('modeDrawBtn').classList.toggle('active', mode==='draw');
+  document.getElementById('typeArea').style.display = mode==='type' ? 'block' : 'none';
+  document.getElementById('drawCanvas').style.display = mode==='draw' ? 'block' : 'none';
+  document.getElementById('typeSubToolbar').style.display = mode==='type' ? 'flex' : 'none';
+  document.getElementById('drawSubToolbar').style.display = mode==='draw' ? 'flex' : 'none';
+  if (mode === 'draw') {
+    // canvas is only now visible with real dimensions — (re)size it properly
+    requestAnimationFrame(setupCanvas);
+  }
+  if (!skipSave) persistCurrentPage();
+}
+
+function setLang(lang, skipSave) {
+  currentLang = lang;
+  document.getElementById('langEnBtn').classList.toggle('active', lang==='en');
+  document.getElementById('langUrBtn').classList.toggle('active', lang==='ur');
+  document.getElementById('typeArea').classList.toggle('urdu', lang==='ur');
+  if (!skipSave) persistCurrentPage();
+}
+
+function onTypeInput() {
+  setStatus('saving…');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(persistCurrentPage, 400);
+}
+function onTagInput() {
+  setStatus('saving…');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(persistCurrentPage, 400);
+}
+
+function persistCurrentPage() {
+  const canvas = document.getElementById('drawCanvas');
+  const existing = getPage(currentPage) || {};
+  const drawData = (currentMode === 'draw') ? canvas.toDataURL('image/png') : (existing.draw || null);
+  const wasFilled = !!(existing.text && existing.text.trim()) || !!existing.draw;
+  setPage(currentPage, {
+    mode: currentMode,
+    lang: currentLang,
+    text: document.getElementById('typeArea').value,
+    draw: isCanvasBlank(canvas) ? null : drawData,
+    tag: document.getElementById('tagInput').value,
+    bookmarked: !!existing.bookmarked,
+    ts: Date.now()
+  });
+  setStatus('saved');
+
+  const nowFilled = !!(document.getElementById('typeArea').value.trim()) || (currentMode==='draw' && !isCanvasBlank(canvas));
+  if (!wasFilled && nowFilled) checkMilestone();
+}
+function isCanvasBlank(canvas) {
+  const blank = document.createElement('canvas');
+  blank.width = canvas.width; blank.height = canvas.height;
+  return canvas.toDataURL() === blank.toDataURL();
+}
+
+const MILESTONES = {10:'10 pages written!', 25:'Quarter of the register filled!', 50:'Halfway through the register!', 75:'Almost there — 75 pages filled!', 100:'Register complete! 📕✨'};
+function checkMilestone() {
+  const pages = getPages();
+  const filledCount = Object.keys(pages).filter(n => {
+    const p = pages[n];
+    return (p.text && p.text.trim()) || p.draw;
+  }).length;
+  if (MILESTONES[filledCount]) {
+    showMilestoneToast(MILESTONES[filledCount], filledCount === 100 ? '🏆' : '🎉');
+  }
+}
+function showMilestoneToast(text, icon) {
+  const toast = document.getElementById('milestoneToast');
+  document.getElementById('milestoneIcon').textContent = icon || '🎉';
+  document.getElementById('milestoneText').textContent = text;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2600);
+}
+function setStatus(t) {
+  document.getElementById('saveStatus').textContent = t;
+}
+
+function navPage(delta) {
+  const oldPage = currentPage;
+  const oldMode = currentMode;
+  const oldLang = currentLang;
+  persistCurrentPage();
+
+  let n = oldPage + delta;
+  if (n < 1) n = 1;
+  if (n > TOTAL_PAGES) n = TOTAL_PAGES;
+  if (n === oldPage) return;
+
+  // build a leaf that looks like the page currently on screen, to animate away
+  const wrap = document.querySelector('.page-content');
+  const leaf = document.createElement('div');
+  leaf.className = 'flip-leaf ' + (delta > 0 ? 'flip-next' : 'flip-prev') + (oldLang === 'ur' ? ' urdu' : '');
+  if (oldMode === 'draw') {
+    const canvas = document.getElementById('drawCanvas');
+    leaf.style.padding = '0';
+    leaf.style.backgroundImage = "url('" + canvas.toDataURL('image/png') + "'), repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px)";
+    leaf.style.backgroundSize = 'cover, auto';
+  } else {
+    leaf.textContent = document.getElementById('typeArea').value;
+  }
+  wrap.appendChild(leaf);
+
+  playFlipSound();
+
+  // immediately swap to the new page underneath (updates page number + content right away)
+  openPage(n);
+
+  // trigger the flip animation on the leaf covering the old page
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => leaf.classList.add('animating'));
+  });
+  leaf.addEventListener('transitionend', () => leaf.remove(), {once:true});
+  setTimeout(() => { if (leaf.parentNode) leaf.remove(); }, 700);
+}
+
+let flipAudioCtx = null;
+function playFlipSound() {
+  try {
+    if (!flipAudioCtx) flipAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctxA = flipAudioCtx;
+    const dur = 0.22;
+    const bufferSize = ctxA.sampleRate * dur;
+    const buffer = ctxA.createBuffer(1, bufferSize, ctxA.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+    }
+    const noise = ctxA.createBufferSource();
+    noise.buffer = buffer;
+
+    const bandpass = ctxA.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.frequency.setValueAtTime(1800, ctxA.currentTime);
+    bandpass.frequency.exponentialRampToValueAtTime(600, ctxA.currentTime + dur);
+    bandpass.Q.value = 0.7;
+
+    const gain = ctxA.createGain();
+    gain.gain.setValueAtTime(0.0001, ctxA.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.35, ctxA.currentTime + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctxA.currentTime + dur);
+
+    noise.connect(bandpass);
+    bandpass.connect(gain);
+    gain.connect(ctxA.destination);
+    noise.start();
+    noise.stop(ctxA.currentTime + dur);
+  } catch(e) { /* audio not available, ignore */ }
+}
+
+/* ============ DRAWING ============ */
+function getPos(e, canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const point = e.touches ? e.touches[0] : e;
+  return { x: point.clientX - rect.left, y: point.clientY - rect.top };
+}
+function setPenColor(el) {
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+  penColor = el.dataset.color;
+  isErasing = false;
+}
+function setPenWidth() {
+  penWidth = parseFloat(document.getElementById('penWidth').value);
+}
+function setEraser() {
+  isErasing = true;
+}
+
+let strokeHistory = [];
+function clearCanvas() {
+  const canvas = document.getElementById('drawCanvas');
+  if (!strokeHistory.length) {
+    // nothing to undo — page is already empty
+    return;
+  }
+  const prevSnapshot = strokeHistory.pop();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (prevSnapshot) {
+    const img = new Image();
+    img.onload = () => {
+      const rect = canvas.getBoundingClientRect();
+      ctx.drawImage(img, 0, 0, rect.width, rect.height);
+      persistCurrentPage();
+    };
+    img.src = prevSnapshot;
+  } else {
+    persistCurrentPage();
+  }
+}
+
+function initCanvasEvents() {
+  const canvas = document.getElementById('drawCanvas');
+  function start(e) {
+    if (currentMode !== 'draw') return;
+    e.preventDefault();
+    drawing = true;
+    // remember the page exactly as it looked before this stroke, so Clear can undo just this one
+    strokeHistory.push(canvas.width ? canvas.toDataURL('image/png') : null);
+    if (strokeHistory.length > 40) strokeHistory.shift();
+    const p = getPos(e, canvas);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  }
+  function move(e) {
+    if (!drawing || currentMode !== 'draw') return;
+    e.preventDefault();
+    const p = getPos(e, canvas);
+    ctx.lineTo(p.x, p.y);
+    ctx.strokeStyle = isErasing ? '#F6EFDD' : penColor;
+    ctx.lineWidth = isErasing ? 22 : penWidth;
+    ctx.stroke();
+  }
+  function end() {
+    if (!drawing) return;
+    drawing = false;
+    setStatus('saving…');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(persistCurrentPage, 300);
+  }
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, {passive:false});
+  canvas.addEventListener('touchmove', move, {passive:false});
+  canvas.addEventListener('touchend', end);
+}
+
+/* ============ CURRENCY CALCULATOR ============ */
+function toggleCalc() {
+  document.getElementById('calcDrawer').classList.toggle('open');
+  computeCalc();
+}
+function setOp(btn) {
+  document.querySelectorAll('.calc-op button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  calcOp = btn.dataset.op;
+  computeCalc();
+}
+function computeCalc() {
+  const a = parseFloat(document.getElementById('calcA').value) || 0;
+  const b = parseFloat(document.getElementById('calcB').value) || 0;
+  let result = a;
+  if (document.getElementById('calcB').value !== '') {
+    switch(calcOp) {
+      case '+': result = a + b; break;
+      case '−': result = a - b; break;
+      case '×': result = a * b; break;
+      case '÷': result = b !== 0 ? a / b : 0; break;
+    }
+  }
+  const cur = document.getElementById('calcCurrency').value;
+  document.getElementById('calcResult').textContent = cur + ' ' + result.toLocaleString(undefined,{maximumFractionDigits:2});
+}
+document.getElementById('calcA').addEventListener('input', computeCalc);
+document.getElementById('calcB').addEventListener('input', computeCalc);
+document.getElementById('calcCurrency').addEventListener('change', computeCalc);
+
+function insertCalcResult() {
+  const a = document.getElementById('calcA').value;
+  const b = document.getElementById('calcB').value;
+  const cur = document.getElementById('calcCurrency').value;
+  const resultText = document.getElementById('calcResult').textContent;
+  let line;
+  if (b !== '') {
+    line = `${cur} ${a} ${calcOp} ${cur} ${b} = ${resultText}`;
+  } else {
+    line = resultText;
+  }
+  if (currentMode !== 'type') setMode('type');
+  const ta = document.getElementById('typeArea');
+  ta.value += (ta.value && !ta.value.endsWith('\n') ? '\n' : '') + line + '\n';
+  toggleCalc();
+  persistCurrentPage();
+}
+
+/* ============ SWIPE TO TURN PAGE (touch + mouse) ============ */
+function initSwipeNavigation() {
+  const zone = document.querySelector('.page-content');
+  let startX = 0, startY = 0, tracking = false;
+
+  function canStartSwipe() {
+    if (document.getElementById('calcDrawer').classList.contains('open')) return false;
+    if (currentMode !== 'type') return false; // avoid clashing with hand-drawing
+    return true;
+  }
+  function finishSwipe(dx, dy) {
+    if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.3) return; // ignore vertical scroll / small moves
+    if (dx > 0) {
+      navPage(-1);  // swipe left → right = go back
+    } else {
+      navPage(1);   // swipe right → left = go forward
+    }
+  }
+
+  // Touch (mobile)
+  zone.addEventListener('touchstart', (e) => {
+    tracking = canStartSwipe();
+    if (!tracking) return;
+    const t = e.touches[0];
+    startX = t.clientX; startY = t.clientY;
+  }, {passive:true});
+  zone.addEventListener('touchend', (e) => {
+    if (!tracking) return;
+    tracking = false;
+    const t = e.changedTouches[0];
+    finishSwipe(t.clientX - startX, t.clientY - startY);
+  }, {passive:true});
+
+  // Mouse drag (desktop / laptop testing)
+  zone.addEventListener('mousedown', (e) => {
+    tracking = canStartSwipe();
+    if (!tracking) return;
+    startX = e.clientX; startY = e.clientY;
+  });
+  window.addEventListener('mouseup', (e) => {
+    if (!tracking) return;
+    tracking = false;
+    finishSwipe(e.clientX - startX, e.clientY - startY);
+  });
+}
+initSwipeNavigation();
+
+/* ============ INIT ============ */
+initCanvasEvents();
+document.getElementById('volLabel').textContent = 'Volume ' + currentVolume;
+window.addEventListener('resize', () => {
+  if (document.getElementById('screenPage').classList.contains('active') && currentMode === 'draw') {
+    // preserve drawing on resize by re-opening the page
+    openPage(currentPage);
+  }
+});
+</script>
+</body>
+</html>
