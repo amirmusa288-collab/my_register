@@ -2,12 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LX83YPJRMB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-LX83YPJRMB');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#3D0F0F">
-<title>My Register —Open, Write, and Close </title>
+<title>My Register — کھولیں، لکھیں، بند کریں</title>
 <meta name="description" content="A digital register just like the real thing — open it, write on numbered pages by hand or keyboard, in Urdu or English, then close it and remember the page number.">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Noto+Nastaliq+Urdu:wght@500;700&family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -21,8 +29,11 @@
   --paper-shadow:#E8DCBB;
   --ink:#2A2118;
   --muted:#8A7C5F;
-  --accent:#7A2E2E;
-  --green:#2F5D42;
+  --accent:#B3492E;
+  --green:#1C7C6B;
+  --write-bg:#FFFFFF;
+  --write-line:#EAEAEA;
+  --write-ink:#111111;
 }
 html,body{height:100%;overflow:hidden;}
 html{height:100dvh;}
@@ -93,18 +104,8 @@ body{
 .book-vol{position:absolute;bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#C9A24B77;}
 .tap-hint{margin-top:26px;color:#C9A24B88;font-size:12px;letter-spacing:.05em;font-family:'Inter',sans-serif;}
 
-/* ============ DESKTOP / TABLET FRAME ============ */
+/* ============ FULL SCREEN ON ALL DEVICES ============ */
 @media(min-width:640px){
-  body{
-    background:linear-gradient(135deg,#1A0808,#2A0F0F 60%,#1A0808);
-    align-items:center;justify-content:center;display:flex;
-  }
-  .screen{
-    position:relative;inset:auto;
-    width:420px;height:min(860px,94dvh);
-    border-radius:22px;overflow:hidden;
-    box-shadow:0 30px 90px rgba(0,0,0,0.6), 0 0 0 10px #100505;
-  }
   #screenCover.screen{overflow-y:auto;}
 }
 
@@ -253,9 +254,9 @@ body{
 .flip-leaf{
   position:absolute;inset:0;z-index:30;
   transform-style:preserve-3d;backface-visibility:hidden;
-  background:var(--paper);
-  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
-  padding:24px 20px;font-size:19px;line-height:34px;color:var(--ink);font-family:'Inter',sans-serif;
+  background:var(--write-bg);
+  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 33px, var(--write-line) 34px);
+  padding:24px 20px;font-size:19px;line-height:34px;color:var(--write-ink);font-family:'Inter',sans-serif;
   overflow:hidden;white-space:pre-wrap;
   box-shadow:0 0 40px rgba(0,0,0,0.25);
   transition:transform .55s cubic-bezier(.4,.1,.3,1), box-shadow .55s;
@@ -272,18 +273,20 @@ body{
 .flip-leaf.animating::after{opacity:1;}
 #drawCanvas{
   position:absolute;inset:0;width:100%;height:100%;touch-action:none;
-  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
+  background-color:var(--write-bg);
+  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 33px, var(--write-line) 34px);
 }
 #typeArea{
   position:absolute;inset:0;width:100%;height:100%;border:none;outline:none;resize:none;
-  padding:24px 20px;font-size:19px;line-height:34px;color:var(--ink);
-  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
+  padding:24px 20px;font-size:19px;line-height:34px;color:var(--write-ink);
+  background-color:var(--write-bg);
+  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 33px, var(--write-line) 34px);
   background-attachment:local;
   font-family:'Inter',sans-serif;
 }
 #typeArea.urdu{
   font-family:'Noto Nastaliq Urdu',serif;direction:rtl;text-align:right;font-size:22px;line-height:44px;
-  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 43px, var(--paper-line) 44px);
+  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 43px, var(--write-line) 44px);
 }
 
 .tag-bar{
@@ -460,9 +463,9 @@ body{
       <button class="mini-btn" id="undoBtnDraw" onclick="performUndo()" title="Undo">↩ Undo</button>
       <button class="mini-btn" id="redoBtnDraw" onclick="performRedo()" title="Redo">↪ Redo</button>
     </div>
-    <div class="color-dot active" style="background:#2A2118" data-color="#2A2118" onclick="setPenColor(this)"></div>
-    <div class="color-dot" style="background:#7A2E2E" data-color="#7A2E2E" onclick="setPenColor(this)"></div>
-    <div class="color-dot" style="background:#1F5D46" data-color="#1F5D46" onclick="setPenColor(this)"></div>
+    <div class="color-dot active" style="background:#111111" data-color="#111111" onclick="setPenColor(this)"></div>
+    <div class="color-dot" style="background:#B3492E" data-color="#B3492E" onclick="setPenColor(this)"></div>
+    <div class="color-dot" style="background:#1C7C6B" data-color="#1C7C6B" onclick="setPenColor(this)"></div>
     <div class="color-dot" style="background:#1B4F91" data-color="#1B4F91" onclick="setPenColor(this)"></div>
     <select id="penWidth" onchange="setPenWidth()">
       <option value="2">Fine</option>
@@ -565,7 +568,7 @@ let currentVolume = parseInt(localStorage.getItem('myreg_volume') || '1');
 let currentPage = 1;
 let currentMode = 'type';
 let currentLang = 'en';
-let penColor = '#2A2118';
+let penColor = '#111111';
 let penWidth = 3.5;
 let isErasing = false;
 let drawing = false;
@@ -1090,7 +1093,7 @@ function initCanvasEvents() {
     e.preventDefault();
     const p = getPos(e, canvas);
     ctx.lineTo(p.x, p.y);
-    ctx.strokeStyle = isErasing ? '#F6EFDD' : penColor;
+    ctx.strokeStyle = isErasing ? '#FFFFFF' : penColor;
     ctx.lineWidth = isErasing ? 22 : penWidth;
     ctx.stroke();
   }
