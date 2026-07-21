@@ -2,44 +2,41 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-LX83YPJRMB"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-LX83YPJRMB');
-</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#3D0F0F">
+<meta name="theme-color" content="#3A4F8A">
 <title>My Register — کھولیں، لکھیں، بند کریں</title>
 <meta name="description" content="A digital register just like the real thing — open it, write on numbered pages by hand or keyboard, in Urdu or English, then close it and remember the page number.">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Noto+Nastaliq+Urdu:wght@500;700&family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --cover:#3D0F0F;
-  --cover-2:#5A1818;
-  --gold:#C9A24B;
-  --paper:#F6EFDD;
-  --paper-line:#D9CBA3;
-  --paper-shadow:#E8DCBB;
-  --ink:#2A2118;
-  --muted:#8A7C5F;
-  --accent:#B3492E;
-  --green:#1C7C6B;
-  --write-bg:#FFFFFF;
-  --write-line:#EAEAEA;
-  --write-ink:#111111;
+  /* ===== Premium palette (soft blue / emerald / cream / purple / orange) ===== */
+  --cover:#3A4F8A;           /* soft indigo-blue cover */
+  --cover-2:#5B4B9A;         /* soft purple, used in cover gradient */
+  --gold:#F3B26A;            /* warm soft-orange accent (replaces old "gold") */
+  --paper:#FBF7EE;           /* light cream paper */
+  --paper-line:#E7DCC6;
+  --paper-shadow:#EFE6D2;
+  --ink:#2B2A33;
+  --muted:#8892A6;
+  --accent:#6C63D6;          /* soft purple — primary action color */
+  --green:#1FA971;           /* emerald — success / save */
+  --blue:#3E8FD9;            /* sky/soft blue — secondary action */
+  --sky:#6FC6E8;
+  --orange:#F2994A;          /* highlight orange */
+  --red:#E4574C;             /* pdf / danger */
+  --gold-deep:#D98F3D;
+  --shadow-soft:0 8px 22px rgba(60,60,110,0.16);
+  --shadow-btn:0 6px 16px rgba(60,60,110,0.22);
 }
 html,body{height:100%;overflow:hidden;}
 html{height:100dvh;}
 body{
   font-family:'Inter',sans-serif;
-  background:#1A0808;
+  background:linear-gradient(160deg,#EAF0FB 0%,#F3EEFB 45%,#FFF6EA 100%);
   color:var(--ink);
   -webkit-user-select:none;user-select:none;
   touch-action:manipulation;
@@ -90,24 +87,48 @@ body{
 .cover-article li{font-size:15px;line-height:1.8;color:#4A4030;margin-bottom:6px;}
 .book{
   width:min(320px,80vw);aspect-ratio:3/4;
-  background:linear-gradient(135deg,#4A1414,#2E0B0B);
-  border:3px solid var(--gold);border-radius:6px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.6), inset 0 0 0 6px rgba(201,162,75,0.15);
+  background:linear-gradient(135deg,#3A4F8A,#5B4B9A 65%,#6C63D6);
+  border:3px solid var(--gold);border-radius:10px;
+  box-shadow:0 20px 60px rgba(30,20,70,0.5), inset 0 0 0 6px rgba(243,178,106,0.15);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:14px;position:relative;
-  transition:transform .25s;
+  transition:transform .25s, box-shadow .25s;
 }
+.book:hover{box-shadow:0 26px 70px rgba(30,20,70,0.6), inset 0 0 0 6px rgba(243,178,106,0.2);}
 .book:active{transform:scale(0.97);}
 .book-orn{width:56px;height:56px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;}
 .book-title{font-family:'Fraunces',serif;font-weight:900;font-size:26px;color:var(--gold);letter-spacing:.02em;text-align:center;padding:0 20px;}
-.book-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#C9A24B99;}
-.book-vol{position:absolute;bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#C9A24B77;}
-.tap-hint{margin-top:26px;color:#C9A24B88;font-size:12px;letter-spacing:.05em;font-family:'Inter',sans-serif;}
+.book-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#F3B26A99;}
+.book-vol{position:absolute;bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F3B26A77;}
+.tap-hint{margin-top:26px;color:#F3B26A88;font-size:12px;letter-spacing:.05em;font-family:'Inter',sans-serif;}
 
-/* ============ FULL SCREEN ON ALL DEVICES ============ */
+/* ============ DESKTOP / TABLET — full, roomy, premium layout ============ */
 @media(min-width:640px){
+  body{
+    align-items:center;justify-content:center;display:flex;
+    padding:24px;
+  }
+  .screen{
+    position:relative;inset:auto;
+    width:min(560px,92vw);height:min(880px,94dvh);
+    border-radius:26px;overflow:hidden;
+    box-shadow:0 40px 100px rgba(60,60,110,0.28), 0 0 0 1px rgba(255,255,255,0.4);
+  }
   #screenCover.screen{overflow-y:auto;}
 }
+/* Tablet: give the notebook noticeably more breathing room */
+@media(min-width:900px){
+  .screen{ width:min(680px,88vw); height:min(920px,94dvh); }
+}
+/* Desktop / laptop: open wide like a real premium app, not a phone mockup */
+@media(min-width:1200px){
+  .screen{ width:min(880px,80vw); height:min(960px,92dvh); }
+  .flip-leaf, #typeArea, #drawCanvas{ font-size:20px; }
+}
+
+/* ============ SCREEN TRANSITION ANIMATION ============ */
+.screen.active{ animation:screenIn .38s cubic-bezier(.22,.8,.32,1); }
+@keyframes screenIn{ from{opacity:0;transform:translateY(10px) scale(.99);} to{opacity:1;transform:translateY(0) scale(1);} }
 
 /* ============ BUTTON MOTION ============ */
 .topbar-btn, .nav-btn, .mode-btn, .mini-btn, .jump-row button, .type-tab, .btn-add, .btn-ghost, .btn-savecard, .btn-share, .calc-op button, .calc-actions button, .cookie-accept, .cookie-decline{
@@ -128,10 +149,10 @@ body{
   align-self:center;transition:all .2s;
 }
 .save-status .dot{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block;}
-.save-status.saved{color:#2F5D42;background:rgba(47,93,66,0.08);}
-.save-status.saved .dot{background:#2F5D42;}
-.save-status.saving{color:#A9822E;background:rgba(169,130,46,0.1);}
-.save-status.saving .dot{background:#C9A24B;animation:pulseDot 1s infinite;}
+.save-status.saved{color:#12805A;background:rgba(31,169,113,0.1);}
+.save-status.saved .dot{background:var(--green);}
+.save-status.saving{color:var(--gold-deep);background:rgba(243,178,106,0.14);}
+.save-status.saving .dot{background:var(--gold);animation:pulseDot 1s infinite;}
 @keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:.3;}}
 
 /* ============ UNDO/REDO GROUP ============ */
@@ -172,9 +193,12 @@ body{
   flex-shrink:0;
 }
 .topbar-btn{
-  background:rgba(201,162,75,0.12);border:1px solid rgba(201,162,75,0.4);color:var(--gold);
-  border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;
+  background:linear-gradient(135deg,rgba(243,178,106,0.22),rgba(243,178,106,0.1));
+  border:1px solid rgba(243,178,106,0.5);color:var(--gold);
+  border-radius:12px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;
+  box-shadow:0 3px 10px rgba(0,0,0,0.12);
 }
+.topbar-btn:active{background:linear-gradient(135deg,rgba(243,178,106,0.4),rgba(243,178,106,0.2));}
 .topbar-title{font-family:'Fraunces',serif;font-weight:700;font-size:16px;}
 .index-body{flex:1;overflow-y:auto;padding:14px;}
 .search-box{
@@ -208,13 +232,15 @@ body{
 }
 .page-cell.filled{background:var(--cover);color:var(--gold);border-color:var(--cover);}
 .jump-row{display:flex;gap:8px;margin-bottom:4px;}
-.jump-row input{flex:1;padding:10px 12px;border:1px solid var(--paper-line);border-radius:8px;font-size:14px;}
-.jump-row button{padding:10px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:700;font-size:13px;cursor:pointer;}
+.jump-row input{flex:1;padding:10px 12px;border:1px solid var(--paper-line);border-radius:10px;font-size:14px;background:#fff;}
+.jump-row button{padding:10px 18px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--blue));color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:var(--shadow-btn);}
 .btn-ghost{
-  padding:12px;border:1.5px solid var(--accent);border-radius:10px;background:#fff;
-  color:var(--accent);font-weight:700;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;
+  padding:13px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--red),#C9453B);
+  color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;
+  box-shadow:var(--shadow-btn);
 }
-.btn-ghost:hover{background:var(--accent);color:#fff;}
+.btn-ghost:hover{filter:brightness(1.06);}
 .btn-ghost:disabled{opacity:.5;cursor:default;}
 
 /* ============ PAGE EDITOR ============ */
@@ -223,18 +249,20 @@ body{
   background:var(--cover);padding:10px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;
 }
 .nav-btn{
-  background:rgba(201,162,75,0.14);border:1px solid rgba(201,162,75,0.4);color:var(--gold);
-  border-radius:8px;width:36px;height:36px;font-size:16px;cursor:pointer;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(243,178,106,0.22),rgba(243,178,106,0.08));
+  border:1px solid rgba(243,178,106,0.45);color:var(--gold);
+  border-radius:10px;width:38px;height:38px;font-size:16px;cursor:pointer;flex-shrink:0;
+  box-shadow:0 3px 8px rgba(0,0,0,0.12);
 }
 .page-num-badge{
   font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:13px;font-weight:700;
   flex:1;text-align:center;min-width:70px;
 }
-.mode-toggle{display:flex;border:1px solid rgba(201,162,75,0.4);border-radius:8px;overflow:hidden;}
+.mode-toggle{display:flex;border:1px solid rgba(243,178,106,0.4);border-radius:10px;overflow:hidden;}
 .mode-btn{
   padding:8px 12px;font-size:12px;font-weight:700;background:transparent;color:var(--gold);border:none;cursor:pointer;font-family:'Inter',sans-serif;
 }
-.mode-btn.active{background:var(--gold);color:var(--cover);}
+.mode-btn.active{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#2B1A08;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.3);}
 
 .sub-toolbar{
   background:#EADFC1;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;
@@ -244,19 +272,28 @@ body{
   padding:6px 8px;border:1px solid var(--paper-line);border-radius:6px;font-size:12px;background:#fff;
 }
 .mini-btn{
-  padding:6px 10px;border:1px solid var(--paper-line);border-radius:6px;background:#fff;font-size:12px;cursor:pointer;font-weight:600;
+  padding:7px 12px;border:1px solid var(--paper-line);border-radius:9px;background:#fff;font-size:12px;cursor:pointer;font-weight:700;
+  box-shadow:0 2px 6px rgba(60,60,110,0.08);
 }
 .mini-btn.danger{color:#A03B2C;}
-.color-dot{width:20px;height:20px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--paper-line);cursor:pointer;flex-shrink:0;}
-.color-dot.active{box-shadow:0 0 0 2px var(--ink);}
+/* ---- color-coded action buttons (per premium spec) ---- */
+#undoBtnType,#undoBtnDraw{background:linear-gradient(135deg,#8B6FE0,#6C55C9);color:#fff;border-color:transparent;}
+#redoBtnType,#redoBtnDraw{background:linear-gradient(135deg,#4FC7DE,#2E9FB8);color:#fff;border-color:transparent;}
+.hist-group .mini-btn:disabled{background:#EEE9F5 !important;color:#B7AFC9 !important;}
+button[onclick="exportPagePDF()"]{background:linear-gradient(135deg,var(--red),#C9453B);color:#fff;border-color:transparent;}
+button[onclick="toggleCalc()"]{background:linear-gradient(135deg,var(--orange),var(--gold-deep));color:#fff;border-color:transparent;}
+button[onclick="toggleVersions()"]{background:linear-gradient(135deg,var(--blue),#2E6FB0);color:#fff;border-color:transparent;}
+#bookmarkBtn.active{background:linear-gradient(135deg,var(--gold),var(--gold-deep)) !important;color:#2B1A08 !important;}
+.color-dot{width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--paper-line),0 2px 5px rgba(0,0,0,0.15);cursor:pointer;flex-shrink:0;}
+.color-dot.active{box-shadow:0 0 0 2px var(--accent),0 2px 5px rgba(0,0,0,0.15);}
 
 .page-content{flex:1;position:relative;overflow:hidden;perspective:1400px;}
 .flip-leaf{
   position:absolute;inset:0;z-index:30;
   transform-style:preserve-3d;backface-visibility:hidden;
-  background:var(--write-bg);
-  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 33px, var(--write-line) 34px);
-  padding:24px 20px;font-size:19px;line-height:34px;color:var(--write-ink);font-family:'Inter',sans-serif;
+  background:var(--paper);
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
+  padding:24px 20px;font-size:19px;line-height:34px;color:var(--ink);font-family:'Inter',sans-serif;
   overflow:hidden;white-space:pre-wrap;
   box-shadow:0 0 40px rgba(0,0,0,0.25);
   transition:transform .55s cubic-bezier(.4,.1,.3,1), box-shadow .55s;
@@ -273,20 +310,18 @@ body{
 .flip-leaf.animating::after{opacity:1;}
 #drawCanvas{
   position:absolute;inset:0;width:100%;height:100%;touch-action:none;
-  background-color:var(--write-bg);
-  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 33px, var(--write-line) 34px);
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
 }
 #typeArea{
   position:absolute;inset:0;width:100%;height:100%;border:none;outline:none;resize:none;
-  padding:24px 20px;font-size:19px;line-height:34px;color:var(--write-ink);
-  background-color:var(--write-bg);
-  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 33px, var(--write-line) 34px);
+  padding:24px 20px;font-size:19px;line-height:34px;color:var(--ink);
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
   background-attachment:local;
   font-family:'Inter',sans-serif;
 }
 #typeArea.urdu{
   font-family:'Noto Nastaliq Urdu',serif;direction:rtl;text-align:right;font-size:22px;line-height:44px;
-  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 43px, var(--write-line) 44px);
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 43px, var(--paper-line) 44px);
 }
 
 .tag-bar{
@@ -337,14 +372,65 @@ body{
 }
 .calc-actions{display:flex;gap:8px;}
 .calc-actions button{flex:1;padding:10px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;}
-.calc-actions .insert{background:var(--accent);color:#fff;}
+.calc-actions .insert{background:linear-gradient(135deg,var(--green),#178A5E);color:#fff;}
 .calc-actions .close{background:#E8E1CF;color:var(--ink);}
+
+/* ============ WELCOME SCREEN (first visit only) ============ */
+#screenWelcome{
+  background:linear-gradient(160deg,#3A4F8A 0%,#5B4B9A 55%,#6C63D6 100%);
+  align-items:center;justify-content:center;padding:40px 26px;text-align:center;
+}
+.welcome-illustration{font-size:78px;margin-bottom:6px;filter:drop-shadow(0 12px 26px rgba(0,0,0,0.35));animation:floatBook 3.2s ease-in-out infinite;}
+@keyframes floatBook{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-10px) rotate(2deg);}}
+.welcome-title{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(24px,6vw,32px);color:#fff;margin:14px 0 6px;}
+.welcome-sub{font-family:'Inter',sans-serif;color:rgba(255,255,255,0.85);font-size:14.5px;margin-bottom:26px;}
+.welcome-features{display:flex;flex-direction:column;gap:12px;width:100%;max-width:320px;margin-bottom:34px;}
+.welcome-feature{
+  display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.18);border-radius:14px;padding:12px 16px;
+  color:#fff;font-size:13.5px;font-weight:600;text-align:left;backdrop-filter:blur(6px);
+}
+.welcome-feature .wf-icon{font-size:20px;flex-shrink:0;}
+.welcome-cta{
+  padding:15px 42px;border:none;border-radius:100px;cursor:pointer;
+  background:linear-gradient(135deg,#F3B26A,#D98F3D);color:#2B1A08;
+  font-weight:800;font-size:15px;font-family:'Inter',sans-serif;
+  box-shadow:0 12px 30px rgba(217,143,61,0.45);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.welcome-cta:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(217,143,61,0.55);}
+.welcome-cta:active{transform:scale(0.96);}
+.welcome-hint{margin-top:16px;color:rgba(255,255,255,0.6);font-size:11.5px;}
+
+/* ============ ADSENSE / AD SLOT RESERVED SPACE ============ */
+.ad-slot{
+  width:100%;max-width:728px;min-height:90px;margin:18px auto;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;
+  border:1.5px dashed var(--paper-line);border-radius:14px;
+  background:rgba(140,140,180,0.05);color:var(--muted);
+  font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:.03em;
+}
+.ad-slot small{font-size:10px;opacity:.75;}
 </style>
 </head>
 <body>
 
+<!-- ============ WELCOME SCREEN (shown once, first visit) ============ -->
+<div class="screen active" id="screenWelcome">
+  <div class="welcome-illustration">📔✨</div>
+  <div class="welcome-title">Welcome to My Register</div>
+  <div class="welcome-sub">Your premium digital notebook — write, save, and organize your world.</div>
+  <div class="welcome-features">
+    <div class="welcome-feature"><span class="wf-icon">📝</span> Write your thoughts, by hand or keyboard</div>
+    <div class="welcome-feature"><span class="wf-icon">☁️</span> Save your memories — automatically, instantly</div>
+    <div class="welcome-feature"><span class="wf-icon">🔖</span> Organize your ideas with labels &amp; bookmarks</div>
+  </div>
+  <button class="welcome-cta" onclick="dismissWelcome()">Get Started →</button>
+  <div class="welcome-hint">Everything is saved on this device automatically.</div>
+</div>
+
 <!-- ============ COVER SCREEN ============ -->
-<div class="screen active" id="screenCover">
+<div class="screen" id="screenCover">
   <div class="cover-hero" onclick="openBook()">
     <div class="book">
       <div class="book-orn">📖</div>
@@ -390,6 +476,11 @@ body{
     <h3>Who This Is For</h3>
     <p>My Register isn't trying to replace a full accounting app or a note-taking suite with reminders and cloud sync. It's built for the smaller, everyday moments a physical register has always been used for — jotting down someone's phone number when you don't have paper handy, writing a quick account of what you spent today, keeping a short list you'll want to check later, or simply having somewhere private to write in your own language without opening an account first. If that sounds like the kind of notebook you used to keep in a drawer, this is the same idea, just carried in your pocket.</p>
 
+    <!-- ============ ADSENSE AD SLOT (reserved space — paste your <ins> AdSense unit here) ============ -->
+    <div class="ad-slot" id="adSlotCover">
+      Advertisement<br><small>e.g. Google AdSense responsive banner (728×90 / 320×50)</small>
+    </div>
+
     <div style="display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:30px;padding-top:20px;border-top:1px solid var(--paper-line);">
       <a href="/about.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">About</a>
       <a href="/contact.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Contact</a>
@@ -426,7 +517,12 @@ body{
     <div class="page-grid" id="pageGrid"></div>
 
     <div class="index-section-label">📤 Export</div>
-    <button class="btn-ghost" style="width:100%;margin-bottom:24px;" onclick="exportRegisterPDF()">⬇ Download Entire Register as PDF</button>
+    <button class="btn-ghost" style="width:100%;margin-bottom:16px;" onclick="exportRegisterPDF()">⬇️ Download Entire Register as PDF</button>
+
+    <!-- ============ ADSENSE AD SLOT (reserved space — paste your <ins> AdSense unit here) ============ -->
+    <div class="ad-slot" id="adSlotIndex" style="margin-bottom:24px;">
+      Advertisement<br><small>Google AdSense responsive banner</small>
+    </div>
   </div>
 </div>
 
@@ -463,9 +559,9 @@ body{
       <button class="mini-btn" id="undoBtnDraw" onclick="performUndo()" title="Undo">↩ Undo</button>
       <button class="mini-btn" id="redoBtnDraw" onclick="performRedo()" title="Redo">↪ Redo</button>
     </div>
-    <div class="color-dot active" style="background:#111111" data-color="#111111" onclick="setPenColor(this)"></div>
-    <div class="color-dot" style="background:#B3492E" data-color="#B3492E" onclick="setPenColor(this)"></div>
-    <div class="color-dot" style="background:#1C7C6B" data-color="#1C7C6B" onclick="setPenColor(this)"></div>
+    <div class="color-dot active" style="background:#2A2118" data-color="#2A2118" onclick="setPenColor(this)"></div>
+    <div class="color-dot" style="background:#7A2E2E" data-color="#7A2E2E" onclick="setPenColor(this)"></div>
+    <div class="color-dot" style="background:#1F5D46" data-color="#1F5D46" onclick="setPenColor(this)"></div>
     <div class="color-dot" style="background:#1B4F91" data-color="#1B4F91" onclick="setPenColor(this)"></div>
     <select id="penWidth" onchange="setPenWidth()">
       <option value="2">Fine</option>
@@ -568,7 +664,7 @@ let currentVolume = parseInt(localStorage.getItem('myreg_volume') || '1');
 let currentPage = 1;
 let currentMode = 'type';
 let currentLang = 'en';
-let penColor = '#111111';
+let penColor = '#2A2118';
 let penWidth = 3.5;
 let isErasing = false;
 let drawing = false;
@@ -593,6 +689,18 @@ function setPage(n, data) {
   pages[n] = data;
   savePages(pages);
 }
+
+/* ============ WELCOME SCREEN (first visit only) ============ */
+function dismissWelcome() {
+  localStorage.setItem('myreg_seen_welcome', '1');
+  showScreen('screenCover');
+}
+(function initWelcome(){
+  if (localStorage.getItem('myreg_seen_welcome') === '1') {
+    document.getElementById('screenWelcome').classList.remove('active');
+    document.getElementById('screenCover').classList.add('active');
+  }
+})();
 
 /* ============ NAVIGATION BETWEEN SCREENS ============ */
 function showScreen(id) {
@@ -862,7 +970,7 @@ function showMilestoneToast(text, icon) {
 function markSaved() {
   const el = document.getElementById('saveStatus');
   el.className = 'save-status saved';
-  el.innerHTML = '<span class="dot"></span> Saved';
+  el.innerHTML = '<span class="dot"></span> ✅ Saved';
 }
 function setStatus(t) {
   const el = document.getElementById('saveStatus');
@@ -1093,7 +1201,7 @@ function initCanvasEvents() {
     e.preventDefault();
     const p = getPos(e, canvas);
     ctx.lineTo(p.x, p.y);
-    ctx.strokeStyle = isErasing ? '#FFFFFF' : penColor;
+    ctx.strokeStyle = isErasing ? '#F6EFDD' : penColor;
     ctx.lineWidth = isErasing ? 22 : penWidth;
     ctx.stroke();
   }
