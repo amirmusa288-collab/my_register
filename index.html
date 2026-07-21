@@ -2,14 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-LX83YPJRMB"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag(\x27js\x27, new Date());
-  gtag(\x27config\x27, \x27G-LX83YPJRMB\x27);
-</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -29,11 +21,8 @@
   --paper-shadow:#E8DCBB;
   --ink:#2A2118;
   --muted:#8A7C5F;
-  --accent:#B3492E;
-  --green:#1C7C6B;
-  --write-bg:#FFFFFF;
-  --write-line:#EAEAEA;
-  --write-ink:#111111;
+  --accent:#7A2E2E;
+  --green:#2F5D42;
 }
 html,body{height:100%;overflow:hidden;}
 html{height:100dvh;}
@@ -104,7 +93,77 @@ body{
 .book-vol{position:absolute;bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#C9A24B77;}
 .tap-hint{margin-top:26px;color:#C9A24B88;font-size:12px;letter-spacing:.05em;font-family:'Inter',sans-serif;}
 
-/* ============ INDEX ============ */
+/* ============ DESKTOP / TABLET FRAME ============ */
+@media(min-width:640px){
+  body{
+    background:linear-gradient(135deg,#1A0808,#2A0F0F 60%,#1A0808);
+    align-items:center;justify-content:center;display:flex;
+  }
+  .screen{
+    position:relative;inset:auto;
+    width:420px;height:min(860px,94dvh);
+    border-radius:22px;overflow:hidden;
+    box-shadow:0 30px 90px rgba(0,0,0,0.6), 0 0 0 10px #100505;
+  }
+  #screenCover.screen{overflow-y:auto;}
+}
+
+/* ============ BUTTON MOTION ============ */
+.topbar-btn, .nav-btn, .mode-btn, .mini-btn, .jump-row button, .type-tab, .btn-add, .btn-ghost, .btn-savecard, .btn-share, .calc-op button, .calc-actions button, .cookie-accept, .cookie-decline{
+  transition:transform .12s ease, box-shadow .12s ease, background .15s ease, opacity .15s ease;
+}
+.topbar-btn:hover, .mini-btn:hover, .jump-row button:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,0.12);}
+.nav-btn:active, .topbar-btn:active, .mini-btn:active, .mode-btn:active, .jump-row button:active, .tagged-row:active, .page-cell:active{
+  transform:scale(0.94);
+}
+.tagged-row, .page-cell{transition:transform .1s ease, box-shadow .15s ease, background .15s ease;}
+.tagged-row:hover{box-shadow:0 4px 14px rgba(122,46,46,0.12);border-color:var(--accent);}
+
+/* ============ SAVE STATUS PILL ============ */
+.save-status{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:100px;background:rgba(122,46,46,0.06);
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);
+  align-self:center;transition:all .2s;
+}
+.save-status .dot{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block;}
+.save-status.saved{color:#2F5D42;background:rgba(47,93,66,0.08);}
+.save-status.saved .dot{background:#2F5D42;}
+.save-status.saving{color:#A9822E;background:rgba(169,130,46,0.1);}
+.save-status.saving .dot{background:#C9A24B;animation:pulseDot 1s infinite;}
+@keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ============ UNDO/REDO GROUP ============ */
+.hist-group{display:flex;gap:4px;}
+.hist-group .mini-btn:disabled{opacity:.35;cursor:default;}
+.hist-group .mini-btn:disabled:hover{transform:none;box-shadow:none;}
+
+/* ============ MODAL (Version History / Search results) ============ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(20,10,10,0.55);z-index:300;
+  display:none;align-items:flex-end;justify-content:center;
+}
+.modal-overlay.open{display:flex;}
+.modal-sheet{
+  background:var(--paper);width:100%;max-width:420px;max-height:75dvh;
+  border-radius:18px 18px 0 0;padding:18px;overflow-y:auto;
+  box-shadow:0 -10px 40px rgba(0,0,0,0.35);
+  animation:sheetUp .25s ease;
+}
+@keyframes sheetUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.modal-title{font-family:'Fraunces',serif;font-weight:700;font-size:17px;color:var(--accent);}
+.version-item{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:10px 12px;border:1px solid var(--paper-line);border-radius:10px;background:#fff;margin-bottom:8px;
+}
+.version-item .vtime{font-size:12px;color:var(--muted);}
+.version-item .vsnippet{font-size:12px;color:var(--ink);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.version-item button{padding:6px 12px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;cursor:pointer;}
+.search-result{padding:10px 12px;border:1px solid var(--paper-line);border-radius:10px;background:#fff;margin-bottom:8px;cursor:pointer;}
+.search-result .sr-num{font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--accent);font-size:12px;}
+.search-result .sr-snippet{font-size:13px;color:var(--ink);margin-top:3px;}
+.search-result mark{background:#F3D98C;padding:0 1px;}
 #screenIndex{background:var(--paper);}
 .topbar{
   background:var(--cover);color:var(--gold);
@@ -150,6 +209,12 @@ body{
 .jump-row{display:flex;gap:8px;margin-bottom:4px;}
 .jump-row input{flex:1;padding:10px 12px;border:1px solid var(--paper-line);border-radius:8px;font-size:14px;}
 .jump-row button{padding:10px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:700;font-size:13px;cursor:pointer;}
+.btn-ghost{
+  padding:12px;border:1.5px solid var(--accent);border-radius:10px;background:#fff;
+  color:var(--accent);font-weight:700;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;
+}
+.btn-ghost:hover{background:var(--accent);color:#fff;}
+.btn-ghost:disabled{opacity:.5;cursor:default;}
 
 /* ============ PAGE EDITOR ============ */
 #screenPage{background:var(--paper);}
@@ -188,9 +253,9 @@ body{
 .flip-leaf{
   position:absolute;inset:0;z-index:30;
   transform-style:preserve-3d;backface-visibility:hidden;
-  background:var(--write-bg);
-  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 33px, var(--write-line) 34px);
-  padding:24px 20px;font-size:19px;line-height:34px;color:var(--write-ink);font-family:'Inter',sans-serif;
+  background:var(--paper);
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
+  padding:24px 20px;font-size:19px;line-height:34px;color:var(--ink);font-family:'Inter',sans-serif;
   overflow:hidden;white-space:pre-wrap;
   box-shadow:0 0 40px rgba(0,0,0,0.25);
   transition:transform .55s cubic-bezier(.4,.1,.3,1), box-shadow .55s;
@@ -207,20 +272,18 @@ body{
 .flip-leaf.animating::after{opacity:1;}
 #drawCanvas{
   position:absolute;inset:0;width:100%;height:100%;touch-action:none;
-  background-color:var(--write-bg);
-  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 33px, var(--write-line) 34px);
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
 }
 #typeArea{
   position:absolute;inset:0;width:100%;height:100%;border:none;outline:none;resize:none;
-  padding:24px 20px;font-size:19px;line-height:34px;color:var(--write-ink);
-  background-color:var(--write-bg);
-  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 33px, var(--write-line) 34px);
+  padding:24px 20px;font-size:19px;line-height:34px;color:var(--ink);
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
   background-attachment:local;
   font-family:'Inter',sans-serif;
 }
 #typeArea.urdu{
   font-family:'Noto Nastaliq Urdu',serif;direction:rtl;text-align:right;font-size:22px;line-height:44px;
-  background-image:repeating-linear-gradient(var(--write-bg) 0px, var(--write-bg) 43px, var(--write-line) 44px);
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 43px, var(--paper-line) 44px);
 }
 
 .tag-bar{
@@ -229,7 +292,7 @@ body{
 .tag-bar input{
   flex:1;padding:9px 12px;border:1px solid var(--paper-line);border-radius:8px;font-size:13px;background:#fff;
 }
-.tag-bar .save-status{font-size:11px;color:var(--muted);align-self:center;white-space:nowrap;padding:0 6px;}
+.tag-bar .save-status{white-space:nowrap;}
 
 #bookmarkBtn.active{background:var(--gold);color:var(--cover);}
 .ribbon{
@@ -341,7 +404,11 @@ body{
     <button class="topbar-btn" onclick="goToNextEmptyPage()">+ New Entry</button>
   </div>
   <div class="index-body">
-    <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search by name or note..." oninput="renderIndex()">
+    <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search everything you've written..." oninput="renderIndex()">
+    <div id="searchResultsWrap" style="display:none;">
+      <div class="index-section-label">🔎 Matches In Your Writing</div>
+      <div id="searchResults"></div>
+    </div>
 
     <div class="index-section-label">📑 Written Pages</div>
     <div class="tagged-list" id="taggedList"></div>
@@ -354,6 +421,9 @@ body{
 
     <div class="index-section-label">All 100 Pages</div>
     <div class="page-grid" id="pageGrid"></div>
+
+    <div class="index-section-label">📤 Export</div>
+    <button class="btn-ghost" style="width:100%;margin-bottom:24px;" onclick="exportRegisterPDF()">⬇ Download Entire Register as PDF</button>
   </div>
 </div>
 
@@ -372,17 +442,27 @@ body{
   </div>
 
   <div class="sub-toolbar" id="typeSubToolbar">
+    <div class="hist-group">
+      <button class="mini-btn" id="undoBtnType" onclick="performUndo()" title="Undo">↩ Undo</button>
+      <button class="mini-btn" id="redoBtnType" onclick="performRedo()" title="Redo">↪ Redo</button>
+    </div>
     <div class="mode-toggle">
       <button class="mode-btn" id="langEnBtn" onclick="setLang('en')">EN</button>
       <button class="mode-btn" id="langUrBtn" onclick="setLang('ur')">اردو</button>
     </div>
     <button class="mini-btn" onclick="toggleCalc()">🧮 Currency Calc</button>
+    <button class="mini-btn" onclick="toggleVersions()">🕐 History</button>
+    <button class="mini-btn" onclick="exportPagePDF()">⬇ PDF</button>
   </div>
 
   <div class="sub-toolbar" id="drawSubToolbar" style="display:none;">
-    <div class="color-dot active" style="background:#111111" data-color="#111111" onclick="setPenColor(this)"></div>
-    <div class="color-dot" style="background:#B3492E" data-color="#B3492E" onclick="setPenColor(this)"></div>
-    <div class="color-dot" style="background:#1C7C6B" data-color="#1C7C6B" onclick="setPenColor(this)"></div>
+    <div class="hist-group">
+      <button class="mini-btn" id="undoBtnDraw" onclick="performUndo()" title="Undo">↩ Undo</button>
+      <button class="mini-btn" id="redoBtnDraw" onclick="performRedo()" title="Redo">↪ Redo</button>
+    </div>
+    <div class="color-dot active" style="background:#2A2118" data-color="#2A2118" onclick="setPenColor(this)"></div>
+    <div class="color-dot" style="background:#7A2E2E" data-color="#7A2E2E" onclick="setPenColor(this)"></div>
+    <div class="color-dot" style="background:#1F5D46" data-color="#1F5D46" onclick="setPenColor(this)"></div>
     <div class="color-dot" style="background:#1B4F91" data-color="#1B4F91" onclick="setPenColor(this)"></div>
     <select id="penWidth" onchange="setPenWidth()">
       <option value="2">Fine</option>
@@ -390,7 +470,8 @@ body{
       <option value="6">Bold</option>
     </select>
     <button class="mini-btn" onclick="setEraser()">🩹 Eraser</button>
-    <button class="mini-btn danger" onclick="clearCanvas()">↩ Undo Last</button>
+    <button class="mini-btn" onclick="toggleVersions()">🕐 History</button>
+    <button class="mini-btn" onclick="exportPagePDF()">⬇ PDF</button>
   </div>
 
   <div class="page-content">
@@ -444,13 +525,47 @@ body{
   </div>
 </div>
 
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal-sheet">
+    <div class="modal-title-row">
+      <div class="modal-title" id="modalTitle">—</div>
+      <button class="nav-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
 <script>
+/*
+  DATA MODEL (kept flat and versioned on purpose, so new features can be added
+  without breaking existing saved registers):
+
+    localStorage['myreg_pages_v<N>']  → { [pageNumber]: PageData }
+    PageData = {
+      mode: 'type' | 'draw',
+      lang: 'en' | 'ur',
+      text: string,
+      draw: string | null        // PNG data URL
+      tag: string,                // shown in the Index
+      bookmarked: boolean,
+      versions: [{ts, text, draw}], // last 10 snapshots — powers Version History
+      ts: number
+    }
+    localStorage['myreg_volume']      → current volume number (multiple registers)
+
+  Everything reads/writes through getPages()/savePages()/getPage()/setPage(),
+  so future features can extend PageData (e.g. `locked: boolean` for Password
+  Protection, `cloudId` for Cloud Backup, `color` for register Dark Mode
+  theming) without touching the storage layer itself. Multiple registers /
+  volumes already work through volKey() — the same mechanism a "Multiple
+  Registers" feature would reuse with a user-chosen key instead of a number.
+*/
 const TOTAL_PAGES = 100;
 let currentVolume = parseInt(localStorage.getItem('myreg_volume') || '1');
 let currentPage = 1;
 let currentMode = 'type';
 let currentLang = 'en';
-let penColor = '#111111';
+let penColor = '#2A2118';
 let penWidth = 3.5;
 let isErasing = false;
 let drawing = false;
@@ -499,6 +614,32 @@ function renderIndex() {
   const pages = getPages();
   const query = document.getElementById('searchBox').value.trim().toLowerCase();
 
+  // full-text content search (searches the actual written text, not just labels)
+  const resultsWrap = document.getElementById('searchResultsWrap');
+  const resultsBox = document.getElementById('searchResults');
+  if (query.length >= 2) {
+    const matches = Object.keys(pages)
+      .map(n => ({n: parseInt(n), ...pages[n]}))
+      .filter(e => e.text && e.text.toLowerCase().includes(query))
+      .sort((a,b) => a.n - b.n);
+    resultsWrap.style.display = 'block';
+    if (!matches.length) {
+      resultsBox.innerHTML = `<div class="tagged-empty">No pages contain "${escapeHtml(query)}".</div>`;
+    } else {
+      resultsBox.innerHTML = matches.map(e => {
+        const idx = e.text.toLowerCase().indexOf(query);
+        const start = Math.max(0, idx - 25);
+        const raw = e.text.slice(start, idx) + '<mark>' + e.text.slice(idx, idx+query.length) + '</mark>' + e.text.slice(idx+query.length, idx+query.length+35);
+        return `<div class="search-result" onclick="openPage(${e.n})">
+          <div class="sr-num">Page ${e.n}${e.tag ? ' — ' + escapeHtml(e.tag) : ''}</div>
+          <div class="sr-snippet">${start>0?'…':''}${raw}…</div>
+        </div>`;
+      }).join('');
+    }
+  } else {
+    resultsWrap.style.display = 'none';
+  }
+
   // tagged list
   const taggedList = document.getElementById('taggedList');
   let entries = Object.keys(pages).map(n => ({n: parseInt(n), ...pages[n]}))
@@ -509,7 +650,7 @@ function renderIndex() {
   entries.sort((a,b) => a.n - b.n);
 
   if (!entries.length) {
-    taggedList.innerHTML = `<div class="tagged-empty">${query ? 'No matching pages found.' : 'Nothing labeled yet. Open a page and add a label so you can find it again.'}</div>`;
+    taggedList.innerHTML = `<div class="tagged-empty">${query ? 'No matching labels.' : 'Nothing labeled yet. Open a page and add a label so you can find it again.'}</div>`;
   } else {
     entries.sort((a,b) => (b.bookmarked?1:0) - (a.bookmarked?1:0) || a.n - b.n);
     taggedList.innerHTML = entries.map(e => `
@@ -551,6 +692,10 @@ function goToNextEmptyPage() {
 /* ============ PAGE EDITOR ============ */
 let ctx;
 let pendingDrawData = null;
+let textUndoStack = [], textRedoStack = [];
+let drawUndoStack = [], drawRedoStack = [];
+let textSnapshotTimer = null;
+
 function openPage(n) {
   currentPage = n;
   showScreen('screenPage');
@@ -564,6 +709,12 @@ function openPage(n) {
   document.getElementById('tagInput').value = data.tag || '';
   document.getElementById('bookmarkBtn').classList.toggle('active', !!data.bookmarked);
   pendingDrawData = data.draw || null;
+
+  textUndoStack = []; textRedoStack = [];
+  drawUndoStack = []; drawRedoStack = [];
+  lastTextValueBeforeBurst = data.text || '';
+  clearTimeout(textBurstTimer); textBurstTimer = null;
+  updateHistButtons();
 
   setMode(currentMode, true);
   setLang(currentLang, true);
@@ -579,7 +730,6 @@ function toggleBookmark() {
 }
 
 function setupCanvas() {
-  strokeHistory = [];
   const canvas = document.getElementById('drawCanvas');
   // use the parent container's size, since the canvas itself may be display:none right now
   const rect = canvas.parentElement.getBoundingClientRect();
@@ -609,6 +759,7 @@ function setMode(mode, skipSave) {
     // canvas is only now visible with real dimensions — (re)size it properly
     requestAnimationFrame(setupCanvas);
   }
+  updateHistButtons();
   if (!skipSave) persistCurrentPage();
 }
 
@@ -620,7 +771,24 @@ function setLang(lang, skipSave) {
   if (!skipSave) persistCurrentPage();
 }
 
+let textBurstTimer = null;
+let lastTextValueBeforeBurst = '';
 function onTypeInput() {
+  if (!textBurstTimer) {
+    // starting a fresh burst of typing — remember what the text looked like just before it
+    if (lastTextValueBeforeBurst !== document.getElementById('typeArea').value) {
+      textUndoStack.push(lastTextValueBeforeBurst);
+      if (textUndoStack.length > 40) textUndoStack.shift();
+      textRedoStack = [];
+      updateHistButtons();
+    }
+  }
+  clearTimeout(textBurstTimer);
+  textBurstTimer = setTimeout(() => {
+    textBurstTimer = null;
+    lastTextValueBeforeBurst = document.getElementById('typeArea').value;
+  }, 800);
+
   setStatus('saving…');
   clearTimeout(saveTimer);
   saveTimer = setTimeout(persistCurrentPage, 400);
@@ -636,18 +804,30 @@ function persistCurrentPage() {
   const existing = getPage(currentPage) || {};
   const drawData = (currentMode === 'draw') ? canvas.toDataURL('image/png') : (existing.draw || null);
   const wasFilled = !!(existing.text && existing.text.trim()) || !!existing.draw;
+  const newText = document.getElementById('typeArea').value;
+  const newDraw = isCanvasBlank(canvas) ? null : drawData;
+
+  // keep a lightweight version snapshot whenever content actually changed
+  let versions = existing.versions || [];
+  const contentChanged = existing.text !== newText || existing.draw !== newDraw;
+  if (contentChanged && (existing.text || existing.draw)) {
+    versions = versions.concat([{ts: existing.ts || Date.now(), text: existing.text || '', draw: existing.draw || null}]);
+    if (versions.length > 10) versions = versions.slice(versions.length - 10);
+  }
+
   setPage(currentPage, {
     mode: currentMode,
     lang: currentLang,
-    text: document.getElementById('typeArea').value,
-    draw: isCanvasBlank(canvas) ? null : drawData,
+    text: newText,
+    draw: newDraw,
     tag: document.getElementById('tagInput').value,
     bookmarked: !!existing.bookmarked,
+    versions: versions,
     ts: Date.now()
   });
-  setStatus('saved');
+  markSaved();
 
-  const nowFilled = !!(document.getElementById('typeArea').value.trim()) || (currentMode==='draw' && !isCanvasBlank(canvas));
+  const nowFilled = !!(newText.trim()) || (currentMode==='draw' && !isCanvasBlank(canvas));
   if (!wasFilled && nowFilled) checkMilestone();
 }
 function isCanvasBlank(canvas) {
@@ -674,8 +854,65 @@ function showMilestoneToast(text, icon) {
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 2600);
 }
+
+/* ============ AUTO-SAVE STATUS + HEARTBEAT ============ */
+function markSaved() {
+  const el = document.getElementById('saveStatus');
+  el.className = 'save-status saved';
+  el.innerHTML = '<span class="dot"></span> Saved';
+}
 function setStatus(t) {
-  document.getElementById('saveStatus').textContent = t;
+  const el = document.getElementById('saveStatus');
+  if (t === 'saved') { markSaved(); return; }
+  el.className = 'save-status saving';
+  el.innerHTML = '<span class="dot"></span> ' + t;
+}
+// safety-net heartbeat: even if an input event was somehow missed, make sure
+// whatever is on screen gets persisted at least every 7 seconds.
+setInterval(() => {
+  if (document.getElementById('screenPage').classList.contains('active')) {
+    persistCurrentPage();
+  }
+}, 7000);
+
+/* ============ VERSION HISTORY ============ */
+function toggleVersions() {
+  const data = getPage(currentPage) || {};
+  const versions = (data.versions || []).slice().reverse();
+  const overlay = document.getElementById('modalOverlay');
+  const title = document.getElementById('modalTitle');
+  const body = document.getElementById('modalBody');
+  title.textContent = '🕐 Version History — Page ' + currentPage;
+  if (!versions.length) {
+    body.innerHTML = '<div class="tagged-empty">No earlier versions yet — versions are saved automatically each time you make a meaningful change.</div>';
+  } else {
+    body.innerHTML = versions.map((v, i) => {
+      const d = new Date(v.ts);
+      const when = d.toLocaleString(undefined, {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+      const snippet = v.text ? v.text.slice(0, 40) : (v.draw ? '(hand-written page)' : '(empty)');
+      return `<div class="version-item">
+        <div><div class="vtime">${when}</div><div class="vsnippet">${escapeHtml(snippet)}</div></div>
+        <button onclick="restoreVersion(${versions.length - 1 - i})">Restore</button>
+      </div>`;
+    }).join('');
+  }
+  overlay.classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function restoreVersion(idx) {
+  const data = getPage(currentPage) || {};
+  const versions = data.versions || [];
+  const v = versions[idx];
+  if (!v) return;
+  if (!confirm('Restore this earlier version? Your current content on this page will be replaced (but is itself saved as a version, so you can still get it back).')) return;
+  document.getElementById('typeArea').value = v.text || '';
+  pendingDrawData = v.draw || null;
+  setMode(v.text ? 'type' : (v.draw ? 'draw' : currentMode));
+  if (v.draw) { setupCanvas(); }
+  persistCurrentPage();
+  closeModal();
 }
 
 function navPage(delta) {
@@ -769,26 +1006,68 @@ function setEraser() {
   isErasing = true;
 }
 
-let strokeHistory = [];
-function clearCanvas() {
-  const canvas = document.getElementById('drawCanvas');
-  if (!strokeHistory.length) {
-    // nothing to undo — page is already empty
-    return;
+/* ============ UNIFIED UNDO / REDO ============ */
+function updateHistButtons() {
+  const undoAvail = currentMode === 'type' ? textUndoStack.length > 0 : drawUndoStack.length > 0;
+  const redoAvail = currentMode === 'type' ? textRedoStack.length > 0 : drawRedoStack.length > 0;
+  ['undoBtnType','undoBtnDraw'].forEach(id => { const b=document.getElementById(id); if(b) b.disabled = !undoAvail; });
+  ['redoBtnType','redoBtnDraw'].forEach(id => { const b=document.getElementById(id); if(b) b.disabled = !redoAvail; });
+}
+
+function performUndo() {
+  if (currentMode === 'type') {
+    if (!textUndoStack.length) return;
+    const ta = document.getElementById('typeArea');
+    textRedoStack.push(ta.value);
+    ta.value = textUndoStack.pop();
+    lastTextValueBeforeBurst = ta.value;
+    clearTimeout(textBurstTimer); textBurstTimer = null;
+    persistCurrentPage();
+  } else {
+    if (!drawUndoStack.length) return;
+    const canvas = document.getElementById('drawCanvas');
+    drawRedoStack.push(canvas.toDataURL('image/png'));
+    const prevSnapshot = drawUndoStack.pop();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (prevSnapshot) {
+      const img = new Image();
+      img.onload = () => {
+        const rect = canvas.getBoundingClientRect();
+        ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        persistCurrentPage();
+      };
+      img.src = prevSnapshot;
+    } else {
+      persistCurrentPage();
+    }
   }
-  const prevSnapshot = strokeHistory.pop();
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (prevSnapshot) {
+  updateHistButtons();
+}
+
+function performRedo() {
+  if (currentMode === 'type') {
+    if (!textRedoStack.length) return;
+    const ta = document.getElementById('typeArea');
+    textUndoStack.push(ta.value);
+    ta.value = textRedoStack.pop();
+    lastTextValueBeforeBurst = ta.value;
+    clearTimeout(textBurstTimer); textBurstTimer = null;
+    persistCurrentPage();
+  } else {
+    if (!drawRedoStack.length) return;
+    const canvas = document.getElementById('drawCanvas');
+    drawUndoStack.push(canvas.toDataURL('image/png'));
+    const nextSnapshot = drawRedoStack.pop();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     const img = new Image();
     img.onload = () => {
       const rect = canvas.getBoundingClientRect();
       ctx.drawImage(img, 0, 0, rect.width, rect.height);
       persistCurrentPage();
     };
-    img.src = prevSnapshot;
-  } else {
-    persistCurrentPage();
+    img.src = nextSnapshot;
   }
+  updateHistButtons();
 }
 
 function initCanvasEvents() {
@@ -797,9 +1076,11 @@ function initCanvasEvents() {
     if (currentMode !== 'draw') return;
     e.preventDefault();
     drawing = true;
-    // remember the page exactly as it looked before this stroke, so Clear can undo just this one
-    strokeHistory.push(canvas.width ? canvas.toDataURL('image/png') : null);
-    if (strokeHistory.length > 40) strokeHistory.shift();
+    // remember the page exactly as it looked before this stroke, so Undo can restore just this one
+    drawUndoStack.push(canvas.width ? canvas.toDataURL('image/png') : null);
+    if (drawUndoStack.length > 40) drawUndoStack.shift();
+    drawRedoStack = [];
+    updateHistButtons();
     const p = getPos(e, canvas);
     ctx.beginPath();
     ctx.moveTo(p.x, p.y);
@@ -809,7 +1090,7 @@ function initCanvasEvents() {
     e.preventDefault();
     const p = getPos(e, canvas);
     ctx.lineTo(p.x, p.y);
-    ctx.strokeStyle = isErasing ? '#FFFFFF' : penColor;
+    ctx.strokeStyle = isErasing ? '#F6EFDD' : penColor;
     ctx.lineWidth = isErasing ? 22 : penWidth;
     ctx.stroke();
   }
@@ -922,6 +1203,131 @@ function initSwipeNavigation() {
   });
 }
 initSwipeNavigation();
+
+/* ============ PDF EXPORT ============ */
+function loadJsPDF() {
+  return new Promise((resolve, reject) => {
+    if (window.jspdf && window.jspdf.jsPDF) { resolve(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('load-failed'));
+    document.head.appendChild(script);
+  });
+}
+
+// Renders typed text to a PNG image via canvas so Urdu (Nastaliq) shapes correctly in the PDF —
+// jsPDF's built-in fonts cannot render Arabic-script text directly.
+function renderTextToImage(text, lang) {
+  const isUrdu = lang === 'ur';
+  const width = 1000;
+  const fontSize = isUrdu ? 36 : 24;
+  const lineHeight = isUrdu ? 58 : 34;
+  const fontFamily = isUrdu ? "'Noto Nastaliq Urdu'" : "'Inter'";
+  const measurer = document.createElement('canvas').getContext('2d');
+  measurer.font = fontSize + 'px ' + fontFamily;
+  const maxWidth = width - 90;
+
+  let wrapped = [];
+  (text || '').split('\n').forEach(line => {
+    if (line.trim() === '') { wrapped.push(''); return; }
+    const words = line.split(' ');
+    let current = '';
+    words.forEach(word => {
+      const test = current ? current + ' ' + word : word;
+      if (measurer.measureText(test).width > maxWidth && current) {
+        wrapped.push(current);
+        current = word;
+      } else {
+        current = test;
+      }
+    });
+    if (current) wrapped.push(current);
+  });
+  if (!wrapped.length) wrapped = [''];
+
+  const height = Math.max(160, wrapped.length * lineHeight + 90);
+  const canvas = document.createElement('canvas');
+  canvas.width = width; canvas.height = height;
+  const ctx2 = canvas.getContext('2d');
+  ctx2.fillStyle = '#FFFFFF';
+  ctx2.fillRect(0, 0, width, height);
+  ctx2.font = fontSize + 'px ' + fontFamily;
+  ctx2.fillStyle = '#2A2118';
+  ctx2.textBaseline = 'top';
+  ctx2.direction = isUrdu ? 'rtl' : 'ltr';
+  ctx2.textAlign = isUrdu ? 'right' : 'left';
+  const x = isUrdu ? width - 45 : 45;
+  wrapped.forEach((line, i) => ctx2.fillText(line, x, 45 + i * lineHeight));
+
+  return { dataURL: canvas.toDataURL('image/png'), width, height };
+}
+
+function addPageToPDF(doc, pageNum, data) {
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const margin = 44;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.setTextColor(122, 46, 46);
+  doc.text('My Register — Page ' + pageNum + (data && data.tag ? '   ·   ' + data.tag : ''), margin, 34);
+  doc.setDrawColor(201, 162, 75);
+  doc.setLineWidth(1);
+  doc.line(margin, 42, pageW - margin, 42);
+
+  const maxW = pageW - margin * 2;
+  const maxH = pageH - 70;
+
+  if (data && data.draw) {
+    try {
+      const props = doc.getImageProperties(data.draw);
+      let w = maxW, h = (props.height / props.width) * w;
+      if (h > maxH) { h = maxH; w = (props.width / props.height) * h; }
+      doc.addImage(data.draw, 'PNG', margin, 58, w, h);
+    } catch (e) { /* skip unreadable image */ }
+  } else if (data && data.text && data.text.trim()) {
+    const img = renderTextToImage(data.text, data.lang);
+    let w = maxW, h = (img.height / img.width) * w;
+    if (h > maxH) { h = maxH; w = (img.width / img.height) * h; }
+    doc.addImage(img.dataURL, 'PNG', margin, 58, w, h);
+  } else {
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(11);
+    doc.setTextColor(160, 150, 130);
+    doc.text('(empty page)', margin, 70);
+  }
+}
+
+async function exportPagePDF() {
+  persistCurrentPage();
+  try { await loadJsPDF(); await document.fonts.ready; }
+  catch (e) { alert('Could not load the PDF export tool. Please check your internet connection and try again.'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  addPageToPDF(doc, currentPage, getPage(currentPage));
+  doc.save('my-register-page-' + currentPage + '.pdf');
+}
+
+async function exportRegisterPDF() {
+  const pages = getPages();
+  const filled = Object.keys(pages).map(n => parseInt(n)).filter(n => {
+    const p = pages[n];
+    return (p.text && p.text.trim()) || p.draw;
+  }).sort((a, b) => a - b);
+  if (!filled.length) { alert('Your register is empty — write something on at least one page first.'); return; }
+
+  try { await loadJsPDF(); await document.fonts.ready; }
+  catch (e) { alert('Could not load the PDF export tool. Please check your internet connection and try again.'); return; }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  filled.forEach((n, i) => {
+    if (i > 0) doc.addPage();
+    addPageToPDF(doc, n, pages[n]);
+  });
+  doc.save('my-register-volume-' + currentVolume + '.pdf');
+}
 
 /* ============ INIT ============ */
 initCanvasEvents();
