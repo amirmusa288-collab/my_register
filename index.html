@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#3A4F8A">
-<title>My Register — کھولیں، لکھیں، بند کریں</title>
+<title>My Register — Open, Write, Close</title>
 <meta name="description" content="A digital register just like the real thing — open it, write on numbered pages by hand or keyboard, in Urdu or English, then close it and remember the page number.">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Noto+Nastaliq+Urdu:wght@500;700&family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -102,28 +102,30 @@ body{
 .book-vol{position:absolute;bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F3B26A77;}
 .tap-hint{margin-top:26px;color:#F3B26A88;font-size:12px;letter-spacing:.05em;font-family:'Inter',sans-serif;}
 
-/* ============ DESKTOP / TABLET — full, roomy, premium layout ============ */
-@media(min-width:640px){
-  body{
-    align-items:center;justify-content:center;display:flex;
-    padding:24px;
-  }
-  .screen{
-    position:relative;inset:auto;
-    width:min(560px,92vw);height:min(880px,94dvh);
-    border-radius:26px;overflow:hidden;
-    box-shadow:0 40px 100px rgba(60,60,110,0.28), 0 0 0 1px rgba(255,255,255,0.4);
-  }
-  #screenCover.screen{overflow-y:auto;}
-}
-/* Tablet: give the notebook noticeably more breathing room */
-@media(min-width:900px){
-  .screen{ width:min(680px,88vw); height:min(920px,94dvh); }
-}
-/* Desktop / laptop: open wide like a real premium app, not a phone mockup */
+/* ============ FULL-SCREEN ON EVERY DEVICE ============ */
+/* The app always fills the entire viewport — phone, tablet, laptop, desktop. */
 @media(min-width:1200px){
-  .screen{ width:min(880px,80vw); height:min(960px,92dvh); }
   .flip-leaf, #typeArea, #drawCanvas{ font-size:20px; }
+}
+
+/* ============ RESERVED ADSENSE SIDE RAIL (wide screens only) ============ */
+.side-ad-rail{ display:none; }
+@media(min-width:1000px){
+  .side-ad-rail{
+    display:flex;flex-direction:column;align-items:center;gap:18px;
+    position:fixed;top:0;right:0;bottom:0;width:300px;
+    background:linear-gradient(180deg,#EAF0FB,#F3EEFB 55%,#FFF6EA);
+    border-left:1px solid rgba(60,60,110,0.14);
+    padding:26px 18px;z-index:9999;overflow-y:auto;
+  }
+  .side-ad-rail .ad-slot{max-width:100%;min-height:250px;}
+  .side-ad-rail .rail-label{font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  /* leave room on the right for the ad rail so the app itself still fills the rest of the screen */
+  .screen{ right:300px; }
+}
+@media(min-width:1440px){
+  .side-ad-rail{ width:340px; }
+  .screen{ right:340px; }
 }
 
 /* ============ SCREEN TRANSITION ANIMATION ============ */
@@ -414,6 +416,19 @@ button[onclick="toggleVersions()"]{background:linear-gradient(135deg,var(--blue)
 </style>
 </head>
 <body>
+
+<!-- ============ RESERVED ADSENSE SIDE RAIL — shown only on laptop/desktop widths ============ -->
+<!-- The app itself still fills the rest of the screen (see .screen{right:300px} rule above) -->
+<div class="side-ad-rail" id="sideAdRail">
+  <div class="rail-label">Advertisement</div>
+  <div class="ad-slot" id="adSlotRailTop">
+    Ad Space<br><small>Paste your Google AdSense &lt;ins&gt; unit here (e.g. 300×250 / 160×600)</small>
+  </div>
+  <div class="rail-label" style="margin-top:auto;">Advertisement</div>
+  <div class="ad-slot" id="adSlotRailBottom">
+    Ad Space<br><small>Second AdSense unit (optional)</small>
+  </div>
+</div>
 
 <!-- ============ WELCOME SCREEN (shown once, first visit) ============ -->
 <div class="screen active" id="screenWelcome">
