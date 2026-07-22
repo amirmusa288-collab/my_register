@@ -108,26 +108,6 @@ body{
   .flip-leaf, #typeArea, #drawCanvas{ font-size:20px; }
 }
 
-/* ============ RESERVED ADSENSE SIDE RAIL (wide screens only) ============ */
-.side-ad-rail{ display:none; }
-@media(min-width:1000px){
-  .side-ad-rail{
-    display:flex;flex-direction:column;align-items:center;gap:18px;
-    position:fixed;top:0;right:0;bottom:0;width:300px;
-    background:linear-gradient(180deg,#EAF0FB,#F3EEFB 55%,#FFF6EA);
-    border-left:1px solid rgba(60,60,110,0.14);
-    padding:26px 18px;z-index:9999;overflow-y:auto;
-  }
-  .side-ad-rail .ad-slot{max-width:100%;min-height:250px;}
-  .side-ad-rail .rail-label{font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
-  /* leave room on the right for the ad rail so the app itself still fills the rest of the screen */
-  .screen{ right:300px; }
-}
-@media(min-width:1440px){
-  .side-ad-rail{ width:340px; }
-  .screen{ right:340px; }
-}
-
 /* ============ SCREEN TRANSITION ANIMATION ============ */
 .screen.active{ animation:screenIn .38s cubic-bezier(.22,.8,.32,1); }
 @keyframes screenIn{ from{opacity:0;transform:translateY(10px) scale(.99);} to{opacity:1;transform:translateY(0) scale(1);} }
@@ -403,32 +383,9 @@ button[onclick="toggleVersions()"]{background:linear-gradient(135deg,var(--blue)
 .welcome-cta:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(217,143,61,0.55);}
 .welcome-cta:active{transform:scale(0.96);}
 .welcome-hint{margin-top:16px;color:rgba(255,255,255,0.6);font-size:11.5px;}
-
-/* ============ ADSENSE / AD SLOT RESERVED SPACE ============ */
-.ad-slot{
-  width:100%;max-width:728px;min-height:90px;margin:18px auto;
-  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;
-  border:1.5px dashed var(--paper-line);border-radius:14px;
-  background:rgba(140,140,180,0.05);color:var(--muted);
-  font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:.03em;
-}
-.ad-slot small{font-size:10px;opacity:.75;}
 </style>
 </head>
 <body>
-
-<!-- ============ RESERVED ADSENSE SIDE RAIL — shown only on laptop/desktop widths ============ -->
-<!-- The app itself still fills the rest of the screen (see .screen{right:300px} rule above) -->
-<div class="side-ad-rail" id="sideAdRail">
-  <div class="rail-label">Advertisement</div>
-  <div class="ad-slot" id="adSlotRailTop">
-    Ad Space<br><small>Paste your Google AdSense &lt;ins&gt; unit here (e.g. 300×250 / 160×600)</small>
-  </div>
-  <div class="rail-label" style="margin-top:auto;">Advertisement</div>
-  <div class="ad-slot" id="adSlotRailBottom">
-    Ad Space<br><small>Second AdSense unit (optional)</small>
-  </div>
-</div>
 
 <!-- ============ WELCOME SCREEN (shown once, first visit) ============ -->
 <div class="screen active" id="screenWelcome">
@@ -491,11 +448,6 @@ button[onclick="toggleVersions()"]{background:linear-gradient(135deg,var(--blue)
     <h3>Who This Is For</h3>
     <p>My Register isn't trying to replace a full accounting app or a note-taking suite with reminders and cloud sync. It's built for the smaller, everyday moments a physical register has always been used for — jotting down someone's phone number when you don't have paper handy, writing a quick account of what you spent today, keeping a short list you'll want to check later, or simply having somewhere private to write in your own language without opening an account first. If that sounds like the kind of notebook you used to keep in a drawer, this is the same idea, just carried in your pocket.</p>
 
-    <!-- ============ ADSENSE AD SLOT (reserved space — paste your <ins> AdSense unit here) ============ -->
-    <div class="ad-slot" id="adSlotCover">
-      Advertisement<br><small>e.g. Google AdSense responsive banner (728×90 / 320×50)</small>
-    </div>
-
     <div style="display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:30px;padding-top:20px;border-top:1px solid var(--paper-line);">
       <a href="/about.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">About</a>
       <a href="/contact.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Contact</a>
@@ -532,12 +484,7 @@ button[onclick="toggleVersions()"]{background:linear-gradient(135deg,var(--blue)
     <div class="page-grid" id="pageGrid"></div>
 
     <div class="index-section-label">📤 Export</div>
-    <button class="btn-ghost" style="width:100%;margin-bottom:16px;" onclick="exportRegisterPDF()">⬇️ Download Entire Register as PDF</button>
-
-    <!-- ============ ADSENSE AD SLOT (reserved space — paste your <ins> AdSense unit here) ============ -->
-    <div class="ad-slot" id="adSlotIndex" style="margin-bottom:24px;">
-      Advertisement<br><small>Google AdSense responsive banner</small>
-    </div>
+    <button class="btn-ghost" style="width:100%;margin-bottom:24px;" onclick="exportRegisterPDF()">⬇️ Download Entire Register as PDF</button>
   </div>
 </div>
 
