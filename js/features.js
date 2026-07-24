@@ -1,8 +1,8 @@
 /* ===================================================
    MY REGISTER - ALL-IN-ONE ADVANCED FEATURES
    1. PIN Lock Security
-   2. Backup & Restore Data (Toolbar Integration)
-   3. Voice Typing (Toolbar Integration)
+   2. Backup & Restore Data (Toolbar Buttons)
+   3. Voice Typing (Toolbar Buttons)
    =================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
 function initPinLock() {
   const savedPin = localStorage.getItem("myregister_pin");
 
-  // CSS Styles for Lock Overlay
   const style = document.createElement("style");
   style.innerHTML = `
         #register-lock-overlay {
@@ -41,7 +40,6 @@ function initPinLock() {
     `;
   document.head.appendChild(style);
 
-  // HTML Structure for Lock
   const lockHTML = document.createElement("div");
   lockHTML.id = "register-lock-overlay";
 
@@ -60,7 +58,7 @@ function initPinLock() {
                 <h2>🔒 Register Locked</h2>
                 <p style="font-size: 13px; color: #ccc;">Enter your 4-digit PIN</p>
                 <input type="password" id="pin-field" class="pin-input" maxlength="4" placeholder="****">
-                <button class="pin-btn" onclick="saveNewPinPin()">Unlock</button>
+                <button class="pin-btn" onclick="verifyPin()">Unlock</button>
             </div>
         `;
   }
@@ -77,7 +75,7 @@ function initPinLock() {
     }
   };
 
-  window.saveNewPinPin = function () {
+  window.verifyPin = function () {
     const val = document.getElementById("pin-field").value;
     if (val === localStorage.getItem("myregister_pin")) {
       document.getElementById("register-lock-overlay").remove();
@@ -91,70 +89,57 @@ function initPinLock() {
    2. TOOLBAR INTEGRATION (Voice, Backup & Restore)
    --------------------------------------------------- */
 function injectToolbarButtons() {
-  // CSS for Toolbar Button Styles matching the site's design
   const style = document.createElement("style");
   style.innerHTML = `
-        .custom-tb-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            padding: 6px 12px;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            white-space: nowrap;
-            transition: opacity 0.2s;
+        .custom-feat-btn {
+            background-color: #f3e5ab !important;
+            color: #2b2319 !important;
+            border: 1px solid #c5a059 !important;
+            padding: 5px 10px !important;
+            font-size: 12px !important;
+            font-weight: bold !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            margin-left: 4px !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
         }
-        .custom-tb-btn:hover { opacity: 0.9; }
-        .btn-voice { background-color: #d9a752; color: #111; }
-        .btn-backup { background-color: #4a6fa5; color: #fff; }
-        .btn-restore { background-color: #6c757d; color: #fff; }
+        .custom-feat-btn:hover {
+            background-color: #e5d394 !important;
+        }
     `;
   document.head.appendChild(style);
 
-  // Function to attach buttons into the top toolbar
-  const attachToToolbar = () => {
-    // Search for existing toolbar containing Currency Calc / History / PDF
-    const allButtons = Array.from(document.querySelectorAll("button, a, div"));
-    const calcBtn = allButtons.find(
-      (el) => el.textContent && el.textContent.includes("Currency Calc")
-    );
+  // Function to continuously check and inject buttons into the top toolbar
+  const interval = setInterval(() => {
+    // Find the toolbar area where Currency Calc or PDF buttons exist
+    const buttons = document.querySelectorAll("button, div, span");
+    let targetToolbar = null;
 
-    if (calcBtn && calcBtn.parentElement) {
-      const parentToolbar = calcBtn.parentElement;
+    for (let btn of buttons) {
+      if (btn.innerText && (btn.innerText.includes("Currency Calc") || btn.innerText.includes("History"))) {
+        targetToolbar = btn.parentElement;
+        break;
+      }
+    }
 
-      // Check if already injected to prevent duplication
-      if (document.getElementById("injected-features-container")) return;
-
-      const container = document.createElement("span");
-      container.id = "injected-features-container";
-      container.style.cssText = "display: inline-flex; gap: 6px; margin-left: 6px;";
-
-      container.innerHTML = `
-                <button class="custom-tb-btn btn-voice" id="voice-type-btn" onclick="startVoiceTyping()">🎙️ Voice</button>
-                <button class="custom-tb-btn btn-backup" onclick="downloadBackup()">💾 Backup</button>
-                <button class="custom-tb-btn btn-restore" onclick="restoreBackup()">📂 Restore</button>
+    if (targetToolbar && !document.getElementById("my-custom-features-box")) {
+      const box = document.createElement("span");
+      box.id = "my-custom-features-box";
+      box.innerHTML = `
+                <button class="custom-feat-btn" onclick="startVoiceTyping()">🎙️ Voice</button>
+                <button class="custom-feat-btn" onclick="downloadBackup()">💾 Backup</button>
+                <button class="custom-feat-btn" onclick="restoreBackup()">📂 Restore</button>
                 <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
             `;
-
-      parentToolbar.appendChild(container);
+      targetToolbar.appendChild(box);
+      clearInterval(interval); // Stop searching once successfully added
     }
-  };
-
-  // Run on load and observe DOM changes (to work properly across page flips/views)
-  attachToToolbar();
-  const observer = new MutationObserver(attachToToolbar);
-  observer.observe(document.body, { childList: true, subtree: true });
+  }, 500);
 
   /* --- Backup Logic --- */
   window.downloadBackup = function () {
-    const dataStr =
-      "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(localStorage));
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage));
     const downloadAnchor = document.createElement("a");
     downloadAnchor.setAttribute("href", dataStr);
     downloadAnchor.setAttribute("download", "MyRegister_Backup.json");
@@ -186,52 +171,29 @@ function injectToolbarButtons() {
 
   /* --- Voice Typing Logic --- */
   window.startVoiceTyping = function () {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert("Voice recognition is not supported in this browser.");
       return;
     }
 
-    const voiceBtn = document.getElementById("voice-type-btn");
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
     recognition.interimResults = false;
 
-    const lang = confirm(
-      "Click OK for Urdu speech, or Cancel for English speech."
-    )
-      ? "ur-PK"
-      : "en-US";
+    const lang = confirm("Click OK for Urdu speech, or Cancel for English speech.") ? "ur-PK" : "en-US";
     recognition.lang = lang;
     recognition.start();
-    if (voiceBtn) voiceBtn.innerText = "🎙️ Listening...";
 
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       const activeElem = document.activeElement;
 
-      if (
-        activeElem &&
-        (activeElem.tagName === "TEXTAREA" || activeElem.tagName === "INPUT")
-      ) {
+      if (activeElem && (activeElem.tagName === "TEXTAREA" || activeElem.tagName === "INPUT")) {
         activeElem.value += " " + transcript;
       } else {
-        alert(
-          "Recognized Text: " +
-            transcript +
-            "\n(Please tap on a page or text box first to insert text)"
-        );
+        alert("Recognized Text: " + transcript + "\n(Please tap on a page or text box first to insert text)");
       }
-      if (voiceBtn) voiceBtn.innerText = "🎙️ Voice";
-    };
-
-    recognition.onerror = () => {
-      if (voiceBtn) voiceBtn.innerText = "🎙️ Voice";
-    };
-
-    recognition.onend = () => {
-      if (voiceBtn) voiceBtn.innerText = "🎙️ Voice";
     };
   };
 }
