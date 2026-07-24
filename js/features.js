@@ -1,14 +1,13 @@
 /* ===================================================
    MY REGISTER - ALL-IN-ONE ADVANCED FEATURES
    1. PIN Lock Security
-   2. Backup & Restore Data
-   3. Urdu/English Voice Typing
+   2. Backup & Restore Data (Toolbar Integration)
+   3. Voice Typing (Toolbar Integration)
    =================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
   initPinLock();
-  initBackupSystem();
-  initVoiceTyping();
+  injectToolbarButtons();
 });
 
 /* ---------------------------------------------------
@@ -61,13 +60,12 @@ function initPinLock() {
                 <h2>🔒 Register Locked</h2>
                 <p style="font-size: 13px; color: #ccc;">Enter your 4-digit PIN</p>
                 <input type="password" id="pin-field" class="pin-input" maxlength="4" placeholder="****">
-                <button class="pin-btn" onclick="verifyPin()">Unlock</button>
+                <button class="pin-btn" onclick="saveNewPinPin()">Unlock</button>
             </div>
         `;
   }
   document.body.appendChild(lockHTML);
 
-  // Global functions for PIN logic
   window.saveNewPin = function () {
     const val = document.getElementById("pin-field").value;
     if (val.length === 4) {
@@ -79,7 +77,7 @@ function initPinLock() {
     }
   };
 
-  window.verifyPin = function () {
+  window.saveNewPinPin = function () {
     const val = document.getElementById("pin-field").value;
     if (val === localStorage.getItem("myregister_pin")) {
       document.getElementById("register-lock-overlay").remove();
@@ -90,21 +88,69 @@ function initPinLock() {
 }
 
 /* ---------------------------------------------------
-   2. BACKUP & RESTORE FEATURE
+   2. TOOLBAR INTEGRATION (Voice, Backup & Restore)
    --------------------------------------------------- */
-function initBackupSystem() {
-  // Add Backup buttons to UI float container
-  const btnContainer = document.createElement("div");
-  btnContainer.style.cssText =
-    "position: fixed; bottom: 15px; right: 15px; z-index: 999; display: flex; gap: 8px;";
-
-  btnContainer.innerHTML = `
-        <button onclick="downloadBackup()" style="background: #2b2319; color: #c5a059; border: 1px solid #c5a059; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px;">💾 Backup</button>
-        <button onclick="restoreBackup()" style="background: #2b2319; color: #c5a059; border: 1px solid #c5a059; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px;">📂 Restore</button>
-        <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
+function injectToolbarButtons() {
+  // CSS for Toolbar Button Styles matching the site's design
+  const style = document.createElement("style");
+  style.innerHTML = `
+        .custom-tb-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+        .custom-tb-btn:hover { opacity: 0.9; }
+        .btn-voice { background-color: #d9a752; color: #111; }
+        .btn-backup { background-color: #4a6fa5; color: #fff; }
+        .btn-restore { background-color: #6c757d; color: #fff; }
     `;
-  document.body.appendChild(btnContainer);
+  document.head.appendChild(style);
 
+  // Function to attach buttons into the top toolbar
+  const attachToToolbar = () => {
+    // Search for existing toolbar containing Currency Calc / History / PDF
+    const allButtons = Array.from(document.querySelectorAll("button, a, div"));
+    const calcBtn = allButtons.find(
+      (el) => el.textContent && el.textContent.includes("Currency Calc")
+    );
+
+    if (calcBtn && calcBtn.parentElement) {
+      const parentToolbar = calcBtn.parentElement;
+
+      // Check if already injected to prevent duplication
+      if (document.getElementById("injected-features-container")) return;
+
+      const container = document.createElement("span");
+      container.id = "injected-features-container";
+      container.style.cssText = "display: inline-flex; gap: 6px; margin-left: 6px;";
+
+      container.innerHTML = `
+                <button class="custom-tb-btn btn-voice" id="voice-type-btn" onclick="startVoiceTyping()">🎙️ Voice</button>
+                <button class="custom-tb-btn btn-backup" onclick="downloadBackup()">💾 Backup</button>
+                <button class="custom-tb-btn btn-restore" onclick="restoreBackup()">📂 Restore</button>
+                <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
+            `;
+
+      parentToolbar.appendChild(container);
+    }
+  };
+
+  // Run on load and observe DOM changes (to work properly across page flips/views)
+  attachToToolbar();
+  const observer = new MutationObserver(attachToToolbar);
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  /* --- Backup Logic --- */
   window.downloadBackup = function () {
     const dataStr =
       "data:text/json;charset=utf-8," +
@@ -137,52 +183,55 @@ function initBackupSystem() {
     };
     fileReader.readAsText(event.target.files[0]);
   };
-}
 
-/* ---------------------------------------------------
-   3. VOICE TYPING FEATURE
-   --------------------------------------------------- */
-function initVoiceTyping() {
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) return; // Browser doesn't support speech
+  /* --- Voice Typing Logic --- */
+  window.startVoiceTyping = function () {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Voice recognition is not supported in this browser.");
+      return;
+    }
 
-  const voiceBtn = document.createElement("button");
-  voiceBtn.innerText = "🎙️ Voice Typing";
-  voiceBtn.style.cssText =
-    "position: fixed; bottom: 15px; left: 15px; z-index: 999; background: #c5a059; color: #1a140e; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px;";
+    const voiceBtn = document.getElementById("voice-type-btn");
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
 
-  document.body.appendChild(voiceBtn);
-
-  const recognition = new SpeechRecognition();
-  recognition.continuous = false;
-  recognition.interimResults = false;
-
-  voiceBtn.onclick = () => {
-    const lang = confirm("Click OK for Urdu speech, or Cancel for English speech.")
+    const lang = confirm(
+      "Click OK for Urdu speech, or Cancel for English speech."
+    )
       ? "ur-PK"
       : "en-US";
     recognition.lang = lang;
     recognition.start();
-    voiceBtn.innerText = "🎙️ Listening...";
-  };
+    if (voiceBtn) voiceBtn.innerText = "🎙️ Listening...";
 
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    const activeElem = document.activeElement;
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      const activeElem = document.activeElement;
 
-    if (
-      activeElem &&
-      (activeElem.tagName === "TEXTAREA" || activeElem.tagName === "INPUT")
-    ) {
-      activeElem.value += " " + transcript;
-    } else {
-      alert("Recognized Text: " + transcript + "\n(Please tap on a page or text box first to insert text)");
-    }
-    voiceBtn.innerText = "🎙️ Voice Typing";
-  };
+      if (
+        activeElem &&
+        (activeElem.tagName === "TEXTAREA" || activeElem.tagName === "INPUT")
+      ) {
+        activeElem.value += " " + transcript;
+      } else {
+        alert(
+          "Recognized Text: " +
+            transcript +
+            "\n(Please tap on a page or text box first to insert text)"
+        );
+      }
+      if (voiceBtn) voiceBtn.innerText = "🎙️ Voice";
+    };
 
-  recognition.onerror = () => {
-    voiceBtn.innerText = "🎙️ Voice Typing";
+    recognition.onerror = () => {
+      if (voiceBtn) voiceBtn.innerText = "🎙️ Voice";
+    };
+
+    recognition.onend = () => {
+      if (voiceBtn) voiceBtn.innerText = "🎙️ Voice";
+    };
   };
 }
