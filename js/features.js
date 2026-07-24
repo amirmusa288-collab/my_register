@@ -1,13 +1,12 @@
 /* ===================================================
-   MY REGISTER - ALL-IN-ONE ADVANCED FEATURES
-   1. PIN Lock Security
-   2. Backup & Restore Data (Header Integration)
-   3. Voice Typing (Header Integration)
+   MY REGISTER - ULTIMATE ALL-IN-ONE FEATURES
+   1. Secure PIN Lock
+   2. Voice Typing, Backup, & Restore (Seamless Toolbar Integration)
    =================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
   initPinLock();
-  injectHeaderButtons();
+  injectToolbarButtons();
 });
 
 /* ---------------------------------------------------
@@ -86,51 +85,62 @@ function initPinLock() {
 }
 
 /* ---------------------------------------------------
-   2. HEADER INTEGRATION (Voice, Backup & Restore)
+   2. TOOLBAR INTEGRATION FOR BUTTONS
    --------------------------------------------------- */
-function injectHeaderButtons() {
+function injectToolbarButtons() {
   const style = document.createElement("style");
   style.innerHTML = `
-        .top-custom-bar {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 9999;
-            display: flex;
-            gap: 5px;
-            background: rgba(26, 20, 14, 0.9);
-            padding: 6px;
-            border-radius: 8px;
-            border: 1px solid #c5a059;
-        }
-        .top-feat-btn {
-            background-color: #c5a059 !important;
-            color: #1a140e !important;
+        .site-style-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            padding: 6px 14px !important;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            border-radius: 8px !important;
             border: none !important;
-            padding: 6px 10px !important;
-            font-size: 12px !important;
-            font-weight: bold !important;
-            border-radius: 4px !important;
             cursor: pointer !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            transition: transform 0.1s ease, opacity 0.2s !important;
+            font-family: inherit !important;
         }
-        .top-feat-btn:hover {
-            background-color: #d6b268 !important;
+        .site-style-btn:active {
+            transform: scale(0.96) !important;
         }
+        .btn-color-voice { background-color: #2bbd7e !important; }
+        .btn-color-backup { background-color: #8e44ad !important; }
+        .btn-color-restore { background-color: #e67e22 !important; }
     `;
   document.head.appendChild(style);
 
-  // Create a fixed floating top toolbar on the screen
-  const topBar = document.createElement("div");
-  topBar.className = "top-custom-bar";
-  topBar.innerHTML = `
-        <button class="top-feat-btn" onclick="startVoiceTyping()">🎙️ Voice</button>
-        <button class="top-feat-btn" onclick="downloadBackup()">💾 Backup</button>
-        <button class="top-feat-btn" onclick="restoreBackup()">📂 Restore</button>
-        <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
-    `;
-  document.body.appendChild(topBar);
+  const checkInterval = setInterval(() => {
+    const pdfBtn = Array.from(document.querySelectorAll("button, a, div")).find(
+      (el) => el.textContent && el.textContent.trim().endsWith("PDF")
+    );
 
-  /* --- Backup Logic --- */
+    if (pdfBtn && pdfBtn.parentElement) {
+      const toolbarContainer = pdfBtn.parentElement;
+
+      if (!document.getElementById("matched-features-group")) {
+        const group = document.createElement("div");
+        group.id = "matched-features-group";
+        group.style.cssText = "display: inline-flex; gap: 8px; margin-left: 8px;";
+
+        group.innerHTML = `
+                    <button class="site-style-btn btn-color-voice" onclick="startVoiceTyping()">🎙️ Voice</button>
+                    <button class="site-style-btn btn-color-backup" onclick="downloadBackup()">💾 Backup</button>
+                    <button class="site-style-btn btn-color-restore" onclick="restoreBackup()">📂 Restore</button>
+                    <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
+                `;
+
+        toolbarContainer.appendChild(group);
+      }
+      clearInterval(checkInterval);
+    }
+  }, 300);
+
+  /* --- Backup System Logic --- */
   window.downloadBackup = function () {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage));
     const downloadAnchor = document.createElement("a");
