@@ -1,13 +1,13 @@
 /* ===================================================
    MY REGISTER - ALL-IN-ONE ADVANCED FEATURES
    1. PIN Lock Security
-   2. Backup & Restore Data (Toolbar Buttons)
-   3. Voice Typing (Toolbar Buttons)
+   2. Backup & Restore Data (Header Integration)
+   3. Voice Typing (Header Integration)
    =================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
   initPinLock();
-  injectToolbarButtons();
+  injectHeaderButtons();
 });
 
 /* ---------------------------------------------------
@@ -86,56 +86,49 @@ function initPinLock() {
 }
 
 /* ---------------------------------------------------
-   2. TOOLBAR INTEGRATION (Voice, Backup & Restore)
+   2. HEADER INTEGRATION (Voice, Backup & Restore)
    --------------------------------------------------- */
-function injectToolbarButtons() {
+function injectHeaderButtons() {
   const style = document.createElement("style");
   style.innerHTML = `
-        .custom-feat-btn {
-            background-color: #f3e5ab !important;
-            color: #2b2319 !important;
-            border: 1px solid #c5a059 !important;
-            padding: 5px 10px !important;
+        .top-custom-bar {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 9999;
+            display: flex;
+            gap: 5px;
+            background: rgba(26, 20, 14, 0.9);
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid #c5a059;
+        }
+        .top-feat-btn {
+            background-color: #c5a059 !important;
+            color: #1a140e !important;
+            border: none !important;
+            padding: 6px 10px !important;
             font-size: 12px !important;
             font-weight: bold !important;
             border-radius: 4px !important;
             cursor: pointer !important;
-            margin-left: 4px !important;
-            display: inline-block !important;
-            vertical-align: middle !important;
         }
-        .custom-feat-btn:hover {
-            background-color: #e5d394 !important;
+        .top-feat-btn:hover {
+            background-color: #d6b268 !important;
         }
     `;
   document.head.appendChild(style);
 
-  // Function to continuously check and inject buttons into the top toolbar
-  const interval = setInterval(() => {
-    // Find the toolbar area where Currency Calc or PDF buttons exist
-    const buttons = document.querySelectorAll("button, div, span");
-    let targetToolbar = null;
-
-    for (let btn of buttons) {
-      if (btn.innerText && (btn.innerText.includes("Currency Calc") || btn.innerText.includes("History"))) {
-        targetToolbar = btn.parentElement;
-        break;
-      }
-    }
-
-    if (targetToolbar && !document.getElementById("my-custom-features-box")) {
-      const box = document.createElement("span");
-      box.id = "my-custom-features-box";
-      box.innerHTML = `
-                <button class="custom-feat-btn" onclick="startVoiceTyping()">🎙️ Voice</button>
-                <button class="custom-feat-btn" onclick="downloadBackup()">💾 Backup</button>
-                <button class="custom-feat-btn" onclick="restoreBackup()">📂 Restore</button>
-                <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
-            `;
-      targetToolbar.appendChild(box);
-      clearInterval(interval); // Stop searching once successfully added
-    }
-  }, 500);
+  // Create a fixed floating top toolbar on the screen
+  const topBar = document.createElement("div");
+  topBar.className = "top-custom-bar";
+  topBar.innerHTML = `
+        <button class="top-feat-btn" onclick="startVoiceTyping()">🎙️ Voice</button>
+        <button class="top-feat-btn" onclick="downloadBackup()">💾 Backup</button>
+        <button class="top-feat-btn" onclick="restoreBackup()">📂 Restore</button>
+        <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
+    `;
+  document.body.appendChild(topBar);
 
   /* --- Backup Logic --- */
   window.downloadBackup = function () {
