@@ -1,198 +1,121 @@
-/* ===================================================
-   MY REGISTER - GUARANTEED VISIBLE TOOLBAR & FEATURES
-   =================================================== */
+/*
+  BACKUP FEATURE (Export / Import) — My Register
+  ------------------------------------------------------------------
+  Self-contained feature file. It does NOT require any changes inside
+  index.html's <body> — it finds the existing "Export" section on the
+  Index screen and adds its own buttons there at runtime.
 
-document.addEventListener("DOMContentLoaded", () => {
-  initPinLock();
-  createAlwaysVisibleToolbar();
-});
+  HOW TO INSTALL (one-time, one line):
+  Add this line just before the closing </body> tag in index.html,
+  next to the dark-mode.js and cookie-consent.js lines:
 
-/* ---------------------------------------------------
-   1. SECURITY PIN LOCK
-   --------------------------------------------------- */
-function initPinLock() {
-  const savedPin = localStorage.getItem("myregister_pin");
+      <script src="features/backup.js"></script>
 
-  const style = document.createElement("style");
-  style.innerHTML = `
-        #register-lock-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(18, 18, 18, 0.98); color: #e0c79b;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 999999; font-family: sans-serif; text-align: center;
-        }
-        .pin-box {
-            background: #2b2319; border: 2px solid #c5a059; padding: 30px;
-            border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 280px;
-        }
-        .pin-input {
-            width: 80%; padding: 10px; font-size: 22px; text-align: center;
-            letter-spacing: 5px; margin: 15px 0; border: 1px solid #c5a059;
-            background: #1a140e; color: #fff; border-radius: 6px;
-        }
-        .pin-btn {
-            background: #c5a059; color: #1a140e; border: none; padding: 10px 20px;
-            font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 90%;
-        }
-    `;
-  document.head.appendChild(style);
+  That's it. Any future change to backup/restore only touches THIS
+  file — index.html stays untouched.
+  ------------------------------------------------------------------
+*/
+(function () {
 
-  const lockHTML = document.createElement("div");
-  lockHTML.id = "register-lock-overlay";
-
-  if (!savedPin) {
-    lockHTML.innerHTML = `
-            <div class="pin-box">
-                <h2>🔐 Set Security PIN</h2>
-                <p style="font-size: 13px; color: #ccc;">Create a 4-digit PIN for your register</p>
-                <input type="password" id="pin-field" class="pin-input" maxlength="4" placeholder="****">
-                <button class="pin-btn" onclick="saveNewPin()">Save PIN</button>
-            </div>
-        `;
-  } else {
-    lockHTML.innerHTML = `
-            <div class="pin-box">
-                <h2>🔒 Register Locked</h2>
-                <p style="font-size: 13px; color: #ccc;">Enter your 4-digit PIN</p>
-                <input type="password" id="pin-field" class="pin-input" maxlength="4" placeholder="****">
-                <button class="pin-btn" onclick="verifyPin()">Unlock</button>
-            </div>
-        `;
+  function collectAllData() {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('myreg_')) {
+        data[key] = localStorage.getItem(key);
+      }
+    }
+    return data;
   }
-  document.body.appendChild(lockHTML);
 
-  window.saveNewPin = function () {
-    const val = document.getElementById("pin-field").value;
-    if (val.length === 4) {
-      localStorage.setItem("myregister_pin", val);
-      alert("PIN set successfully!");
-      document.getElementById("register-lock-overlay").remove();
-    } else {
-      alert("Please enter a valid 4-digit PIN.");
-    }
-  };
+  function exportBackup() {
+    const payload = {
+      app: 'My Register',
+      exportedAt: new Date().toISOString(),
+      data: collectAllData()
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = 'my-register-backup-' + dateStr + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
 
-  window.verifyPin = function () {
-    const val = document.getElementById("pin-field").value;
-    if (val === localStorage.getItem("myregister_pin")) {
-      document.getElementById("register-lock-overlay").remove();
-    } else {
-      alert("Incorrect PIN! Please try again.");
-    }
-  };
-}
-
-/* ---------------------------------------------------
-   2. ALWAYS-VISIBLE TOOLBAR (INDEPENDENT INJECTION)
-   --------------------------------------------------- */
-function createAlwaysVisibleToolbar() {
-  const style = document.createElement("style");
-  style.innerHTML = `
-        #custom-register-toolbar {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            gap: 8px !important;
-            padding: 6px 10px !important;
-            background-color: #fdf8eb !important;
-            border-bottom: 1px solid #e0d0b0 !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-            z-index: 99999 !important;
-        }
-        .custom-site-btn {
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 4px !important;
-            padding: 6px 12px !important;
-            font-size: 13px !important;
-            font-weight: 700 !important;
-            border-radius: 8px !important;
-            border: none !important;
-            cursor: pointer !important;
-            color: #ffffff !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
-            font-family: inherit !important;
-        }
-        .custom-site-btn:active {
-            transform: scale(0.96) !important;
-        }
-        .btn-voice { background-color: #2bbd7e !important; }
-        .btn-backup { background-color: #8e44ad !important; }
-        .btn-restore { background-color: #e67e22 !important; }
-    `;
-  document.head.appendChild(style);
-
-  // Inject Custom Row at top of Page Area
-  const toolbar = document.createElement("div");
-  toolbar.id = "custom-register-toolbar";
-  toolbar.innerHTML = `
-        <button class="custom-site-btn btn-voice" onclick="startVoiceTyping()">🎙️ Voice</button>
-        <button class="custom-site-btn btn-backup" onclick="downloadBackup()">💾 Backup</button>
-        <button class="custom-site-btn btn-restore" onclick="restoreBackup()">📂 Restore</button>
-        <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
-    `;
-
-  // Always put it right after the header or at the very top of body
-  document.body.prepend(toolbar);
-
-  /* --- Backup Logic --- */
-  window.downloadBackup = function () {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage));
-    const downloadAnchor = document.createElement("a");
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", "MyRegister_Backup.json");
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-  };
-
-  window.restoreBackup = function () {
-    document.getElementById("restore-file-input").click();
-  };
-
-  window.handleFileRestore = function (event) {
-    const fileReader = new FileReader();
-    fileReader.onload = function (e) {
+  function importBackupFile(file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      let parsed;
       try {
-        const data = JSON.parse(e.target.result);
-        Object.keys(data).forEach((key) => {
-          localStorage.setItem(key, data[key]);
-        });
-        alert("Data restored successfully!");
-        location.reload();
+        parsed = JSON.parse(e.target.result);
       } catch (err) {
-        alert("Invalid file format. Please upload a valid JSON backup file.");
+        alert('This file is not a valid backup format.');
+        return;
       }
-    };
-    fileReader.readAsText(event.target.files[0]);
-  };
+      if (!parsed || typeof parsed.data !== 'object') {
+        alert('This file does not look like a My Register backup.');
+        return;
+      }
+      const confirmMsg = 'Replace your current data with this backup? Your existing register will be overwritten.';
+      if (!confirm(confirmMsg)) return;
 
-  /* --- Voice Typing Logic --- */
-  window.startVoiceTyping = function () {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Voice recognition is not supported in this browser.");
-      return;
+      Object.keys(parsed.data).forEach(key => {
+        localStorage.setItem(key, parsed.data[key]);
+      });
+      alert('Backup restored successfully. Reloading the page.');
+      location.reload();
+    };
+    reader.readAsText(file);
+  }
+
+  /* ---------- Inject buttons into the existing Export section ---------- */
+  function injectUI() {
+    const indexBody = document.querySelector('#screenIndex .index-body');
+    if (!indexBody) return;
+
+    const wrap = document.createElement('div');
+    wrap.style.display = 'flex';
+    wrap.style.gap = '8px';
+    wrap.style.marginBottom = '24px';
+
+    const exportBtn = document.createElement('button');
+    exportBtn.textContent = '💾 Export Backup (JSON)';
+    exportBtn.style.cssText = 'flex:1;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#1FA971,#178A5E);color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 16px rgba(31,169,113,0.3);';
+    exportBtn.addEventListener('click', exportBackup);
+
+    const importBtn = document.createElement('button');
+    importBtn.textContent = '📂 Import Backup';
+    importBtn.style.cssText = 'flex:1;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#3E8FD9,#2E6FB0);color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 16px rgba(62,143,217,0.3);';
+
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'application/json';
+    fileInput.style.display = 'none';
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files && fileInput.files[0]) importBackupFile(fileInput.files[0]);
+      fileInput.value = '';
+    });
+    importBtn.addEventListener('click', () => fileInput.click());
+
+    wrap.appendChild(exportBtn);
+    wrap.appendChild(importBtn);
+    wrap.appendChild(fileInput);
+
+    indexBody.appendChild(wrap);
+  }
+
+  let attempts = 0;
+  const tryInject = setInterval(() => {
+    attempts++;
+    if (document.querySelector('#screenIndex .index-body')) {
+      injectUI();
+      clearInterval(tryInject);
+    } else if (attempts > 20) {
+      clearInterval(tryInject);
     }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-
-    const lang = confirm("Click OK for Urdu speech, or Cancel for English speech.") ? "ur-PK" : "en-US";
-    recognition.lang = lang;
-    recognition.start();
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      const activeElem = document.activeElement;
-
-      if (activeElem && (activeElem.tagName === "TEXTAREA" || activeElem.tagName === "INPUT")) {
-        activeElem.value += " " + transcript;
-      } else {
-        alert("Recognized Text: " + transcript + "\n(Please tap on a page or text box first to insert text)");
-      }
-    };
-  };
-}
+  }, 150);
+})();
