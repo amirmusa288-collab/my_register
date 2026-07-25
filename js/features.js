@@ -1,16 +1,14 @@
 /* ===================================================
-   MY REGISTER - ULTIMATE ALL-IN-ONE FEATURES
-   1. Secure PIN Lock
-   2. Voice Typing, Backup, & Restore (Seamless Toolbar Integration)
+   MY REGISTER - GUARANTEED VISIBLE TOOLBAR & FEATURES
    =================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
   initPinLock();
-  injectToolbarButtons();
+  createAlwaysVisibleToolbar();
 });
 
 /* ---------------------------------------------------
-   1. PIN LOCK FEATURE
+   1. SECURITY PIN LOCK
    --------------------------------------------------- */
 function initPinLock() {
   const savedPin = localStorage.getItem("myregister_pin");
@@ -21,7 +19,7 @@ function initPinLock() {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(18, 18, 18, 0.98); color: #e0c79b;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 99999; font-family: sans-serif; text-align: center;
+            z-index: 999999; font-family: sans-serif; text-align: center;
         }
         .pin-box {
             background: #2b2319; border: 2px solid #c5a059; padding: 30px;
@@ -85,62 +83,60 @@ function initPinLock() {
 }
 
 /* ---------------------------------------------------
-   2. TOOLBAR INTEGRATION FOR BUTTONS
+   2. ALWAYS-VISIBLE TOOLBAR (INDEPENDENT INJECTION)
    --------------------------------------------------- */
-function injectToolbarButtons() {
+function createAlwaysVisibleToolbar() {
   const style = document.createElement("style");
   style.innerHTML = `
-        .site-style-btn {
+        #custom-register-toolbar {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding: 6px 10px !important;
+            background-color: #fdf8eb !important;
+            border-bottom: 1px solid #e0d0b0 !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            z-index: 99999 !important;
+        }
+        .custom-site-btn {
             display: inline-flex !important;
             align-items: center !important;
-            gap: 5px !important;
-            padding: 6px 14px !important;
+            gap: 4px !important;
+            padding: 6px 12px !important;
             font-size: 13px !important;
             font-weight: 700 !important;
             border-radius: 8px !important;
             border: none !important;
             cursor: pointer !important;
             color: #ffffff !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-            transition: transform 0.1s ease, opacity 0.2s !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
             font-family: inherit !important;
         }
-        .site-style-btn:active {
+        .custom-site-btn:active {
             transform: scale(0.96) !important;
         }
-        .btn-color-voice { background-color: #2bbd7e !important; }
-        .btn-color-backup { background-color: #8e44ad !important; }
-        .btn-color-restore { background-color: #e67e22 !important; }
+        .btn-voice { background-color: #2bbd7e !important; }
+        .btn-backup { background-color: #8e44ad !important; }
+        .btn-restore { background-color: #e67e22 !important; }
     `;
   document.head.appendChild(style);
 
-  const checkInterval = setInterval(() => {
-    const pdfBtn = Array.from(document.querySelectorAll("button, a, div")).find(
-      (el) => el.textContent && el.textContent.trim().endsWith("PDF")
-    );
+  // Inject Custom Row at top of Page Area
+  const toolbar = document.createElement("div");
+  toolbar.id = "custom-register-toolbar";
+  toolbar.innerHTML = `
+        <button class="custom-site-btn btn-voice" onclick="startVoiceTyping()">🎙️ Voice</button>
+        <button class="custom-site-btn btn-backup" onclick="downloadBackup()">💾 Backup</button>
+        <button class="custom-site-btn btn-restore" onclick="restoreBackup()">📂 Restore</button>
+        <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
+    `;
 
-    if (pdfBtn && pdfBtn.parentElement) {
-      const toolbarContainer = pdfBtn.parentElement;
+  // Always put it right after the header or at the very top of body
+  document.body.prepend(toolbar);
 
-      if (!document.getElementById("matched-features-group")) {
-        const group = document.createElement("div");
-        group.id = "matched-features-group";
-        group.style.cssText = "display: inline-flex; gap: 8px; margin-left: 8px;";
-
-        group.innerHTML = `
-                    <button class="site-style-btn btn-color-voice" onclick="startVoiceTyping()">🎙️ Voice</button>
-                    <button class="site-style-btn btn-color-backup" onclick="downloadBackup()">💾 Backup</button>
-                    <button class="site-style-btn btn-color-restore" onclick="restoreBackup()">📂 Restore</button>
-                    <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
-                `;
-
-        toolbarContainer.appendChild(group);
-      }
-      clearInterval(checkInterval);
-    }
-  }, 300);
-
-  /* --- Backup System Logic --- */
+  /* --- Backup Logic --- */
   window.downloadBackup = function () {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage));
     const downloadAnchor = document.createElement("a");
