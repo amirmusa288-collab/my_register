@@ -448,9 +448,8 @@ button[onclick="toggleVersions()"]{background:linear-gradient(135deg,var(--blue)
     <h3>Who This Is For</h3>
     <p>My Register isn't trying to replace a full accounting app or a note-taking suite with reminders and cloud sync. It's built for the smaller, everyday moments a physical register has always been used for — jotting down someone's phone number when you don't have paper handy, writing a quick account of what you spent today, keeping a short list you'll want to check later, or simply having somewhere private to write in your own language without opening an account first. If that sounds like the kind of notebook you used to keep in a drawer, this is the same idea, just carried in your pocket.</p>
 
-   <div style="display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:30px;padding-top:20px;border-top:1px solid var(--paper-line);">
-     <a href="/blog.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Blog</a>
-     <a href="/about.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">About</a>
+    <div style="display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:30px;padding-top:20px;border-top:1px solid var(--paper-line);">
+      <a href="/about.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">About</a>
       <a href="/contact.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Contact</a>
       <a href="/privacy.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Privacy Policy</a>
       <a href="/terms.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Terms</a>
@@ -1385,4 +1384,33 @@ async function exportPagePDF() {
 
 async function exportRegisterPDF() {
   const pages = getPages();
-  const filled = Object.keys(pages).map(n => parseInt(n)).
+  const filled = Object.keys(pages).map(n => parseInt(n)).filter(n => {
+    const p = pages[n];
+    return (p.text && p.text.trim()) || p.draw;
+  }).sort((a, b) => a - b);
+  if (!filled.length) { alert('Your register is empty — write something on at least one page first.'); return; }
+
+  try { await loadJsPDF(); await document.fonts.ready; }
+  catch (e) { alert('Could not load the PDF export tool. Please check your internet connection and try again.'); return; }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  filled.forEach((n, i) => {
+    if (i > 0) doc.addPage();
+    addPageToPDF(doc, n, pages[n]);
+  });
+  doc.save('my-register-volume-' + currentVolume + '.pdf');
+}
+
+/* ============ INIT ============ */
+initCanvasEvents();
+document.getElementById('volLabel').textContent = 'Volume ' + currentVolume;
+window.addEventListener('resize', () => {
+  if (document.getElementById('screenPage').classList.contains('active') && currentMode === 'draw') {
+    // preserve drawing on resize by re-opening the page
+    openPage(currentPage);
+  }
+});
+</script>
+</body>
+</html>
