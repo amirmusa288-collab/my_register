@@ -7,10 +7,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#3A4F8A">
-<title>My Register — Digital Register, Notebook & Diary</title>
-<meta name="description" content="A digital register just like the real thing — open it, write on numbered pages by hand or keyboard, in Urdu or English, with calendar, reminders, checklist, and advanced organization.">
+<title>My Register — Open, Write, Close</title>
+<meta name="description" content="A digital register just like the real thing — open it, write on numbered pages by hand or keyboard, in Urdu or English, then close it and remember the page number.">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Noto+Nastaliq+Urdu:wght@500;700&family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -33,6 +32,7 @@
   --red:#E4574C;
   --gold-deep:#D98F3D;
   --shadow-soft:0 8px 22px rgba(60,60,110,0.16);
+  --shadow-btn:0 6px 16px rgba(60,60,110,0.22);
 }
 html,body{height:100%;overflow:hidden;}
 html{height:100dvh;}
@@ -50,6 +50,10 @@ body{
   position:fixed;inset:0;display:none;
   flex-direction:column;
   height:100dvh;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right);
 }
 .screen.active{display:flex;}
 
@@ -57,13 +61,32 @@ body{
 #screenCover{
   overflow-y:auto;-webkit-overflow-scrolling:touch;
   align-items:stretch;justify-content:flex-start;
-  background:radial-gradient(ellipse at 30% 20%, var(--cover-2), var(--cover) 60%);
+  background:
+    radial-gradient(ellipse at 30% 20%, var(--cover-2), var(--cover) 60%);
 }
 .cover-hero{
   min-height:100dvh;flex-shrink:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   cursor:pointer;padding:20px;
 }
+.cover-article{
+  background:var(--paper);color:var(--ink);
+  padding:36px 22px 60px;
+  max-width:680px;margin:0 auto;
+}
+.cover-article h2{
+  font-family:'Fraunces',serif;font-size:clamp(22px,5vw,28px);font-weight:800;
+  color:var(--accent);margin-bottom:16px;line-height:1.3;
+}
+.cover-article h3{
+  font-family:'Fraunces',serif;font-size:18px;font-weight:700;
+  color:var(--ink);margin:26px 0 10px;
+}
+.cover-article p{
+  font-family:'Inter',sans-serif;font-size:15px;line-height:1.85;color:#4A4030;margin-bottom:14px;
+}
+.cover-article ul{padding-left:20px;margin-bottom:14px;}
+.cover-article li{font-size:15px;line-height:1.8;color:#4A4030;margin-bottom:6px;}
 .book{
   width:min(320px,80vw);aspect-ratio:3/4;
   background:linear-gradient(135deg,#3A4F8A,#5B4B9A 65%,#6C63D6);
@@ -73,104 +96,69 @@ body{
   gap:14px;position:relative;
   transition:transform .25s, box-shadow .25s;
 }
-.book:hover{box-shadow:0 26px 70px rgba(30,20,70,0.6);}
+.book:hover{box-shadow:0 26px 70px rgba(30,20,70,0.6), inset 0 0 0 6px rgba(243,178,106,0.2);}
+.book:active{transform:scale(0.97);}
 .book-orn{width:56px;height:56px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;}
 .book-title{font-family:'Fraunces',serif;font-weight:900;font-size:26px;color:var(--gold);letter-spacing:.02em;text-align:center;padding:0 20px;}
 .book-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#F3B26A99;}
 .book-vol{position:absolute;bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F3B26A77;}
-.tap-hint{margin-top:26px;color:#F3B26A88;font-size:12px;letter-spacing:.05em;}
+.tap-hint{margin-top:26px;color:#F3B26A88;font-size:12px;letter-spacing:.05em;font-family:'Inter',sans-serif;}
 
-/* ============ TOOLBARS & BUTTONS ============ */
-#custom-register-toolbar {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 12px; background-color: #3A4F8A;
-    border-bottom: 1px solid rgba(243,178,106,0.3); width: 100%; flex-wrap: wrap; gap: 6px;
-    z-index: 100;
+/* ============ SCREEN TRANSITIONS & BUTTON MOTION ============ */
+.screen.active{ animation:screenIn .38s cubic-bezier(.22,.8,.32,1); }
+@keyframes screenIn{ from{opacity:0;transform:translateY(10px) scale(.99);} to{opacity:1;transform:translateY(0) scale(1);} }
+
+.topbar-btn, .nav-btn, .mode-btn, .mini-btn, .btn-ghost{
+  transition:transform .12s ease, box-shadow .12s ease, background .15s ease, opacity .15s ease;
 }
-.custom-site-btn {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 6px 10px; font-size: 11px; font-weight: 700;
-    border-radius: 8px; border: none; cursor: pointer; color: #ffffff;
-    font-family: 'Inter', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-}
-.btn-voice { background-color: #1FA971; }
-.btn-backup { background-color: #6C63D6; }
-.btn-restore { background-color: #F2994A; }
-.btn-features { background-color: #3E8FD9; }
+.topbar-btn:hover, .mini-btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,0.12);}
+.nav-btn:active, .topbar-btn:active, .mini-btn:active, .mode-btn:active{transform:scale(0.94);}
 
 /* ============ PAGE EDITOR & TOOLBARS ============ */
 #screenPage{background:var(--paper);}
 .topbar{
   background:var(--cover);color:var(--gold);
-  padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;
   flex-shrink:0;
 }
 .topbar-btn{
   background:linear-gradient(135deg,rgba(243,178,106,0.22),rgba(243,178,106,0.1));
   border:1px solid rgba(243,178,106,0.5);color:var(--gold);
-  border-radius:10px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;
+  border-radius:12px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;
+  box-shadow:0 3px 10px rgba(0,0,0,0.12);
 }
 .page-toolbar{
-  background:var(--cover);padding:8px 12px;display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap;
+  background:var(--cover);padding:10px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;
 }
 .nav-btn{
   background:linear-gradient(135deg,rgba(243,178,106,0.22),rgba(243,178,106,0.08));
   border:1px solid rgba(243,178,106,0.45);color:var(--gold);
-  border-radius:8px;width:34px;height:34px;font-size:14px;cursor:pointer;flex-shrink:0;
+  border-radius:10px;width:38px;height:38px;font-size:16px;cursor:pointer;flex-shrink:0;
 }
 .page-num-badge{
-  font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:12px;font-weight:700;
-  flex:1;text-align:center;min-width:60px;
+  font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:13px;font-weight:700;
+  flex:1;text-align:center;min-width:70px;
 }
 
-.page-content{flex:1;position:relative;overflow:hidden; display:flex; flex-direction:column;}
-.page-header-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 8px 16px; background: rgba(231,220,198,0.4); border-bottom: 1px solid var(--paper-line);
-}
-.page-title-input {
-  font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; border: none; outline: none; background: transparent; color: var(--ink); flex: 1;
-}
+.page-content{flex:1;position:relative;overflow:hidden;}
 #drawCanvas{
   position:absolute;inset:0;width:100%;height:100%;touch-action:none;
   background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
-  z-index: 10; pointer-events: none;
+  z-index: 10;
+  pointer-events: none;
 }
 .active-draw #drawCanvas { pointer-events: auto; }
 #typeArea{
-  flex:1;border:none;outline:none;resize:none;
-  padding:16px 20px;font-size:18px;line-height:34px;color:var(--ink);
+  position:absolute;inset:0;width:100%;height:100%;border:none;outline:none;resize:none;
+  padding:24px 20px;font-size:19px;line-height:34px;color:var(--ink);
   background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
   background-attachment:local;
-  font-family:'Inter',sans-serif; z-index: 5;
-}
-.checklist-container { flex:1; padding: 16px 20px; overflow-y: auto; background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px); z-index: 6; display: none; }
-
-/* Modal Styles */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99999;
-  display: none; align-items: center; justify-content: center; padding: 16px;
-}
-.modal-overlay.active { display: flex; }
-.modal-box {
-  background: #fff; border-radius: 14px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  font-family:'Inter',sans-serif;
+  z-index: 5;
 }
 </style>
 </head>
 <body>
-
-  <!-- Top Persistent Toolbar -->
-  <div id="custom-register-toolbar">
-    <div style="display:flex; gap:6px; align-items:center;">
-        <button class="custom-site-btn btn-voice" onclick="startVoiceTyping()">🎙️ Voice</button>
-        <button class="custom-site-btn btn-backup" onclick="downloadBackup()">💾 Backup</button>
-        <button class="custom-site-btn btn-restore" onclick="restoreBackup()">📂 Restore</button>
-        <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
-    </div>
-    <div style="display:flex; gap:6px; align-items:center;">
-        <button class="custom-site-btn btn-features" onclick="openModal('hubModal')">⚡ Hub & Tools</button>
-    </div>
-  </div>
 
   <!-- Screen Cover -->
   <div id="screenCover" class="screen active">
@@ -197,133 +185,202 @@ body{
       <button class="nav-btn" onclick="changePage(-1)">◀</button>
       <div id="pageBadge" class="page-num-badge">Page 1</div>
       <button class="nav-btn" onclick="changePage(1)">▶</button>
-      <button id="drawModeBtn" class="topbar-btn" onclick="toggleDraw()">✏️ Draw</button>
-      <button class="topbar-btn" onclick="toggleChecklistMode()" id="modeToggleBtn">☑ Checklist</button>
-      <button class="topbar-btn" onclick="togglePageFavorite()" id="favBtn">⭐</button>
-      <button class="topbar-btn" onclick="trashCurrentPage()" style="color:#E4574C;">🗑️</button>
-    </div>
-
-    <div class="page-header-row">
-      <input type="text" id="pageTitleInput" class="page-title-input" placeholder="Page Title..." oninput="saveCurrentPageMeta()">
-      <span id="pageDateDisplay" style="font-size:11px; color:#8892A6; font-family:'IBM Plex Mono',monospace;"></span>
+      <button id="drawModeBtn" class="topbar-btn" onclick="toggleDraw()">✏️ Draw Mode</button>
     </div>
 
     <div class="page-content" id="pageCard">
       <textarea id="typeArea" placeholder="Start typing here..."></textarea>
-      <div id="checklistArea" class="checklist-container">
-        <div style="display:flex; gap:8px; margin-bottom:12px;">
-          <input type="text" id="newChecklistItemText" placeholder="Add checklist task..." style="flex:1; padding:8px; border:1px solid #ccc; border-radius:6px; outline:none;">
-          <button onclick="addChecklistItem()" style="padding:8px 14px; background:#3E8FD9; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Add</button>
-        </div>
-        <div id="checklistItemsList" style="display:flex; flex-direction:column; gap:6px;"></div>
-      </div>
       <canvas id="drawCanvas"></canvas>
     </div>
   </div>
 
-  <!-- Hub Modal (Calendar, Reminders, Search, Stats, Tags, Trash, Templates) -->
-  <div id="hubModal" class="modal-overlay">
-    <div class="modal-box">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid #eee; padding-bottom:8px;">
-        <h3 style="font-family:'Fraunces',serif; font-size:18px; color:#3A4F8A;">⚡ My Register Hub</h3>
-        <button onclick="closeModal('hubModal')" style="background:none; border:none; font-size:18px; cursor:pointer;">✖</button>
-      </div>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:16px;">
-        <button onclick="openCalendarModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">📅 Calendar / Diary</button>
-        <button onclick="openRemindersModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">🔔 Reminders</button>
-        <button onclick="openSearchModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">🔍 Advanced Search</button>
-        <button onclick="openTagsModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">🏷️ Tag Dashboard</button>
-        <button onclick="openTemplatesModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">📋 Page Templates</button>
-        <button onclick="openStatsModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">📊 Statistics</button>
-        <button onclick="openTrashModal()" style="padding:10px; background:#fef2f2; border:1px solid #fee2e2; border-radius:8px; font-weight:600; color:#E4574C; cursor:pointer; text-align:left;">🗑️ Recycle Bin</button>
-        <button onclick="openFavoritesModal()" style="padding:10px; background:#fffbeb; border:1px solid #fef3c7; border-radius:8px; font-weight:600; color:#d97706; cursor:pointer; text-align:left;">⭐ Favorites</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Dynamic Sub-Modals Container -->
-  <div id="subModal" class="modal-overlay">
-    <div class="modal-box" id="subModalContent"></div>
-  </div>
-
   <script>
     /* ===================================================
-       APPLICATION DATA & LOCAL STORAGE ARCHITECTURE
+       1. PIN LOCK & ALWAYS-VISIBLE TOOLBAR INJECTION
+       =================================================== */
+    document.addEventListener("DOMContentLoaded", () => {
+      initPinLock();
+      createAlwaysVisibleToolbar();
+      initCanvas();
+      loadPageData();
+    });
+
+    function initPinLock() {
+      const savedPin = localStorage.getItem("myregister_pin");
+
+      const style = document.createElement("style");
+      style.innerHTML = `
+        #register-lock-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 18, 18, 0.98); color: #F3B26A;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 999999; font-family: 'Inter', sans-serif; text-align: center;
+        }
+        .pin-box {
+            background: #2b2319; border: 2px solid #F3B26A; padding: 30px;
+            border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 290px;
+        }
+        .pin-input {
+            width: 80%; padding: 10px; font-size: 22px; text-align: center;
+            letter-spacing: 5px; margin: 15px 0; border: 1px solid #F3B26A;
+            background: #1a140e; color: #fff; border-radius: 6px; outline: none;
+        }
+        .pin-btn {
+            background: #F3B26A; color: #1a140e; border: none; padding: 10px 20px;
+            font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 90%;
+        }
+      `;
+      document.head.appendChild(style);
+
+      const lockHTML = document.createElement("div");
+      lockHTML.id = "register-lock-overlay";
+
+      if (!savedPin) {
+        lockHTML.innerHTML = `
+            <div class="pin-box">
+                <h2>🔐 Set Security PIN</h2>
+                <p style="font-size: 12px; color: #ccc; margin-top:5px;">Create a 4-digit PIN for your register</p>
+                <input type="password" id="pin-field" class="pin-input" maxlength="4" placeholder="****">
+                <button class="pin-btn" onclick="saveNewPin()">Save PIN</button>
+            </div>
+        `;
+      } else {
+        lockHTML.innerHTML = `
+            <div class="pin-box">
+                <h2>🔒 Register Locked</h2>
+                <p style="font-size: 12px; color: #ccc; margin-top:5px;">Enter your 4-digit PIN</p>
+                <input type="password" id="pin-field" class="pin-input" maxlength="4" placeholder="****">
+                <button class="pin-btn" onclick="verifyPin()">Unlock</button>
+            </div>
+        `;
+      }
+      document.body.appendChild(lockHTML);
+
+      window.saveNewPin = function () {
+        const val = document.getElementById("pin-field").value;
+        if (val.length === 4) {
+          localStorage.setItem("myregister_pin", val);
+          alert("PIN set successfully!");
+          document.getElementById("register-lock-overlay").remove();
+        } else {
+          alert("Please enter a valid 4-digit PIN.");
+        }
+      };
+
+      window.verifyPin = function () {
+        const val = document.getElementById("pin-field").value;
+        if (val === localStorage.getItem("myregister_pin")) {
+          document.getElementById("register-lock-overlay").remove();
+        } else {
+          alert("Incorrect PIN! Please try again.");
+        }
+      };
+    }
+
+    function createAlwaysVisibleToolbar() {
+      const style = document.createElement("style");
+      style.innerHTML = `
+        #custom-register-toolbar {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding: 8px 10px !important;
+            background-color: #3A4F8A !important;
+            border-bottom: 1px solid rgba(243,178,106,0.3) !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            z-index: 99999 !important;
+        }
+        .custom-site-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            padding: 6px 12px !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            border-radius: 8px !important;
+            border: none !important;
+            cursor: pointer !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        .btn-voice { background-color: #1FA971 !important; }
+        .btn-backup { background-color: #6C63D6 !important; }
+        .btn-restore { background-color: #F2994A !important; }
+      `;
+      document.head.appendChild(style);
+
+      const toolbar = document.createElement("div");
+      toolbar.id = "custom-register-toolbar";
+      toolbar.innerHTML = `
+        <button class="custom-site-btn btn-voice" onclick="startVoiceTyping()">🎙️ Voice</button>
+        <button class="custom-site-btn btn-backup" onclick="downloadBackup()">💾 Backup</button>
+        <button class="custom-site-btn btn-restore" onclick="restoreBackup()">📂 Restore</button>
+        <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
+      `;
+      document.body.prepend(toolbar);
+
+      window.downloadBackup = function () {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage));
+        const downloadAnchor = document.createElement("a");
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "MyRegister_Backup.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+      };
+
+      window.restoreBackup = function () {
+        document.getElementById("restore-file-input").click();
+      };
+
+      window.handleFileRestore = function (event) {
+        const fileReader = new FileReader();
+        fileReader.onload = function (e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            Object.keys(data).forEach((key) => {
+              localStorage.setItem(key, data[key]);
+            });
+            alert("Data restored successfully!");
+            location.reload();
+          } catch (err) {
+            alert("Invalid JSON backup file.");
+          }
+        };
+        fileReader.readAsText(event.target.files[0]);
+      };
+
+      window.startVoiceTyping = function () {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          alert("Voice recognition is not supported in this browser.");
+          return;
+        }
+        const recognition = new SpeechRecognition();
+        const lang = confirm("Click OK for English, or Cancel for Urdu voice input.") ? "en-US" : "ur-PK";
+        recognition.lang = lang;
+        recognition.start();
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          const activeElem = document.getElementById("typeArea");
+          activeElem.value += " " + transcript;
+          saveCurrentPage();
+        };
+      };
+    }
+
+    /* ===================================================
+       2. REGISTER NAVIGATION & CANVAS LOGIC
        =================================================== */
     let currentPage = 1;
     let isDrawingMode = false;
     let isDrawing = false;
     let canvas, ctx;
 
-    // Database structure initialization
-    let db = JSON.parse(localStorage.getItem("myregister_fulldb")) || {
-      pages: {
-        1: { title: "Welcome to My Register", text: "Start writing your personal notes here safely.", drawData: "", date: new Date().toISOString().split('T')[0], favorite: false, trashed: false, mode: "normal", checklist: [], tags: ["General"], color: "yellow" }
-      },
-      reminders: [],
-      settings: { pin: "" }
-    };
-
-    function saveFullDB() {
-      localStorage.setItem("myregister_fulldb", JSON.stringify(db));
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      initPinLock();
-      initCanvas();
-      loadPageData();
-    });
-
-    /* ===================================================
-       PIN LOCK & SECURITY
-       =================================================== */
-    function initPinLock() {
-      const savedPin = localStorage.getItem("myregister_pin");
-      const lockHTML = document.createElement("div");
-      lockHTML.id = "register-lock-overlay";
-      lockHTML.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(18,18,18,0.98);color:#F3B26A;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;font-family:'Inter',sans-serif;text-align:center;";
-
-      if (!savedPin) {
-        lockHTML.innerHTML = `
-            <div style="background:#2b2319;border:2px solid #F3B26A;padding:30px;border-radius:12px;width:290px;">
-                <h2>🔐 Set Security PIN</h2>
-                <p style="font-size:12px;color:#ccc;margin-top:5px;">Create a 4-digit PIN for your register</p>
-                <input type="password" id="pin-field" maxlength="4" placeholder="****" style="width:80%;padding:10px;font-size:22px;text-align:center;letter-spacing:5px;margin:15px 0;border:1px solid #F3B26A;background:#1a140e;color:#fff;border-radius:6px;outline:none;">
-                <button onclick="saveNewPin()" style="background:#F3B26A;color:#1a140e;border:none;padding:10px 20px;font-size:15px;font-weight:bold;border-radius:6px;cursor:pointer;width:90%;">Save PIN</button>
-            </div>
-        `;
-      } else {
-        lockHTML.innerHTML = `
-            <div style="background:#2b2319;border:2px solid #F3B26A;padding:30px;border-radius:12px;width:290px;">
-                <h2>🔒 Register Locked</h2>
-                <p style="font-size:12px;color:#ccc;margin-top:5px;">Enter your 4-digit PIN</p>
-                <input type="password" id="pin-field" maxlength="4" placeholder="****" style="width:80%;padding:10px;font-size:22px;text-align:center;letter-spacing:5px;margin:15px 0;border:1px solid #F3B26A;background:#1a140e;color:#fff;border-radius:6px;outline:none;">
-                <button onclick="verifyPin()" style="background:#F3B26A;color:#1a140e;border:none;padding:10px 20px;font-size:15px;font-weight:bold;border-radius:6px;cursor:pointer;width:90%;">Unlock</button>
-            </div>
-        `;
-      }
-      document.body.appendChild(lockHTML);
-
-      window.saveNewPin = function() {
-        const val = document.getElementById("pin-field").value;
-        if (val.length === 4) {
-          localStorage.setItem("myregister_pin", val);
-          alert("PIN set successfully!");
-          document.getElementById("register-lock-overlay").remove();
-        } else { alert("Please enter a valid 4-digit PIN."); }
-      };
-
-      window.verifyPin = function() {
-        const val = document.getElementById("pin-field").value;
-        if (val === localStorage.getItem("myregister_pin")) {
-          document.getElementById("register-lock-overlay").remove();
-        } else { alert("Incorrect PIN!"); }
-      };
-    }
-
-    /* ===================================================
-       CORE CANVAS & PAGE NAVIGATION
-       =================================================== */
     function openRegister() {
       document.getElementById("screenCover").classList.remove("active");
       document.getElementById("screenPage").classList.add("active");
@@ -344,7 +401,10 @@ body{
       canvas.addEventListener("mouseup", stopDraw);
 
       canvas.addEventListener("touchstart", (e) => startDraw(e.touches[0]));
-      canvas.addEventListener("touchmove", (e) => { draw(e.touches[0]); e.preventDefault(); });
+      canvas.addEventListener("touchmove", (e) => {
+        draw(e.touches[0]);
+        e.preventDefault();
+      });
       canvas.addEventListener("touchend", stopDraw);
 
       document.getElementById("typeArea").addEventListener("input", saveCurrentPage);
@@ -361,12 +421,13 @@ body{
       isDrawingMode = !isDrawingMode;
       const card = document.getElementById("pageCard");
       const btn = document.getElementById("drawModeBtn");
+
       if (isDrawingMode) {
         card.classList.add("active-draw");
-        btn.innerText = "✍️ Type";
+        btn.innerText = "✍️ Type Mode";
       } else {
         card.classList.remove("active-draw");
-        btn.innerText = "✏️ Draw";
+        btn.innerText = "✏️ Draw Mode";
       }
     }
 
@@ -389,57 +450,36 @@ body{
     }
 
     function stopDraw() {
-      if (isDrawing) { isDrawing = false; saveCurrentPage(); }
+      if (isDrawing) {
+        isDrawing = false;
+        saveCurrentPage();
+      }
     }
 
     function saveCurrentPage() {
-      if (!db.pages[currentPage]) {
-        db.pages[currentPage] = { title: `Page ${currentPage}`, text: "", drawData: "", date: new Date().toISOString().split('T')[0], favorite: false, trashed: false, mode: "normal", checklist: [], tags: [], color: "yellow" };
-      }
-      db.pages[currentPage].text = document.getElementById("typeArea").value;
-      db.pages[currentPage].drawData = canvas.toDataURL();
-      saveFullDB();
-    }
+      const text = document.getElementById("typeArea").value;
+      const drawData = canvas.toDataURL();
+      const pageObj = { text, drawData };
 
-    function saveCurrentPageMeta() {
-      if (!db.pages[currentPage]) {
-        db.pages[currentPage] = { title: "", text: "", drawData: "", date: new Date().toISOString().split('T')[0], favorite: false, trashed: false, mode: "normal", checklist: [], tags: [], color: "yellow" };
-      }
-      db.pages[currentPage].title = document.getElementById("pageTitleInput").value;
-      saveFullDB();
+      localStorage.setItem(`register_page_${currentPage}`, JSON.stringify(pageObj));
     }
 
     function loadPageData() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const page = db.pages[currentPage];
+      const data = localStorage.getItem(`register_page_${currentPage}`);
 
-      if (page && !page.trashed) {
-        document.getElementById("typeArea").value = page.text || "";
-        document.getElementById("pageTitleInput").value = page.title || `Page ${currentPage}`;
-        document.getElementById("pageDateDisplay").innerText = page.date || "";
-        document.getElementById("favBtn").style.color = page.favorite ? "#F3B26A" : "";
-        
-        if (page.drawData) {
+      if (data) {
+        const pageObj = JSON.parse(data);
+        document.getElementById("typeArea").value = pageObj.text || "";
+        if (pageObj.drawData) {
           const img = new Image();
           img.onload = () => ctx.drawImage(img, 0, 0);
-          img.src = page.drawData;
-        }
-
-        if (page.mode === "checklist") {
-          document.getElementById("typeArea").style.display = "none";
-          document.getElementById("checklistArea").style.display = "block";
-          document.getElementById("modeToggleBtn").innerText = "📝 Note Mode";
-          renderChecklistItems();
-        } else {
-          document.getElementById("typeArea").style.display = "block";
-          document.getElementById("checklistArea").style.display = "none";
-          document.getElementById("modeToggleBtn").innerText = "☑ Checklist";
+          img.src = pageObj.drawData;
         }
       } else {
         document.getElementById("typeArea").value = "";
-        document.getElementById("pageTitleInput").value = `Page ${currentPage}`;
-        document.getElementById("pageDateDisplay").innerText = new Date().toISOString().split('T')[0];
       }
+
       document.getElementById("pageBadge").innerText = `Page ${currentPage}`;
     }
 
@@ -451,270 +491,15 @@ body{
       }
     }
 
-    /* ===================================================
-       NEW FEATURES IMPLEMENTATION
-       =================================================== */
-    function toggleChecklistMode() {
-      if (!db.pages[currentPage]) {
-        db.pages[currentPage] = { title: `Page ${currentPage}`, text: "", drawData: "", date: new Date().toISOString().split('T')[0], favorite: false, trashed: false, mode: "normal", checklist: [], tags: [], color: "yellow" };
-      }
-      db.pages[currentPage].mode = db.pages[currentPage].mode === "checklist" ? "normal" : "checklist";
-      saveFullDB();
-      loadPageData();
-    }
-
-    function addChecklistItem() {
-      const textInput = document.getElementById("newChecklistItemText");
-      if (!textInput.value.trim()) return;
-      if (!db.pages[currentPage].checklist) db.pages[currentPage].checklist = [];
-      db.pages[currentPage].checklist.push({ id: Date.now(), text: textInput.value, completed: false });
-      textInput.value = "";
-      saveFullDB();
-      renderChecklistItems();
-    }
-
-    function renderChecklistItems() {
-      const listEl = document.getElementById("checklistItemsList");
-      const items = db.pages[currentPage]?.checklist || [];
-      listEl.innerHTML = items.map(item => `
-        <div style="display:flex; align-items:center; gap:8px; background:#fff; padding:6px 10px; border-radius:6px; border:1px solid #e7dcc6;">
-          <input type="checkbox" ${item.completed ? "checked" : ""} onclick="toggleCheckItem(${item.id})">
-          <span style="flex:1; font-size:14px; ${item.completed ? 'text-decoration:line-through; opacity:0.6;' : ''}">${item.text}</span>
-          <button onclick="deleteCheckItem(${item.id})" style="background:none; border:none; color:#e4574c; cursor:pointer;">🗑️</button>
-        </div>
-      `).join('') || '<p style="font-size:12px; color:#8892A6;">No checklist items yet.</p>';
-    }
-
-    function toggleCheckItem(id) {
-      const items = db.pages[currentPage]?.checklist || [];
-      const item = items.find(i => i.id === id);
-      if (item) { item.completed = !item.completed; saveFullDB(); renderChecklistItems(); }
-    }
-
-    function deleteCheckItem(id) {
-      db.pages[currentPage].checklist = db.pages[currentPage].checklist.filter(i => i.id !== id);
-      saveFullDB();
-      renderChecklistItems();
-    }
-
-    function togglePageFavorite() {
-      if (!db.pages[currentPage]) {
-        db.pages[currentPage] = { title: `Page ${currentPage}`, text: "", drawData: "", date: new Date().toISOString().split('T')[0], favorite: false, trashed: false, mode: "normal", checklist: [], tags: [], color: "yellow" };
-      }
-      db.pages[currentPage].favorite = !db.pages[currentPage].favorite;
-      saveFullDB();
-      loadPageData();
-    }
-
-    function trashCurrentPage() {
-      if (confirm("Move this page to Trash?")) {
-        if (!db.pages[currentPage]) db.pages[currentPage] = {};
-        db.pages[currentPage].trashed = true;
-        saveFullDB();
-        currentPage = Math.max(1, currentPage - 1);
-        loadPageData();
-      }
-    }
-
-    /* Modal Framework Helpers */
-    function openModal(id) { document.getElementById(id).classList.add('active'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-    function openSubModal(html) {
-      document.getElementById('subModalContent').innerHTML = html;
-      document.getElementById('subModal').classList.add('active');
-    }
-    function closeSubModal() { document.getElementById('subModal').classList.remove('active'); }
-
-    /* Hub Modals Creators */
-    function openCalendarModal() {
-      closeModal('hubModal');
-      let html = `<h3 style="margin-bottom:12px;">📅 Calendar / Diary View</h3><div style="display:flex; flex-direction:column; gap:6px; max-height:300px; overflow-y:auto;">`;
-      Object.keys(db.pages).forEach(pgNum => {
-        const p = db.pages[pgNum];
-        if (!p.trashed) {
-          html += `<div onclick="goToPage(${pgNum}); closeSubModal(); closeRegister();" style="padding:8px; background:#f9fafb; border-radius:6px; cursor:pointer; border:1px solid #eee;"><strong>Page ${pgNum}:</strong> ${p.title} <span style="float:right; font-size:11px; color:#8892A6;">${p.date}</span></div>`;
-        }
-      });
-      html += `</div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`;
-      openSubModal(html);
-    }
-
-    function openRemindersModal() {
-      closeModal('hubModal');
-      let html = `<h3 style="margin-bottom:12px;">🔔 Reminders</h3>
-        <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
-          <input type="text" id="remTitle" placeholder="Reminder title..." style="padding:8px; border:1px solid #ccc; border-radius:6px;">
-          <input type="date" id="remDate" style="padding:8px; border:1px solid #ccc; border-radius:6px;">
-          <button onclick="addReminder()" style="padding:8px; background:#1FA971; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Add Reminder</button>
-        </div><div style="max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;" id="remList">`;
-      (db.reminders || []).forEach((r, idx) => {
-        html += `<div style="padding:8px; background:#f9fafb; border-radius:6px; border:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><span>${r.title} (${r.date})</span><button onclick="deleteReminder(${idx})" style="color:red; background:none; border:none; cursor:pointer;">🗑️</button></div>`;
-      });
-      html += `</div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`;
-      openSubModal(html);
-    }
-
-    window.addReminder = function() {
-      const title = document.getElementById('remTitle').value;
-      const date = document.getElementById('remDate').value;
-      if (!title || !date) return;
-      if (!db.reminders) db.reminders = [];
-      db.reminders.push({ title, date });
-      saveFullDB();
-      openRemindersModal();
-    }
-
-    window.deleteReminder = function(idx) {
-      db.reminders.splice(idx, 1);
-      saveFullDB();
-      openRemindersModal();
-    }
-
-    function openSearchModal() {
-      closeModal('hubModal');
-      let html = `<h3 style="margin-bottom:12px;">🔍 Advanced Search</h3>
-        <input type="text" id="searchBox" placeholder="Search page title or content..." oninput="runSearch(this.value)" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; margin-bottom:10px;">
-        <div id="searchResults" style="max-height:250px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;"></div>`;
-      openSubModal(html);
-    }
-
-    window.runSearch = function(query) {
-      const resEl = document.getElementById('searchResults');
-      if (!query.trim()) { resEl.innerHTML = ''; return; }
-      let out = '';
-      Object.keys(db.pages).forEach(pgNum => {
-        const p = db.pages[pgNum];
-        if (!p.trashed && (p.title.toLowerCase().includes(query.toLowerCase()) || p.text.toLowerCase().includes(query.toLowerCase()))) {
-          out += `<div onclick="goToPage(${pgNum}); closeSubModal(); closeRegister();" style="padding:8px; background:#f9fafb; border-radius:6px; cursor:pointer; border:1px solid #eee;"><strong>Page ${pgNum}:</strong> ${p.title}</div>`;
-        }
-      });
-      resEl.innerHTML = out || '<p style="font-size:12px; color:#8892A6;">No pages found.</p>';
-    }
-
-    function openTagsModal() {
-      closeModal('hubModal');
-      openSubModal(`<h3>🏷️ Tag Dashboard</h3><p style="font-size:12px; color:#8892A6; margin-top:6px;">General — ${Object.keys(db.pages).length} pages</p><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`);
-    }
-
-    function openTemplatesModal() {
-      closeModal('hubModal');
-      openSubModal(`<h3>📋 Page Templates</h3>
-        <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
-          <button onclick="applyTemplate('Daily Diary')" style="padding:8px; background:#f0f4ff; border:none; border-radius:6px; text-align:left; cursor:pointer; font-weight:600;">📖 Daily Diary Template</button>
-          <button onclick="applyTemplate('Expense Record')" style="padding:8px; background:#f0f4ff; border:none; border-radius:6px; text-align:left; cursor:pointer; font-weight:600;">💰 Expense Record Template</button>
-        </div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`);
-    }
-
-    window.applyTemplate = function(templateName) {
-      if (!db.pages[currentPage]) db.pages[currentPage] = {};
-      db.pages[currentPage].title = templateName;
-      db.pages[currentPage].text = `[Template: ${templateName}]\n- `;
-      saveFullDB();
-      loadPageData();
-      closeSubModal();
-    }
-
-    function openStatsModal() {
-      closeModal('hubModal');
-      const totalPages = Object.keys(db.pages).filter(k => !db.pages[k].trashed).length;
-      openSubModal(`<h3>📊 Register Statistics</h3>
-        <div style="font-size:14px; margin-top:10px; display:flex; flex-direction:column; gap:6px;">
-          <p><strong>Total Active Pages:</strong> ${totalPages}</p>
-          <p><strong>Reminders Count:</strong> ${(db.reminders || []).length}</p>
-        </div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`);
-    }
-
-    function openTrashModal() {
-      closeModal('hubModal');
-      let html = `<h3 style="margin-bottom:12px;">🗑️ Recycle Bin</h3><div style="max-height:250px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">`;
-      Object.keys(db.pages).forEach(pgNum => {
-        const p = db.pages[pgNum];
-        if (p.trashed) {
-          html += `<div style="padding:8px; background:#fef2f2; border-radius:6px; border:1px solid #fee2e2; display:flex; justify-content:space-between; align-items:center;"><span>Page ${pgNum}: ${p.title}</span><button onclick="restorePage(${pgNum})" style="padding:4px 8px; background:#1FA971; color:#fff; border:none; border-radius:4px; cursor:pointer;">Restore</button></div>`;
-        }
-      });
-      html += `</div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`;
-      openSubModal(html);
-    }
-
-    window.restorePage = function(pgNum) {
-      db.pages[pgNum].trashed = false;
-      saveFullDB();
-      openTrashModal();
-    }
-
-    function openFavoritesModal() {
-      closeModal('hubModal');
-      let html = `<h3 style="margin-bottom:12px;">⭐ Favorite Pages</h3><div style="max-height:250px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">`;
-      Object.keys(db.pages).forEach(pgNum => {
-        const p = db.pages[pgNum];
-        if (!p.trashed && p.favorite) {
-          html += `<div onclick="goToPage(${pgNum}); closeSubModal(); closeRegister();" style="padding:8px; background:#fffbeb; border-radius:6px; cursor:pointer; border:1px solid #fef3c7;"><strong>Page ${pgNum}:</strong> ${p.title}</div>`;
-        }
-      });
-      html += `</div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`;
-      openSubModal(html);
-    }
-
-    function goToPage(pgNum) {
-      saveCurrentPage();
-      currentPage = pgNum;
-      loadPageData();
-    }
-
-    /* ===================================================
-       BACKUP, RESTORE & VOICE TYPING
-       =================================================== */
-    window.downloadBackup = function() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-      const downloadAnchor = document.createElement("a");
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", "MyRegister_Backup.json");
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    };
-
-    window.restoreBackup = function() {
-      document.getElementById("restore-file-input").click();
-    };
-
-    window.handleFileRestore = function(event) {
-      const fileReader = new FileReader();
-      fileReader.onload = function(e) {
-        try {
-          db = JSON.parse(e.target.result);
-          saveFullDB();
-          alert("Data restored successfully!");
-          location.reload();
-        } catch (err) { alert("Invalid JSON backup file."); }
-      };
-      fileReader.readAsText(event.target.files[0]);
-    };
-
-    window.startVoiceTyping = function() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) { alert("Voice recognition is not supported in this browser."); return; }
-      const recognition = new SpeechRecognition();
-      const lang = confirm("Click OK for English, or Cancel for Urdu voice input.") ? "en-US" : "ur-PK";
-      recognition.lang = lang;
-      recognition.start();
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        const activeElem = document.getElementById("typeArea");
-        activeElem.value += " " + transcript;
-        saveCurrentPage();
-      };
-    };
-
     async function exportPDF() {
       saveCurrentPage();
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF('p', 'pt', 'a4');
+
       const element = document.getElementById("pageCard");
       const canvasImg = await html2canvas(element);
       const imgData = canvasImg.toDataURL('image/png');
+
       doc.addImage(imgData, 'PNG', 20, 20, 550, 750);
       doc.save(`Register_Page_${currentPage}.pdf`);
     }
