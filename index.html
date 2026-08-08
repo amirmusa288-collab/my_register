@@ -1,385 +1,723 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Register - Digital Register & Diary</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .urdu-text { font-family: 'Noto Nastaliq Urdu', serif; direction: rtl; }
-        .page-tint-yellow { background-color: #fef9c3; }
-        .page-tint-blue { background-color: #e0f2fe; }
-        .page-tint-green { background-color: #dcfce7; }
-        .page-tint-pink { background-color: #fce7f3; }
-        .page-tint-purple { background-color: #f3e8ff; }
-        .page-tint-gray { background-color: #f3f4f6; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#3A4F8A">
+<title>My Register — Digital Register, Notebook & Diary</title>
+<meta name="description" content="A digital register just like the real thing — open it, write on numbered pages by hand or keyboard, in Urdu or English, with calendar, reminders, checklist, and advanced organization.">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Noto+Nastaliq+Urdu:wght@500;700&family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --cover:#3A4F8A;
+  --cover-2:#5B4B9A;
+  --gold:#F3B26A;
+  --paper:#FBF7EE;
+  --paper-line:#E7DCC6;
+  --paper-shadow:#EFE6D2;
+  --ink:#2B2A33;
+  --muted:#8892A6;
+  --accent:#6C63D6;
+  --green:#1FA971;
+  --blue:#3E8FD9;
+  --sky:#6FC6E8;
+  --orange:#F2994A;
+  --red:#E4574C;
+  --gold-deep:#D98F3D;
+  --shadow-soft:0 8px 22px rgba(60,60,110,0.16);
+}
+html,body{height:100%;overflow:hidden;}
+html{height:100dvh;}
+body{
+  font-family:'Inter',sans-serif;
+  background:linear-gradient(160deg,#EAF0FB 0%,#F3EEFB 45%,#FFF6EA 100%);
+  color:var(--ink);
+  -webkit-user-select:none;user-select:none;
+  touch-action:manipulation;
+  height:100dvh;
+  width:100vw;
+  overscroll-behavior:none;
+}
+.screen{
+  position:fixed;inset:0;display:none;
+  flex-direction:column;
+  height:100dvh;
+}
+.screen.active{display:flex;}
+
+/* ============ COVER ============ */
+#screenCover{
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  align-items:stretch;justify-content:flex-start;
+  background:radial-gradient(ellipse at 30% 20%, var(--cover-2), var(--cover) 60%);
+}
+.cover-hero{
+  min-height:100dvh;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;padding:20px;
+}
+.book{
+  width:min(320px,80vw);aspect-ratio:3/4;
+  background:linear-gradient(135deg,#3A4F8A,#5B4B9A 65%,#6C63D6);
+  border:3px solid var(--gold);border-radius:10px;
+  box-shadow:0 20px 60px rgba(30,20,70,0.5), inset 0 0 0 6px rgba(243,178,106,0.15);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;position:relative;
+  transition:transform .25s, box-shadow .25s;
+}
+.book:hover{box-shadow:0 26px 70px rgba(30,20,70,0.6);}
+.book-orn{width:56px;height:56px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;}
+.book-title{font-family:'Fraunces',serif;font-weight:900;font-size:26px;color:var(--gold);letter-spacing:.02em;text-align:center;padding:0 20px;}
+.book-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#F3B26A99;}
+.book-vol{position:absolute;bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F3B26A77;}
+.tap-hint{margin-top:26px;color:#F3B26A88;font-size:12px;letter-spacing:.05em;}
+
+/* ============ TOOLBARS & BUTTONS ============ */
+#custom-register-toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 12px; background-color: #3A4F8A;
+    border-bottom: 1px solid rgba(243,178,106,0.3); width: 100%; flex-wrap: wrap; gap: 6px;
+    z-index: 100;
+}
+.custom-site-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 10px; font-size: 11px; font-weight: 700;
+    border-radius: 8px; border: none; cursor: pointer; color: #ffffff;
+    font-family: 'Inter', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.btn-voice { background-color: #1FA971; }
+.btn-backup { background-color: #6C63D6; }
+.btn-restore { background-color: #F2994A; }
+.btn-features { background-color: #3E8FD9; }
+
+/* ============ PAGE EDITOR & TOOLBARS ============ */
+#screenPage{background:var(--paper);}
+.topbar{
+  background:var(--cover);color:var(--gold);
+  padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  flex-shrink:0;
+}
+.topbar-btn{
+  background:linear-gradient(135deg,rgba(243,178,106,0.22),rgba(243,178,106,0.1));
+  border:1px solid rgba(243,178,106,0.5);color:var(--gold);
+  border-radius:10px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;
+}
+.page-toolbar{
+  background:var(--cover);padding:8px 12px;display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap;
+}
+.nav-btn{
+  background:linear-gradient(135deg,rgba(243,178,106,0.22),rgba(243,178,106,0.08));
+  border:1px solid rgba(243,178,106,0.45);color:var(--gold);
+  border-radius:8px;width:34px;height:34px;font-size:14px;cursor:pointer;flex-shrink:0;
+}
+.page-num-badge{
+  font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:12px;font-weight:700;
+  flex:1;text-align:center;min-width:60px;
+}
+
+.page-content{flex:1;position:relative;overflow:hidden; display:flex; flex-direction:column;}
+.page-header-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 16px; background: rgba(231,220,198,0.4); border-bottom: 1px solid var(--paper-line);
+}
+.page-title-input {
+  font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; border: none; outline: none; background: transparent; color: var(--ink); flex: 1;
+}
+#drawCanvas{
+  position:absolute;inset:0;width:100%;height:100%;touch-action:none;
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
+  z-index: 10; pointer-events: none;
+}
+.active-draw #drawCanvas { pointer-events: auto; }
+#typeArea{
+  flex:1;border:none;outline:none;resize:none;
+  padding:16px 20px;font-size:18px;line-height:34px;color:var(--ink);
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
+  background-attachment:local;
+  font-family:'Inter',sans-serif; z-index: 5;
+}
+.checklist-container { flex:1; padding: 16px 20px; overflow-y: auto; background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px); z-index: 6; display: none; }
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99999;
+  display: none; align-items: center; justify-content: center; padding: 16px;
+}
+.modal-overlay.active { display: flex; }
+.modal-box {
+  background: #fff; border-radius: 14px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+</style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+<body>
 
-    <!-- PIN Lock Screen -->
-    <div id="lockScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
-            <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                <i class="fa-solid fa-lock"></i>
-            </div>
-            <h2 class="text-xl font-bold mb-2">My Register is Locked</h2>
-            <p class="text-sm text-slate-500 mb-6">Enter your PIN to access your private notes.</p>
-            <input type="password" id="pinInput" placeholder="Enter PIN" maxlength="6" class="w-full text-center text-2xl tracking-widest px-4 py-3 border rounded-xl mb-4 focus:ring-2 focus:ring-indigo-500 outline-none">
-            <button onclick="verifyPin()" class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-xl hover:bg-indigo-700 transition">Unlock Register</button>
-        </div>
+  <!-- Top Persistent Toolbar -->
+  <div id="custom-register-toolbar">
+    <div style="display:flex; gap:6px; align-items:center;">
+        <button class="custom-site-btn btn-voice" onclick="startVoiceTyping()">🎙️ Voice</button>
+        <button class="custom-site-btn btn-backup" onclick="downloadBackup()">💾 Backup</button>
+        <button class="custom-site-btn btn-restore" onclick="restoreBackup()">📂 Restore</button>
+        <input type="file" id="restore-file-input" style="display:none" onchange="handleFileRestore(event)">
+    </div>
+    <div style="display:flex; gap:6px; align-items:center;">
+        <button class="custom-site-btn btn-features" onclick="openModal('hubModal')">⚡ Hub & Tools</button>
+    </div>
+  </div>
+
+  <!-- Screen Cover -->
+  <div id="screenCover" class="screen active">
+    <div class="cover-hero" onclick="openRegister()">
+      <div class="book">
+        <div class="book-orn">📖</div>
+        <div class="book-title">MY REGISTER</div>
+        <div class="book-sub">DIGITAL LEDGER</div>
+        <div class="book-vol">VOLUME 1</div>
+      </div>
+      <div class="tap-hint">TAP TO OPEN REGISTER</div>
+    </div>
+  </div>
+
+  <!-- Screen Page Editor -->
+  <div id="screenPage" class="screen">
+    <div class="topbar">
+      <button class="topbar-btn" onclick="closeRegister()">🔒 Close</button>
+      <div style="font-family:'Fraunces',serif;font-weight:700;">My Register</div>
+      <button class="topbar-btn" onclick="exportPDF()">📄 PDF</button>
     </div>
 
-    <!-- Main Navigation Bar -->
-    <header class="bg-white border-b sticky top-0 z-30 px-4 py-3 flex items-center justify-between shadow-xs">
-        <div class="flex items-center space-x-3">
-            <button onclick="toggleSidebar()" class="text-slate-600 hover:text-indigo-600 p-2 rounded-lg lg:hidden">
-                <i class="fa-solid fa-bars text-xl"></i>
-            </button>
-            <h1 class="text-lg font-bold text-indigo-600 flex items-center gap-2">
-                <i class="fa-solid fa-book-open"></i> My Register
-            </h1>
-        </div>
-        <div class="flex items-center space-x-2">
-            <button onclick="openModal('searchModal')" class="p-2 text-slate-600 hover:bg-slate-100 rounded-full" title="Search">
-                <i class="fa-solid fa-search text-lg"></i>
-            </button>
-            <button onclick="openModal('statsModal')" class="p-2 text-slate-600 hover:bg-slate-100 rounded-full" title="Statistics">
-                <i class="fa-solid fa-chart-pie text-lg"></i>
-            </button>
-            <button onclick="createNewPage()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-indigo-700 flex items-center gap-2">
-                <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">New Page</span>
-            </button>
-        </div>
-    </header>
-
-    <div class="flex-1 flex overflow-hidden">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-white border-r transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out flex flex-col pt-16 lg:pt-0">
-            <div class="p-4 border-b flex items-center justify-between">
-                <span class="font-semibold text-sm text-slate-500">Navigation</span>
-                <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <nav class="flex-1 overflow-y-auto p-4 space-y-1 text-sm font-medium">
-                <a href="#" onclick="switchView('dashboard')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 text-slate-700">
-                    <i class="fa-solid fa-house w-5"></i> Dashboard
-                </a>
-                <a href="#" onclick="switchView('calendar')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 text-slate-700">
-                    <i class="fa-solid fa-calendar-days w-5"></i> Calendar / Diary
-                </a>
-                <a href="#" onclick="switchView('favorites')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 text-slate-700">
-                    <i class="fa-solid fa-star w-5 text-amber-500"></i> Favorites
-                </a>
-                <a href="#" onclick="switchView('tags')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 text-slate-700">
-                    <i class="fa-solid fa-tags w-5"></i> Tag Dashboard
-                </a>
-                <a href="#" onclick="switchView('reminders')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 text-slate-700">
-                    <i class="fa-solid fa-bell w-5"></i> Reminders
-                </a>
-                <a href="#" onclick="switchView('trash')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 text-slate-700">
-                    <i class="fa-solid fa-trash w-5"></i> Recycle Bin
-                </a>
-                <div class="pt-4 pb-2"><hr class="border-slate-200"></div>
-                <a href="#" onclick="openModal('backupModal')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 text-slate-700">
-                    <i class="fa-solid fa-cloud-arrow-down w-5"></i> Backup & Export
-                </a>
-            </nav>
-            <div class="p-4 border-t bg-slate-50 text-xs text-slate-500 text-center">
-                Your register is 100% private & local.
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col h-[calc(100vh-4rem)] overflow-y-auto lg:ml-72 p-4 sm:p-6" id="mainContainer">
-            <!-- Dynamic Content Will Load Here -->
-            <div id="contentArea" class="max-w-4xl mx-auto w-full">
-                <!-- Welcome Dashboard View -->
-                <div class="space-y-6">
-                    <div class="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-3xl p-6 text-white shadow-lg">
-                        <h2 class="text-2xl font-bold mb-2">Welcome Back, Amir!</h2>
-                        <p class="text-indigo-100 text-sm mb-4">Your digital register is secure, fast, and ready for your notes.</p>
-                        <div class="flex flex-wrap gap-3">
-                            <button onclick="createNewPage()" class="bg-white text-indigo-600 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-indigo-50 transition">New Page</button>
-                            <button onclick="switchView('calendar')" class="bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-indigo-800 transition">Open Calendar</button>
-                        </div>
-                    </div>
-                    
-                    <h3 class="font-bold text-lg text-slate-700">Recent Pages</h3>
-                    <div id="recentPagesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Populated via JS -->
-                    </div>
-                </div>
-            </div>
-        </main>
+    <div class="page-toolbar">
+      <button class="nav-btn" onclick="changePage(-1)">◀</button>
+      <div id="pageBadge" class="page-num-badge">Page 1</div>
+      <button class="nav-btn" onclick="changePage(1)">▶</button>
+      <button id="drawModeBtn" class="topbar-btn" onclick="toggleDraw()">✏️ Draw</button>
+      <button class="topbar-btn" onclick="toggleChecklistMode()" id="modeToggleBtn">☑ Checklist</button>
+      <button class="topbar-btn" onclick="togglePageFavorite()" id="favBtn">⭐</button>
+      <button class="topbar-btn" onclick="trashCurrentPage()" style="color:#E4574C;">🗑️</button>
     </div>
 
-    <!-- Modals (Search, Stats, Backup) -->
-    <div id="searchModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg">Advanced Search</h3>
-                <button onclick="closeModal('searchModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <input type="text" id="searchInput" oninput="performSearch(this.value)" placeholder="Search titles, content, or tags..." class="w-full px-4 py-3 border rounded-xl mb-4 focus:ring-2 focus:ring-indigo-500 outline-none">
-            <div id="searchResults" class="max-h-60 overflow-y-auto space-y-2"></div>
-        </div>
+    <div class="page-header-row">
+      <input type="text" id="pageTitleInput" class="page-title-input" placeholder="Page Title..." oninput="saveCurrentPageMeta()">
+      <span id="pageDateDisplay" style="font-size:11px; color:#8892A6; font-family:'IBM Plex Mono',monospace;"></span>
     </div>
 
-    <div id="statsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg">Register Statistics</h3>
-                <button onclick="closeModal('statsModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <div id="statsContent" class="space-y-3 text-sm text-slate-600">
-                <!-- Populated via JS -->
-            </div>
+    <div class="page-content" id="pageCard">
+      <textarea id="typeArea" placeholder="Start typing here..."></textarea>
+      <div id="checklistArea" class="checklist-container">
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <input type="text" id="newChecklistItemText" placeholder="Add checklist task..." style="flex:1; padding:8px; border:1px solid #ccc; border-radius:6px; outline:none;">
+          <button onclick="addChecklistItem()" style="padding:8px 14px; background:#3E8FD9; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Add</button>
         </div>
+        <div id="checklistItemsList" style="display:flex; flex-direction:column; gap:6px;"></div>
+      </div>
+      <canvas id="drawCanvas"></canvas>
     </div>
+  </div>
 
-    <div id="backupModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg">Backup & Export Center</h3>
-                <button onclick="closeModal('backupModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+  <!-- Hub Modal (Calendar, Reminders, Search, Stats, Tags, Trash, Templates) -->
+  <div id="hubModal" class="modal-overlay">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid #eee; padding-bottom:8px;">
+        <h3 style="font-family:'Fraunces',serif; font-size:18px; color:#3A4F8A;">⚡ My Register Hub</h3>
+        <button onclick="closeModal('hubModal')" style="background:none; border:none; font-size:18px; cursor:pointer;">✖</button>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:16px;">
+        <button onclick="openCalendarModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">📅 Calendar / Diary</button>
+        <button onclick="openRemindersModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">🔔 Reminders</button>
+        <button onclick="openSearchModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">🔍 Advanced Search</button>
+        <button onclick="openTagsModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">🏷️ Tag Dashboard</button>
+        <button onclick="openTemplatesModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">📋 Page Templates</button>
+        <button onclick="openStatsModal()" style="padding:10px; background:#f0f4ff; border:1px solid #d0e1fd; border-radius:8px; font-weight:600; cursor:pointer; text-align:left;">📊 Statistics</button>
+        <button onclick="openTrashModal()" style="padding:10px; background:#fef2f2; border:1px solid #fee2e2; border-radius:8px; font-weight:600; color:#E4574C; cursor:pointer; text-align:left;">🗑️ Recycle Bin</button>
+        <button onclick="openFavoritesModal()" style="padding:10px; background:#fffbeb; border:1px solid #fef3c7; border-radius:8px; font-weight:600; color:#d97706; cursor:pointer; text-align:left;">⭐ Favorites</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Sub-Modals Container -->
+  <div id="subModal" class="modal-overlay">
+    <div class="modal-box" id="subModalContent"></div>
+  </div>
+
+  <script>
+    /* ===================================================
+       APPLICATION DATA & LOCAL STORAGE ARCHITECTURE
+       =================================================== */
+    let currentPage = 1;
+    let isDrawingMode = false;
+    let isDrawing = false;
+    let canvas, ctx;
+
+    // Database structure initialization
+    let db = JSON.parse(localStorage.getItem("myregister_fulldb")) || {
+      pages: {
+        1: { title: "Welcome to My Register", text: "Start writing your personal notes here safely.", drawData: "", date: new Date().toISOString().split('T')[0], favorite: false, trashed: false, mode: "normal", checklist: [], tags: ["General"], color: "yellow" }
+      },
+      reminders: [],
+      settings: { pin: "" }
+    };
+
+    function saveFullDB() {
+      localStorage.setItem("myregister_fulldb", JSON.stringify(db));
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initPinLock();
+      initCanvas();
+      loadPageData();
+    });
+
+    /* ===================================================
+       PIN LOCK & SECURITY
+       =================================================== */
+    function initPinLock() {
+      const savedPin = localStorage.getItem("myregister_pin");
+      const lockHTML = document.createElement("div");
+      lockHTML.id = "register-lock-overlay";
+      lockHTML.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(18,18,18,0.98);color:#F3B26A;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;font-family:'Inter',sans-serif;text-align:center;";
+
+      if (!savedPin) {
+        lockHTML.innerHTML = `
+            <div style="background:#2b2319;border:2px solid #F3B26A;padding:30px;border-radius:12px;width:290px;">
+                <h2>🔐 Set Security PIN</h2>
+                <p style="font-size:12px;color:#ccc;margin-top:5px;">Create a 4-digit PIN for your register</p>
+                <input type="password" id="pin-field" maxlength="4" placeholder="****" style="width:80%;padding:10px;font-size:22px;text-align:center;letter-spacing:5px;margin:15px 0;border:1px solid #F3B26A;background:#1a140e;color:#fff;border-radius:6px;outline:none;">
+                <button onclick="saveNewPin()" style="background:#F3B26A;color:#1a140e;border:none;padding:10px 20px;font-size:15px;font-weight:bold;border-radius:6px;cursor:pointer;width:90%;">Save PIN</button>
             </div>
-            <div class="space-y-4">
-                <button onclick="exportJSON()" class="w-full bg-indigo-50 text-indigo-600 font-semibold py-3 rounded-xl hover:bg-indigo-100 transition">Download JSON Backup</button>
-                <label class="block w-full bg-slate-100 text-slate-700 font-semibold py-3 rounded-xl text-center cursor-pointer hover:bg-slate-200 transition">
-                    Restore Backup <input type="file" onchange="importJSON(event)" class="hidden" accept=".json">
-                </label>
+        `;
+      } else {
+        lockHTML.innerHTML = `
+            <div style="background:#2b2319;border:2px solid #F3B26A;padding:30px;border-radius:12px;width:290px;">
+                <h2>🔒 Register Locked</h2>
+                <p style="font-size:12px;color:#ccc;margin-top:5px;">Enter your 4-digit PIN</p>
+                <input type="password" id="pin-field" maxlength="4" placeholder="****" style="width:80%;padding:10px;font-size:22px;text-align:center;letter-spacing:5px;margin:15px 0;border:1px solid #F3B26A;background:#1a140e;color:#fff;border-radius:6px;outline:none;">
+                <button onclick="verifyPin()" style="background:#F3B26A;color:#1a140e;border:none;padding:10px 20px;font-size:15px;font-weight:bold;border-radius:6px;cursor:pointer;width:90%;">Unlock</button>
             </div>
+        `;
+      }
+      document.body.appendChild(lockHTML);
+
+      window.saveNewPin = function() {
+        const val = document.getElementById("pin-field").value;
+        if (val.length === 4) {
+          localStorage.setItem("myregister_pin", val);
+          alert("PIN set successfully!");
+          document.getElementById("register-lock-overlay").remove();
+        } else { alert("Please enter a valid 4-digit PIN."); }
+      };
+
+      window.verifyPin = function() {
+        const val = document.getElementById("pin-field").value;
+        if (val === localStorage.getItem("myregister_pin")) {
+          document.getElementById("register-lock-overlay").remove();
+        } else { alert("Incorrect PIN!"); }
+      };
+    }
+
+    /* ===================================================
+       CORE CANVAS & PAGE NAVIGATION
+       =================================================== */
+    function openRegister() {
+      document.getElementById("screenCover").classList.remove("active");
+      document.getElementById("screenPage").classList.add("active");
+      resizeCanvas();
+    }
+
+    function closeRegister() {
+      document.getElementById("screenPage").classList.remove("active");
+      document.getElementById("screenCover").classList.add("active");
+    }
+
+    function initCanvas() {
+      canvas = document.getElementById("drawCanvas");
+      ctx = canvas.getContext("2d");
+
+      canvas.addEventListener("mousedown", startDraw);
+      canvas.addEventListener("mousemove", draw);
+      canvas.addEventListener("mouseup", stopDraw);
+
+      canvas.addEventListener("touchstart", (e) => startDraw(e.touches[0]));
+      canvas.addEventListener("touchmove", (e) => { draw(e.touches[0]); e.preventDefault(); });
+      canvas.addEventListener("touchend", stopDraw);
+
+      document.getElementById("typeArea").addEventListener("input", saveCurrentPage);
+    }
+
+    function resizeCanvas() {
+      const wrapper = document.getElementById("pageCard");
+      canvas.width = wrapper.clientWidth;
+      canvas.height = wrapper.clientHeight;
+      loadPageData();
+    }
+
+    function toggleDraw() {
+      isDrawingMode = !isDrawingMode;
+      const card = document.getElementById("pageCard");
+      const btn = document.getElementById("drawModeBtn");
+      if (isDrawingMode) {
+        card.classList.add("active-draw");
+        btn.innerText = "✍️ Type";
+      } else {
+        card.classList.remove("active-draw");
+        btn.innerText = "✏️ Draw";
+      }
+    }
+
+    function startDraw(e) {
+      if (!isDrawingMode) return;
+      isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      ctx.beginPath();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function draw(e) {
+      if (!isDrawing || !isDrawingMode) return;
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.strokeStyle = "#2B2A33";
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = "round";
+      ctx.stroke();
+    }
+
+    function stopDraw() {
+      if (isDrawing) { isDrawing = false; saveCurrentPage(); }
+    }
+
+    function saveCurrentPage() {
+      if (!db.pages[currentPage]) {
+        db.pages[currentPage] = { title: `Page ${currentPage}`, text: "", drawData: "", date: new Date().toISOString().split('T')[0], favorite: false, trashed: false, mode: "normal", checklist: [], tags: [], color: "yellow" };
+      }
+      db.pages[currentPage].text = document.getElementById("typeArea").value;
+      db.pages[currentPage].drawData = canvas.toDataURL();
+      saveFullDB();
+    }
+
+    function saveCurrentPageMeta() {
+      if (!db.pages[currentPage]) {
+        db.pages[currentPage] = { title: "", text: "", drawData: "", date: new Date().toISOString().split('T')[0], favorite: false, trashed: false, mode: "normal", checklist: [], tags: [], color: "yellow" };
+      }
+      db.pages[currentPage].title = document.getElementById("pageTitleInput").value;
+      saveFullDB();
+    }
+
+    function loadPageData() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const page = db.pages[currentPage];
+
+      if (page && !page.trashed) {
+        document.getElementById("typeArea").value = page.text || "";
+        document.getElementById("pageTitleInput").value = page.title || `Page ${currentPage}`;
+        document.getElementById("pageDateDisplay").innerText = page.date || "";
+        document.getElementById("favBtn").style.color = page.favorite ? "#F3B26A" : "";
+        
+        if (page.drawData) {
+          const img = new Image();
+          img.onload = () => ctx.drawImage(img, 0, 0);
+          img.src = page.drawData;
+        }
+
+        if (page.mode === "checklist") {
+          document.getElementById("typeArea").style.display = "none";
+          document.getElementById("checklistArea").style.display = "block";
+          document.getElementById("modeToggleBtn").innerText = "📝 Note Mode";
+          renderChecklistItems();
+        } else {
+          document.getElementById("typeArea").style.display = "block";
+          document.getElementById("checklistArea").style.display = "none";
+          document.getElementById("modeToggleBtn").innerText = "☑ Checklist";
+        }
+      } else {
+        document.getElementById("typeArea").value = "";
+        document.getElementById("pageTitleInput").value = `Page ${currentPage}`;
+        document.getElementById("pageDateDisplay").innerText = new Date().toISOString().split('T')[0];
+      }
+      document.getElementById("pageBadge").innerText = `Page ${currentPage}`;
+    }
+
+    function changePage(dir) {
+      saveCurrentPage();
+      if (currentPage + dir >= 1) {
+        currentPage += dir;
+        loadPageData();
+      }
+    }
+
+    /* ===================================================
+       NEW FEATURES IMPLEMENTATION
+       =================================================== */
+    function toggleChecklistMode() {
+      if (!db.pages[currentPage]) {
+        db.pages[currentPage] = { title: `Page ${currentPage}`, text: "", drawData: "", date: new Date().toISOString().split('T')[0], favorite: false, trashed: false, mode: "normal", checklist: [], tags: [], color: "yellow" };
+      }
+      db.pages[currentPage].mode = db.pages[currentPage].mode === "checklist" ? "normal" : "checklist";
+      saveFullDB();
+      loadPageData();
+    }
+
+    function addChecklistItem() {
+      const textInput = document.getElementById("newChecklistItemText");
+      if (!textInput.value.trim()) return;
+      if (!db.pages[currentPage].checklist) db.pages[currentPage].checklist = [];
+      db.pages[currentPage].checklist.push({ id: Date.now(), text: textInput.value, completed: false });
+      textInput.value = "";
+      saveFullDB();
+      renderChecklistItems();
+    }
+
+    function renderChecklistItems() {
+      const listEl = document.getElementById("checklistItemsList");
+      const items = db.pages[currentPage]?.checklist || [];
+      listEl.innerHTML = items.map(item => `
+        <div style="display:flex; align-items:center; gap:8px; background:#fff; padding:6px 10px; border-radius:6px; border:1px solid #e7dcc6;">
+          <input type="checkbox" ${item.completed ? "checked" : ""} onclick="toggleCheckItem(${item.id})">
+          <span style="flex:1; font-size:14px; ${item.completed ? 'text-decoration:line-through; opacity:0.6;' : ''}">${item.text}</span>
+          <button onclick="deleteCheckItem(${item.id})" style="background:none; border:none; color:#e4574c; cursor:pointer;">🗑️</button>
         </div>
-    </div>
+      `).join('') || '<p style="font-size:12px; color:#8892A6;">No checklist items yet.</p>';
+    }
 
-    <!-- Core App Logic Script -->
-    <script>
-        // Database Initialization & Migration
-        let db = {
-            pages: JSON.parse(localStorage.getItem('myregister_pages')) || [
-                { id: '1', pageNumber: 1, title: 'Welcome to My Register', content: 'Start writing your personal notes here safely.', date: new Date().toISOString().split('T')[0], type: 'typed', mode: 'normal', checklist: [], tags: ['General'], color: null, favorite: true, trashed: false }
-            ],
-            reminders: JSON.parse(localStorage.getItem('myregister_reminders')) || [],
-            settings: JSON.parse(localStorage.getItem('myregister_settings')) || { pin: '', autoLockTimeout: 0 }
-        };
+    function toggleCheckItem(id) {
+      const items = db.pages[currentPage]?.checklist || [];
+      const item = items.find(i => i.id === id);
+      if (item) { item.completed = !item.completed; saveFullDB(); renderChecklistItems(); }
+    }
 
-        function saveDB() {
-            localStorage.setItem('myregister_pages', JSON.stringify(db.pages));
-            localStorage.setItem('myregister_reminders', JSON.stringify(db.reminders));
-            localStorage.setItem('myregister_settings', JSON.stringify(db.settings));
+    function deleteCheckItem(id) {
+      db.pages[currentPage].checklist = db.pages[currentPage].checklist.filter(i => i.id !== id);
+      saveFullDB();
+      renderChecklistItems();
+    }
+
+    function togglePageFavorite() {
+      if (!db.pages[currentPage]) {
+        db.pages[currentPage] = { title: `Page ${currentPage}`, text: "", drawData: "", date: new Date().toISOString().split('T')[0], favorite: false, trashed: false, mode: "normal", checklist: [], tags: [], color: "yellow" };
+      }
+      db.pages[currentPage].favorite = !db.pages[currentPage].favorite;
+      saveFullDB();
+      loadPageData();
+    }
+
+    function trashCurrentPage() {
+      if (confirm("Move this page to Trash?")) {
+        if (!db.pages[currentPage]) db.pages[currentPage] = {};
+        db.pages[currentPage].trashed = true;
+        saveFullDB();
+        currentPage = Math.max(1, currentPage - 1);
+        loadPageData();
+      }
+    }
+
+    /* Modal Framework Helpers */
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    function openSubModal(html) {
+      document.getElementById('subModalContent').innerHTML = html;
+      document.getElementById('subModal').classList.add('active');
+    }
+    function closeSubModal() { document.getElementById('subModal').classList.remove('active'); }
+
+    /* Hub Modals Creators */
+    function openCalendarModal() {
+      closeModal('hubModal');
+      let html = `<h3 style="margin-bottom:12px;">📅 Calendar / Diary View</h3><div style="display:flex; flex-direction:column; gap:6px; max-height:300px; overflow-y:auto;">`;
+      Object.keys(db.pages).forEach(pgNum => {
+        const p = db.pages[pgNum];
+        if (!p.trashed) {
+          html += `<div onclick="goToPage(${pgNum}); closeSubModal(); closeRegister();" style="padding:8px; background:#f9fafb; border-radius:6px; cursor:pointer; border:1px solid #eee;"><strong>Page ${pgNum}:</strong> ${p.title} <span style="float:right; font-size:11px; color:#8892A6;">${p.date}</span></div>`;
         }
+      });
+      html += `</div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`;
+      openSubModal(html);
+    }
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('-translate-x-full');
+    function openRemindersModal() {
+      closeModal('hubModal');
+      let html = `<h3 style="margin-bottom:12px;">🔔 Reminders</h3>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
+          <input type="text" id="remTitle" placeholder="Reminder title..." style="padding:8px; border:1px solid #ccc; border-radius:6px;">
+          <input type="date" id="remDate" style="padding:8px; border:1px solid #ccc; border-radius:6px;">
+          <button onclick="addReminder()" style="padding:8px; background:#1FA971; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Add Reminder</button>
+        </div><div style="max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;" id="remList">`;
+      (db.reminders || []).forEach((r, idx) => {
+        html += `<div style="padding:8px; background:#f9fafb; border-radius:6px; border:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><span>${r.title} (${r.date})</span><button onclick="deleteReminder(${idx})" style="color:red; background:none; border:none; cursor:pointer;">🗑️</button></div>`;
+      });
+      html += `</div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`;
+      openSubModal(html);
+    }
+
+    window.addReminder = function() {
+      const title = document.getElementById('remTitle').value;
+      const date = document.getElementById('remDate').value;
+      if (!title || !date) return;
+      if (!db.reminders) db.reminders = [];
+      db.reminders.push({ title, date });
+      saveFullDB();
+      openRemindersModal();
+    }
+
+    window.deleteReminder = function(idx) {
+      db.reminders.splice(idx, 1);
+      saveFullDB();
+      openRemindersModal();
+    }
+
+    function openSearchModal() {
+      closeModal('hubModal');
+      let html = `<h3 style="margin-bottom:12px;">🔍 Advanced Search</h3>
+        <input type="text" id="searchBox" placeholder="Search page title or content..." oninput="runSearch(this.value)" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; margin-bottom:10px;">
+        <div id="searchResults" style="max-height:250px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;"></div>`;
+      openSubModal(html);
+    }
+
+    window.runSearch = function(query) {
+      const resEl = document.getElementById('searchResults');
+      if (!query.trim()) { resEl.innerHTML = ''; return; }
+      let out = '';
+      Object.keys(db.pages).forEach(pgNum => {
+        const p = db.pages[pgNum];
+        if (!p.trashed && (p.title.toLowerCase().includes(query.toLowerCase()) || p.text.toLowerCase().includes(query.toLowerCase()))) {
+          out += `<div onclick="goToPage(${pgNum}); closeSubModal(); closeRegister();" style="padding:8px; background:#f9fafb; border-radius:6px; cursor:pointer; border:1px solid #eee;"><strong>Page ${pgNum}:</strong> ${p.title}</div>`;
         }
+      });
+      resEl.innerHTML = out || '<p style="font-size:12px; color:#8892A6;">No pages found.</p>';
+    }
 
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function openTagsModal() {
+      closeModal('hubModal');
+      openSubModal(`<h3>🏷️ Tag Dashboard</h3><p style="font-size:12px; color:#8892A6; margin-top:6px;">General — ${Object.keys(db.pages).length} pages</p><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`);
+    }
 
-        function switchView(view) {
-            toggleSidebar();
-            const container = document.getElementById('contentArea');
-            if (view === 'dashboard') {
-                renderDashboard();
-            } else if (view === 'favorites') {
-                renderFavorites();
-            } else if (view === 'trash') {
-                renderTrash();
-            } else if (view === 'tags') {
-                renderTags();
-            } else if (view === 'reminders') {
-                renderReminders();
-            } else if (view === 'calendar') {
-                renderCalendar();
-            }
+    function openTemplatesModal() {
+      closeModal('hubModal');
+      openSubModal(`<h3>📋 Page Templates</h3>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+          <button onclick="applyTemplate('Daily Diary')" style="padding:8px; background:#f0f4ff; border:none; border-radius:6px; text-align:left; cursor:pointer; font-weight:600;">📖 Daily Diary Template</button>
+          <button onclick="applyTemplate('Expense Record')" style="padding:8px; background:#f0f4ff; border:none; border-radius:6px; text-align:left; cursor:pointer; font-weight:600;">💰 Expense Record Template</button>
+        </div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`);
+    }
+
+    window.applyTemplate = function(templateName) {
+      if (!db.pages[currentPage]) db.pages[currentPage] = {};
+      db.pages[currentPage].title = templateName;
+      db.pages[currentPage].text = `[Template: ${templateName}]\n- `;
+      saveFullDB();
+      loadPageData();
+      closeSubModal();
+    }
+
+    function openStatsModal() {
+      closeModal('hubModal');
+      const totalPages = Object.keys(db.pages).filter(k => !db.pages[k].trashed).length;
+      openSubModal(`<h3>📊 Register Statistics</h3>
+        <div style="font-size:14px; margin-top:10px; display:flex; flex-direction:column; gap:6px;">
+          <p><strong>Total Active Pages:</strong> ${totalPages}</p>
+          <p><strong>Reminders Count:</strong> ${(db.reminders || []).length}</p>
+        </div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`);
+    }
+
+    function openTrashModal() {
+      closeModal('hubModal');
+      let html = `<h3 style="margin-bottom:12px;">🗑️ Recycle Bin</h3><div style="max-height:250px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">`;
+      Object.keys(db.pages).forEach(pgNum => {
+        const p = db.pages[pgNum];
+        if (p.trashed) {
+          html += `<div style="padding:8px; background:#fef2f2; border-radius:6px; border:1px solid #fee2e2; display:flex; justify-content:space-between; align-items:center;"><span>Page ${pgNum}: ${p.title}</span><button onclick="restorePage(${pgNum})" style="padding:4px 8px; background:#1FA971; color:#fff; border:none; border-radius:4px; cursor:pointer;">Restore</button></div>`;
         }
+      });
+      html += `</div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`;
+      openSubModal(html);
+    }
 
-        function renderDashboard() {
-            const container = document.getElementById('contentArea');
-            const recent = db.pages.filter(p => !p.trashed).slice(-6).reverse();
-            container.innerHTML = `
-                <div class="space-y-6">
-                    <div class="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-3xl p-6 text-white shadow-lg">
-                        <h2 class="text-2xl font-bold mb-2">My Digital Register</h2>
-                        <p class="text-indigo-100 text-sm mb-4">Simple, secure, and lightning fast notebook utility.</p>
-                        <button onclick="createNewPage()" class="bg-white text-indigo-600 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-indigo-50 transition">New Page</button>
-                    </div>
-                    <h3 class="font-bold text-lg text-slate-700">Recent Pages</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        ${recent.map(p => `
-                            <div onclick="openPage('${p.id}')" class="bg-white p-4 rounded-2xl border shadow-xs hover:shadow-md cursor-pointer transition">
-                                <div class="flex justify-between items-start mb-2">
-                                    <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">Page ${p.pageNumber}</span>
-                                    <span class="text-xs text-slate-400">${p.date}</span>
-                                </div>
-                                <h4 class="font-bold text-slate-800 truncate mb-1">${p.title || 'Untitled'}</h4>
-                                <p class="text-xs text-slate-500 line-clamp-2">${p.content || 'Empty page...'}</p>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
+    window.restorePage = function(pgNum) {
+      db.pages[pgNum].trashed = false;
+      saveFullDB();
+      openTrashModal();
+    }
+
+    function openFavoritesModal() {
+      closeModal('hubModal');
+      let html = `<h3 style="margin-bottom:12px;">⭐ Favorite Pages</h3><div style="max-height:250px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">`;
+      Object.keys(db.pages).forEach(pgNum => {
+        const p = db.pages[pgNum];
+        if (!p.trashed && p.favorite) {
+          html += `<div onclick="goToPage(${pgNum}); closeSubModal(); closeRegister();" style="padding:8px; background:#fffbeb; border-radius:6px; cursor:pointer; border:1px solid #fef3c7;"><strong>Page ${pgNum}:</strong> ${p.title}</div>`;
         }
+      });
+      html += `</div><button onclick="closeSubModal()" style="margin-top:12px; width:100%; padding:8px; background:#3A4F8A; color:#fff; border:none; border-radius:6px;">Close</button>`;
+      openSubModal(html);
+    }
 
-        function createNewPage() {
-            const newId = Date.now().toString();
-            const newPage = {
-                id: newId,
-                pageNumber: db.pages.length + 1,
-                title: 'New Page',
-                content: '',
-                date: new Date().toISOString().split('T')[0],
-                type: 'typed',
-                mode: 'normal',
-                checklist: [],
-                tags: [],
-                color: null,
-                favorite: false,
-                trashed: false
-            };
-            db.pages.push(newPage);
-            saveDB();
-            openPage(newId);
-        }
+    function goToPage(pgNum) {
+      saveCurrentPage();
+      currentPage = pgNum;
+      loadPageData();
+    }
 
-        function openPage(id) {
-            const page = db.pages.find(p => p.id === id);
-            if (!page) return;
-            const container = document.getElementById('contentArea');
-            container.innerHTML = `
-                <div class="bg-white rounded-3xl border shadow-sm p-6 space-y-4 max-w-2xl mx-auto">
-                    <div class="flex justify-between items-center border-b pb-4">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">Page ${page.pageNumber}</span>
-                            <input type="text" value="${page.title}" oninput="updatePageField('${page.id}', 'title', this.value)" class="font-bold text-lg text-slate-800 border-none outline-none bg-transparent w-full">
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="toggleFavorite('${page.id}')" class="text-amber-500 text-lg p-2"><i class="fa-${page.favorite ? 'solid' : 'regular'} fa-star"></i></button>
-                            <button onclick="trashPage('${page.id}')" class="text-rose-500 text-lg p-2"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                    <textarea oninput="updatePageField('${page.id}', 'content', this.value)" rows="10" placeholder="Write your thoughts..." class="w-full p-4 border rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 resize-none">${page.content}</textarea>
-                    <div class="flex justify-between items-center text-xs text-slate-400">
-                        <span>Date: ${page.date}</span>
-                        <button onclick="switchView('dashboard')" class="bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-semibold hover:bg-slate-200 transition">Done</button>
-                    </div>
-                </div>
-            `;
-        }
+    /* ===================================================
+       BACKUP, RESTORE & VOICE TYPING
+       =================================================== */
+    window.downloadBackup = function() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "MyRegister_Backup.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    };
 
-        function updatePageField(id, field, val) {
-            const page = db.pages.find(p => p.id === id);
-            if (page) {
-                page[field] = val;
-                saveDB();
-            }
-        }
+    window.restoreBackup = function() {
+      document.getElementById("restore-file-input").click();
+    };
 
-        function toggleFavorite(id) {
-            const page = db.pages.find(p => p.id === id);
-            if (page) {
-                page.favorite = !page.favorite;
-                saveDB();
-                openPage(id);
-            }
-        }
+    window.handleFileRestore = function(event) {
+      const fileReader = new FileReader();
+      fileReader.onload = function(e) {
+        try {
+          db = JSON.parse(e.target.result);
+          saveFullDB();
+          alert("Data restored successfully!");
+          location.reload();
+        } catch (err) { alert("Invalid JSON backup file."); }
+      };
+      fileReader.readAsText(event.target.files[0]);
+    };
 
-        function trashPage(id) {
-            const page = db.pages.find(p => p.id === id);
-            if (page) {
-                page.trashed = true;
-                saveDB();
-                switchView('dashboard');
-            }
-        }
+    window.startVoiceTyping = function() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) { alert("Voice recognition is not supported in this browser."); return; }
+      const recognition = new SpeechRecognition();
+      const lang = confirm("Click OK for English, or Cancel for Urdu voice input.") ? "en-US" : "ur-PK";
+      recognition.lang = lang;
+      recognition.start();
 
-        function performSearch(query) {
-            const resultsDiv = document.getElementById('searchResults');
-            if (!query.trim()) { resultsDiv.innerHTML = ''; return; }
-            const matches = db.pages.filter(p => !p.trashed && (p.title.toLowerCase().includes(query.toLowerCase()) || p.content.toLowerCase().includes(query.toLowerCase())));
-            resultsDiv.innerHTML = matches.map(p => `
-                <div onclick="closeModal('searchModal'); openPage('${p.id}');" class="p-3 hover:bg-slate-50 rounded-xl cursor-pointer border-b">
-                    <div class="font-bold text-sm text-slate-800">${p.title}</div>
-                    <div class="text-xs text-slate-500 truncate">${p.content}</div>
-                </div>
-            `).join('') || '<p class="text-sm text-slate-400 text-center py-4">No pages found.</p>';
-        }
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        const activeElem = document.getElementById("typeArea");
+        activeElem.value += " " + transcript;
+        saveCurrentPage();
+      };
+    };
 
-        function renderFavorites() {
-            const container = document.getElementById('contentArea');
-            const favs = db.pages.filter(p => !p.trashed && p.favorite);
-            container.innerHTML = `
-                <h3 class="font-bold text-xl mb-4">Favorite Pages</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    ${favs.map(p => `
-                        <div onclick="openPage('${p.id}')" class="bg-white p-4 rounded-2xl border shadow-xs cursor-pointer">
-                            <h4 class="font-bold text-slate-800">${p.title}</h4>
-                            <p class="text-xs text-slate-500 truncate">${p.content}</p>
-                        </div>
-                    `).join('') || '<p class="text-sm text-slate-400">No favorite pages yet.</p>'}
-                </div>
-            `;
-        }
-
-        function renderTrash() {
-            const container = document.getElementById('contentArea');
-            const trashed = db.pages.filter(p => p.trashed);
-            container.innerHTML = `
-                <h3 class="font-bold text-xl mb-4">Recycle Bin</h3>
-                <div class="space-y-2">
-                    ${trashed.map(p => `
-                        <div class="bg-white p-4 rounded-2xl border flex justify-between items-center">
-                            <div>
-                                <h4 class="font-bold text-slate-800">${p.title}</h4>
-                                <span class="text-xs text-slate-400">Page ${p.pageNumber}</span>
-                            </div>
-                            <button onclick="restorePage('${p.id}')" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-xl text-xs font-semibold">Restore</button>
-                        </div>
-                    `).join('') || '<p class="text-sm text-slate-400">Your recycle bin is empty.</p>'}
-                </div>
-            `;
-        }
-
-        function restorePage(id) {
-            const page = db.pages.find(p => p.id === id);
-            if (page) {
-                page.trashed = false;
-                saveDB();
-                renderTrash();
-            }
-        }
-
-        function exportJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", "my_register_backup.json");
-            dlAnchor.click();
-        }
-
-        function importJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    db = JSON.parse(e.target.result);
-                    saveDB();
-                    alert('Backup restored successfully!');
-                    switchView('dashboard');
-                } catch (err) {
-                    alert('Invalid backup file.');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // Initial Load
-        renderDashboard();
-    </script>
+    async function exportPDF() {
+      saveCurrentPage();
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'pt', 'a4');
+      const element = document.getElementById("pageCard");
+      const canvasImg = await html2canvas(element);
+      const imgData = canvasImg.toDataURL('image/png');
+      doc.addImage(imgData, 'PNG', 20, 20, 550, 750);
+      doc.save(`Register_Page_${currentPage}.pdf`);
+    }
+  </script>
 </body>
 </html>
