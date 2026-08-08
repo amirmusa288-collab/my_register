@@ -530,1409 +530,1378 @@ button[onclick="toggleVoice()"].active{background:linear-gradient(135deg,#2ECC71
     <h3>Keeping Your Register Safe</h3>
     <p>You can lock the entire register with a PIN from Settings, or lock individual sensitive pages from within the page toolbar so they stay hidden until you unlock them. My Register also supports Dark Mode for comfortable night-time writing, adjustable font size for the typed pages, and a Statistics screen that shows how much of the register you've filled.</p>
 
-    <h3>Your Data Stays With You</h3>
-    <p>Nothing you write in My Register is uploaded anywhere by default — it's all saved directly on your own device. Because there's no cloud account, you can create a full backup of your entire register as a single file from Settings and restore it later, or move it to another device yourself.</p>
-
-    <h3>Multiple Volumes</h3>
-    <p>A register only has 100 pages, on purpose — just like a real one. When it's full, tap the volume label on the cover to create and switch between multiple named volumes, exactly the way you'd reach for a new physical register and keep going.</p>
-
-   <div style="display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:30px;padding-top:20px;border-top:1px solid var(--paper-line);">
-</a>
-     <a href="/blog.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Blog</a>
-     <a href="/about.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">About</a>
-      <a href="/contact.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Contact</a>
-      <a href="/privacy.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Privacy Policy</a>
-      <a href="/terms.html" style="color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;">Terms</a>
-    </div>
+    <h3>Your Data Stays Yours</h3>
+    <p>Everything you write, draw, or calculate is saved locally inside your web browser. Nothing goes to an external server. You can export a JSON backup of all volumes from Settings or export individual pages as PDF files whenever you need a physical copy.</p>
   </div>
 </div>
 
 <!-- ============ INDEX SCREEN ============ -->
 <div class="screen" id="screenIndex">
   <div class="topbar">
-    <button class="topbar-btn" onclick="closeBook()">✕ Close Register</button>
+    <button class="topbar-btn" onclick="closeBook()">📕 Close Book</button>
     <div class="topbar-title">Index</div>
-    <button class="topbar-btn" onclick="goToNextEmptyPage()">+ New Entry</button>
+    <div style="display:flex;gap:6px;">
+      <button class="topbar-btn" onclick="openStats()" title="Statistics">📊</button>
+      <button class="topbar-btn" onclick="openSearchModal()" title="Search">🔍</button>
+    </div>
   </div>
+
   <div class="index-body">
-    <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search everything you've written..." oninput="renderIndex()">
-    <div id="searchResultsWrap" style="display:none;">
-      <div class="index-section-label">🔎 Matches In Your Writing</div>
-      <div id="searchResults"></div>
+    <input type="text" class="search-box" id="indexFilter" placeholder="Filter pages by label or tag..." oninput="renderIndex()">
+
+    <div class="jump-row">
+      <input type="number" id="jumpNum" placeholder="Page # (1-100)" min="1" max="100">
+      <button onclick="jumpToPageInput()">Go →</button>
     </div>
 
-    <div class="index-section-label">📑 Written Pages</div>
+    <div class="index-section-label">
+      <span>Tagged / Labeled Pages</span>
+      <span id="taggedCount" style="color:var(--accent);">0 pages</span>
+    </div>
     <div class="tagged-list" id="taggedList"></div>
 
-    <div class="index-section-label">🔢 Jump to Page</div>
-    <div class="jump-row">
-      <input type="number" id="jumpInput" min="1" max="100" placeholder="Page number (1–100)">
-      <button onclick="jumpToPage()">Open</button>
+    <div class="index-section-label">
+      <span>All Pages (1 — 100)</span>
+      <span>Tap to open</span>
     </div>
-
-    <div class="index-section-label">All 100 Pages</div>
     <div class="page-grid" id="pageGrid"></div>
-
-    <div class="index-section-label" style="margin-top:22px;">📊 &amp; 📤</div>
-    <button class="btn-block purple" onclick="openStats()">📊 View Statistics</button>
-    <button class="btn-ghost" style="width:100%;margin-bottom:24px;" onclick="exportRegisterPDF()">⬇️ Download Entire Register as PDF</button>
   </div>
 </div>
 
 <!-- ============ PAGE EDITOR SCREEN ============ -->
 <div class="screen" id="screenPage">
   <div class="page-toolbar">
-    <button class="nav-btn" onclick="navPage(-1)">‹</button>
+    <button class="nav-btn" onclick="showScreen('screenIndex')">📋</button>
+    <button class="nav-btn" onclick="prevPage()">◀</button>
     <div class="page-num-badge" id="pageNumBadge">Page 1</div>
-    <button class="nav-btn" onclick="navPage(1)">›</button>
+    <button class="nav-btn" onclick="nextPage()">▶</button>
+
     <div class="mode-toggle">
-      <button class="mode-btn" id="modeTypeBtn" onclick="setMode('type')">⌨️ Type</button>
-      <button class="mode-btn" id="modeDrawBtn" onclick="setMode('draw')">✍️ Hand</button>
+      <button class="mode-btn active" id="btnModeType" onclick="setMode('type')">✍️ Type</button>
+      <button class="mode-btn" id="btnModeDraw" onclick="setMode('draw')">🖌️ Hand</button>
     </div>
-    <button class="nav-btn" id="lockPageBtn" onclick="togglePageLock()" title="Lock this page">🔐</button>
-    <button class="nav-btn" id="bookmarkBtn" onclick="toggleBookmark()" title="Bookmark this page">🔖</button>
-    <button class="nav-btn" onclick="backToIndex()" title="Close page">✕</button>
   </div>
 
-  <div class="sub-toolbar" id="typeSubToolbar">
+  <div class="sub-toolbar" id="typeSubbar">
+    <button class="mini-btn" id="langBtn" onclick="toggleLang()">EN / اردو</button>
+    <div class="fontsize-group">
+      <button onclick="changeFontSize(-0.1)">A-</button>
+      <button onclick="changeFontSize(0.1)">A+</button>
+    </div>
     <div class="hist-group">
-      <button class="mini-btn" id="undoBtnType" onclick="performUndo()" title="Undo">↩ Undo</button>
-      <button class="mini-btn" id="redoBtnType" onclick="performRedo()" title="Redo">↪ Redo</button>
+      <button class="mini-btn" id="undoBtnType" onclick="undoType()" title="Undo typing">↶ Undo</button>
+      <button class="mini-btn" id="redoBtnType" onclick="redoType()" title="Redo typing">↷ Redo</button>
     </div>
-    <div class="mode-toggle">
-      <button class="mode-btn" id="langEnBtn" onclick="setLang('en')">EN</button>
-      <button class="mode-btn" id="langUrBtn" onclick="setLang('ur')">اردو</button>
-    </div>
-    <button class="mini-btn" id="voiceBtn" onclick="toggleVoice()">🎙️ Voice</button>
-    <div class="fontsize-group" title="Font size">
-      <button onclick="changeFontSize(-1)">A-</button>
-      <button onclick="changeFontSize(1)">A+</button>
-    </div>
-    <button class="mini-btn" onclick="toggleCalc()">🧮 Currency Calc</button>
-    <button class="mini-btn" onclick="toggleVersions()">🕐 History</button>
-    <button class="mini-btn" onclick="duplicatePage()">📄 Duplicate</button>
-    <button class="mini-btn" onclick="sharePage()">📤 Share</button>
-    <button class="mini-btn" onclick="exportPagePDF()">⬇ PDF</button>
+    <button class="mini-btn" onclick="toggleVoice()" id="voiceBtn" title="Voice dictation">🎙️ Dictate</button>
+    <button class="mini-btn" onclick="toggleCalc()">🧮 Calc</button>
+    <button class="mini-btn" onclick="toggleVersions()">📜 History</button>
+    <button class="mini-btn" onclick="duplicatePage()" title="Duplicate page">📋 Copy</button>
+    <button class="mini-btn" onclick="exportPagePDF()" title="Save as PDF">📄 PDF</button>
+    <button class="mini-btn" onclick="sharePage()" title="Share page text">📤 Share</button>
+    <button class="mini-btn" id="bookmarkBtn" onclick="toggleBookmark()" title="Bookmark page">🔖</button>
+    <button class="mini-btn" id="lockPageBtn" onclick="togglePageLock()" title="Lock page with PIN">🔒</button>
+    <button class="mini-btn danger" onclick="clearPageText()">🗑️ Clear</button>
+    <div class="save-status" id="saveStatusType"><span class="dot"></span><span class="st-text">Saved</span></div>
   </div>
 
-  <div class="sub-toolbar" id="drawSubToolbar" style="display:none;">
-    <div class="hist-group">
-      <button class="mini-btn" id="undoBtnDraw" onclick="performUndo()" title="Undo">↩ Undo</button>
-      <button class="mini-btn" id="redoBtnDraw" onclick="performRedo()" title="Redo">↪ Redo</button>
+  <div class="sub-toolbar" id="drawSubbar" style="display:none;">
+    <button class="mini-btn" id="toolPen" onclick="setDrawTool('pen')" style="outline:2px solid var(--accent)">🖊️ Pen</button>
+    <button class="mini-btn" id="toolEraser" onclick="setDrawTool('eraser')">🧹 Eraser</button>
+
+    <div style="display:flex;gap:4px;align-items:center;">
+      <div class="color-dot active" style="background:#2B2A33;" onclick="setPenColor('#2B2A33',this)"></div>
+      <div class="color-dot" style="background:#2563EB;" onclick="setPenColor('#2563EB',this)"></div>
+      <div class="color-dot" style="background:#DC2626;" onclick="setPenColor('#DC2626',this)"></div>
+      <div class="color-dot" style="background:#16A34A;" onclick="setPenColor('#16A34A',this)"></div>
     </div>
-    <div class="color-dot active" style="background:#2A2118" data-color="#2A2118" onclick="setPenColor(this)"></div>
-    <div class="color-dot" style="background:#7A2E2E" data-color="#7A2E2E" onclick="setPenColor(this)"></div>
-    <div class="color-dot" style="background:#1F5D46" data-color="#1F5D46" onclick="setPenColor(this)"></div>
-    <div class="color-dot" style="background:#1B4F91" data-color="#1B4F91" onclick="setPenColor(this)"></div>
-    <select id="penWidth" onchange="setPenWidth()">
+
+    <select id="penSize" onchange="setPenSize(this.value)" style="padding:4px 6px;">
       <option value="2">Fine</option>
-      <option value="3.5" selected>Medium</option>
-      <option value="6">Bold</option>
+      <option value="4" selected>Medium</option>
+      <option value="8">Thick</option>
     </select>
-    <button class="mini-btn" onclick="setEraser()">🩹 Eraser</button>
-    <button class="mini-btn" onclick="toggleVersions()">🕐 History</button>
-    <button class="mini-btn" onclick="duplicatePage()">📄 Duplicate</button>
-    <button class="mini-btn" onclick="sharePage()">📤 Share</button>
-    <button class="mini-btn" onclick="exportPagePDF()">⬇ PDF</button>
+
+    <div class="hist-group">
+      <button class="mini-btn" id="undoBtnDraw" onclick="undoDraw()" title="Undo drawing">↶ Undo</button>
+      <button class="mini-btn" id="redoBtnDraw" onclick="redoDraw()" title="Redo drawing">↷ Redo</button>
+    </div>
+    <button class="mini-btn danger" onclick="clearCanvas()">🗑️ Clear</button>
+    <div class="save-status" id="saveStatusDraw"><span class="dot"></span><span class="st-text">Saved</span></div>
   </div>
 
-  <div class="page-content">
-    <textarea id="typeArea" placeholder="Write anything here — a note, a name, someone's number, an account of what you spent today..." oninput="onTypeInput()"></textarea>
+  <div class="page-content" id="pageContent">
+    <textarea id="typeArea" placeholder="Write something on this page..." oninput="handleTypeInput()"></textarea>
     <canvas id="drawCanvas" style="display:none;"></canvas>
 
     <div class="calc-drawer" id="calcDrawer">
       <div class="calc-row">
-        <select id="calcCurrency">
-          <option value="Rs">Rs — Pakistani Rupee</option>
-          <option value="₹">₹ — Indian Rupee</option>
-          <option value="$">$ — US Dollar</option>
-          <option value="€">€ — Euro</option>
-          <option value="£">£ — British Pound</option>
-          <option value="﷼">﷼ — Saudi Riyal</option>
-          <option value="د.إ">د.إ — UAE Dirham</option>
-          <option value="¥">¥ — Japanese Yen</option>
+        <select id="calcCurr">
+          <option value="PKR">PKR (Rs)</option>
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+          <option value="INR">INR (₹)</option>
+          <option value="AED">AED (AED)</option>
+          <option value="SAR">SAR (SAR)</option>
         </select>
-      </div>
-      <div class="calc-row">
-        <input type="number" id="calcA" placeholder="Amount 1">
+        <input type="number" id="calcA" placeholder="Amount 1" oninput="runCalc()">
       </div>
       <div class="calc-op">
-        <button data-op="+" class="active" onclick="setOp(this)">+</button>
-        <button data-op="−" onclick="setOp(this)">−</button>
-        <button data-op="×" onclick="setOp(this)">×</button>
-        <button data-op="÷" onclick="setOp(this)">÷</button>
+        <button class="active" onclick="setCalcOp('+',this)">+</button>
+        <button onclick="setCalcOp('-',this)">−</button>
+        <button onclick="setCalcOp('*',this)">×</button>
+        <button onclick="setCalcOp('/',this)">÷</button>
       </div>
       <div class="calc-row">
-        <input type="number" id="calcB" placeholder="Amount 2 (optional)">
+        <input type="number" id="calcB" placeholder="Amount 2" oninput="runCalc()">
       </div>
-      <div class="calc-result" id="calcResult">—</div>
+      <div class="calc-result" id="calcResult">= 0</div>
       <div class="calc-actions">
-        <button class="insert" onclick="insertCalcResult()">Insert into page</button>
+        <button class="insert" onclick="insertCalcResult()">Insert into Page</button>
         <button class="close" onclick="toggleCalc()">Close</button>
       </div>
     </div>
   </div>
 
   <div class="tag-bar">
-    <input type="text" id="tagInput" class="tag-chip-input" placeholder="Index label — e.g. 'Ali's number'..." oninput="onTagInput()">
-    <input type="date" id="dateInput" class="date-input" onchange="onTagInput()">
-    <span class="save-status" id="saveStatus">saved</span>
-    <div class="tag-chips-wrap">
-      <input type="text" id="tagsChipInput" class="tag-chip-input" placeholder="+ add a tag and press Enter (e.g. expense)" onkeydown="onTagChipKey(event)" style="flex:1;">
-      <div id="tagChipsList" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
-    </div>
+    <input type="text" class="tag-chip-input" id="pageLabelInput" placeholder="Main index label (e.g., Shop Accounts)..." oninput="savePageMeta()">
+    <input type="date" class="date-input" id="pageDateInput" onchange="savePageMeta()">
+    <input type="text" class="tag-chip-input" id="newTagInput" placeholder="+ Tag &amp; Press Enter" onkeydown="handleTagKeyDown(event)">
+    <div class="tag-chips-wrap" id="tagChipsWrap"></div>
   </div>
 </div>
 
-<div class="milestone-toast" id="milestoneToast">
-  <div class="milestone-icon" id="milestoneIcon">🎉</div>
-  <div>
-    <div class="milestone-title">Milestone</div>
-    <div class="milestone-text" id="milestoneText">—</div>
-  </div>
-</div>
+<!-- ============ MODALS ============ -->
 
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="modalSettings">
   <div class="modal-sheet">
     <div class="modal-title-row">
-      <div class="modal-title" id="modalTitle">—</div>
-      <button class="nav-btn" onclick="closeModal()">✕</button>
+      <div class="modal-title">Settings &amp; Options</div>
+      <button class="mini-btn" onclick="closeModal('modalSettings')">✕</button>
     </div>
-    <div id="modalBody"></div>
+
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">PIN Lock</div>
+        <div class="settings-sub">Protect register with a 4-digit PIN</div>
+      </div>
+      <div class="switch" id="pinSwitch" onclick="togglePinSetting()">
+        <div class="knob"></div>
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">Dark Theme</div>
+        <div class="settings-sub">Easy on eyes for night writing</div>
+      </div>
+      <div class="switch" id="darkSwitch" onclick="toggleDarkMode()">
+        <div class="knob"></div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <button class="btn-block purple" onclick="exportBackup()">📥 Export Backup (JSON)</button>
+      <button class="btn-block blue" onclick="importBackupTrigger()">📤 Import Backup (JSON)</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="handleImportFile(event)">
+      <button class="btn-block orange" onclick="openVolumes();closeModal('modalSettings');">📚 Manage Volumes</button>
+      <button class="btn-ghost" style="width:100%;margin-top:10px;" onclick="factoryReset()">⚠️ Reset All Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- VOLUMES MODAL -->
+<div class="modal-overlay" id="modalVolumes">
+  <div class="modal-sheet">
+    <div class="modal-title-row">
+      <div class="modal-title">Select Volume</div>
+      <button class="mini-btn" onclick="closeModal('modalVolumes')">✕</button>
+    </div>
+    <div id="volumesList"></div>
+    <button class="btn-block green" onclick="createNewVolume()" style="margin-top:12px;">+ Create New Volume</button>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div class="modal-overlay" id="modalSearch">
+  <div class="modal-sheet">
+    <div class="modal-title-row">
+      <div class="modal-title">Full Text Search</div>
+      <button class="mini-btn" onclick="closeModal('modalSearch')">✕</button>
+    </div>
+    <input type="text" class="search-box" id="fullSearchInput" placeholder="Search across all typed pages..." oninput="performFullSearch()">
+    <div id="searchResultsList"></div>
+  </div>
+</div>
+
+<!-- VERSIONS MODAL -->
+<div class="modal-overlay" id="modalVersions">
+  <div class="modal-sheet">
+    <div class="modal-title-row">
+      <div class="modal-title">Page Version History</div>
+      <button class="mini-btn" onclick="closeModal('modalVersions')">✕</button>
+    </div>
+    <div id="versionsList"></div>
+  </div>
+</div>
+
+<!-- STATS MODAL -->
+<div class="modal-overlay" id="modalStats">
+  <div class="modal-sheet">
+    <div class="modal-title-row">
+      <div class="modal-title">Register Statistics</div>
+      <button class="mini-btn" onclick="closeModal('modalStats')">✕</button>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num" id="statPagesFilled">0</div>
+        <div class="stat-label">Pages Filled</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statTotalWords">0</div>
+        <div class="stat-label">Total Words</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statBookmarks">0</div>
+        <div class="stat-label">Bookmarks</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statLocked">0</div>
+        <div class="stat-label">Locked Pages</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MILESTONE TOAST -->
+<div class="milestone-toast" id="milestoneToast">
+  <div class="milestone-icon">🎉</div>
+  <div>
+    <div class="milestone-title">Milestone Unlocked</div>
+    <div class="milestone-text" id="milestoneText">Filled 10 pages!</div>
   </div>
 </div>
 
 <script>
-/*
-  DATA MODEL:
-    localStorage['myreg_pages_<volumeKey>']  → { [pageNumber]: PageData }
-    PageData = {
-      mode: 'type' | 'draw',
-      lang: 'en' | 'ur',
-      text: string,
-      draw: string | null,
-      tag: string,
-      tags: string[],
-      date: string | null,       // yyyy-mm-dd
-      bookmarked: boolean,
-      locked: boolean,
-      versions: [{ts, text, draw}],
-      ts: number
-    }
-    localStorage['myreg_volumes']       → [{key,name}]
-    localStorage['myreg_current_vol']   → current volume key
-    localStorage['myreg_theme']         → 'light' | 'dark'
-    localStorage['myreg_fontscale']     → number
-    localStorage['myreg_pin']           → hashed pin string or ''
-    localStorage['myreg_pin_pages_<vol>']→ {pageNumber:true} quick lock lookup (mirrors PageData.locked)
-*/
+/* ============ APPLICATION STATE ============ */
+let AppState = {
+  currentVol: 1,
+  volumes: { 1: "Volume 1" },
+  pages: {}, // format: { "vol1_p1": { typeText: "", drawData: "", label: "", date: "", tags: [], bookmarked: false, locked: false, isUrdu: false, versions: [] } }
+  pin: "",
+  pinEnabled: false,
+  darkMode: false,
+  fontScale: 1.0,
+  currentPage: 1,
+  currentMode: "type", // "type" or "draw"
+  drawTool: "pen",
+  penColor: "#2B2A33",
+  penSize: 4,
+  calcOp: "+",
+  typeUndoStack: [],
+  typeRedoStack: [],
+  drawUndoStack: [],
+  drawRedoStack: [],
+  enteredPin: "",
+  speechRec: null,
+  isListening: false
+};
+
 const TOTAL_PAGES = 100;
 
-/* ---------- volumes ---------- */
-function getVolumes(){
+/* ============ AUDIO SYNTHESIS / SOUNDS ============ */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playPaperSound() {
   try {
-    let v = JSON.parse(localStorage.getItem('myreg_volumes') || 'null');
-    if (!v) {
-      // migrate from old single-number scheme if present
-      const oldVol = localStorage.getItem('myreg_volume');
-      v = [{key:'v1', name:'Volume 1'}];
-      if (oldVol && oldVol !== '1') {
-        for (let i=2;i<=parseInt(oldVol);i++) v.push({key:'v'+i, name:'Volume '+i});
-      }
-      localStorage.setItem('myreg_volumes', JSON.stringify(v));
-    }
-    return v;
-  } catch(e){ return [{key:'v1', name:'Volume 1'}]; }
-}
-function saveVolumes(v){ localStorage.setItem('myreg_volumes', JSON.stringify(v)); }
-let currentVolKey = localStorage.getItem('myreg_current_vol') || getVolumes()[0].key;
-
-function volKey(){ return 'myreg_pages_' + currentVolKey; }
-function currentVolName(){
-  const v = getVolumes().find(x=>x.key===currentVolKey);
-  return v ? v.name : 'Volume 1';
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.15);
+  } catch (e) {}
 }
 
-let currentPage = 1;
-let currentMode = 'type';
-let currentLang = 'en';
-let penColor = '#2A2118';
-let penWidth = 3.5;
-let isErasing = false;
-let drawing = false;
-let calcOp = '+';
-let saveTimer = null;
-let currentTags = [];
-
-function getPages() {
-  try { return JSON.parse(localStorage.getItem(volKey()) || '{}'); }
-  catch(e){ return {}; }
-}
-function savePages(obj) {
-  localStorage.setItem(volKey(), JSON.stringify(obj));
-}
-function getPage(n) {
-  const pages = getPages();
-  return pages[n] || null;
-}
-function setPage(n, data) {
-  const pages = getPages();
-  pages[n] = data;
-  savePages(pages);
-}
-
-/* ============ THEME (Dark Mode) ============ */
-function applyTheme(t){
-  document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
-  document.getElementById('darkToggleIcon').textContent = t === 'dark' ? '☀️' : '🌙';
-  localStorage.setItem('myreg_theme', t);
-}
-function toggleDarkMode(){
-  const cur = localStorage.getItem('myreg_theme') || 'light';
-  applyTheme(cur === 'dark' ? 'light' : 'dark');
-}
-applyTheme(localStorage.getItem('myreg_theme') || 'light');
-
-/* ============ FONT SIZE ============ */
-function applyFontScale(scale){
-  document.documentElement.style.setProperty('--page-font-scale', scale);
-  localStorage.setItem('myreg_fontscale', scale);
-}
-function changeFontSize(dir){
-  let scale = parseFloat(localStorage.getItem('myreg_fontscale') || '1');
-  scale = Math.min(1.6, Math.max(0.7, scale + dir*0.1));
-  applyFontScale(scale.toFixed(2));
-}
-applyFontScale(localStorage.getItem('myreg_fontscale') || '1');
-
-/* ============ PIN LOCK (whole register) ============ */
-let pinBuffer = '';
-let pinMode = 'unlock'; // unlock | setup | confirm
-let pinFirstEntry = '';
-function hashPin(p){ let h=0; for(let i=0;i<p.length;i++){ h=(h*31 + p.charCodeAt(i))>>>0; } return 'h'+h; }
-function getStoredPinHash(){ return localStorage.getItem('myreg_pin') || ''; }
-function renderPinPad(){
-  const pad = document.getElementById('pinPad');
-  const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
-  pad.innerHTML = keys.map(k => k === '' ? '<div></div>' : `<button class="pin-key" onclick="pinPress('${k}')">${k}</button>`).join('');
-}
-renderPinPad();
-function renderPinDots(){
-  const dots = document.getElementById('pinDots');
-  dots.innerHTML = '';
-  for(let i=0;i<4;i++){
-    const d = document.createElement('div');
-    d.className = 'pin-dot' + (i < pinBuffer.length ? ' filled' : '');
-    dots.appendChild(d);
-  }
-}
-function pinPress(k){
-  if (k === '⌫') { pinBuffer = pinBuffer.slice(0,-1); renderPinDots(); return; }
-  if (pinBuffer.length >= 4) return;
-  pinBuffer += k;
-  renderPinDots();
-  if (pinBuffer.length === 4) setTimeout(handlePinComplete, 150);
-}
-function handlePinComplete(){
-  const err = document.getElementById('lockError');
-  if (pinMode === 'unlock') {
-    if (hashPin(pinBuffer) === getStoredPinHash()) {
-      pinBuffer=''; renderPinDots();
-      afterUnlock();
+/* ============ INITIALIZATION ============ */
+window.addEventListener('DOMContentLoaded', () => {
+  loadStorage();
+  initCanvas();
+  initPinPad();
+  
+  if (AppState.pinEnabled && AppState.pin) {
+    showScreen('screenLock');
+  } else {
+    const welcomeSeen = localStorage.getItem('myreg_welcome_seen');
+    if (!welcomeSeen) {
+      showScreen('screenWelcome');
     } else {
-      err.textContent = 'Incorrect PIN, try again.';
-      pinBuffer=''; renderPinDots();
-    }
-  } else if (pinMode === 'setup') {
-    pinFirstEntry = pinBuffer;
-    pinBuffer=''; renderPinDots();
-    pinMode = 'confirm';
-    document.querySelector('.lock-title').textContent = 'Confirm your new PIN';
-    err.textContent = '';
-  } else if (pinMode === 'confirm') {
-    if (pinBuffer === pinFirstEntry) {
-      localStorage.setItem('myreg_pin', hashPin(pinBuffer));
-      pinBuffer=''; renderPinDots();
-      closeModal();
       showScreen('screenCover');
-      alert('Register PIN lock enabled.');
-    } else {
-      err.textContent = "PINs didn't match — try setting it again.";
-      pinBuffer=''; pinFirstEntry=''; renderPinDots();
-      pinMode='setup';
-      document.querySelector('.lock-title').textContent = 'Set a new PIN';
-    }
-  } else if (pinMode === 'unlock-page') {
-    if (hashPin(pinBuffer) === (pagePinTarget ? getStoredPinHash() : '')) {
-      pinBuffer=''; renderPinDots();
-      showScreen('screenPage');
-      pagePinTarget = null;
-    } else {
-      err.textContent = 'Incorrect PIN.';
-      pinBuffer=''; renderPinDots();
     }
   }
-}
-function forgotPin(){
-  if (confirm('This removes the PIN lock entirely (your written pages are kept). Continue?')) {
-    localStorage.removeItem('myreg_pin');
-    pinBuffer=''; renderPinDots();
-    afterUnlock();
-  }
-}
-let pendingLockAction = null;
-function afterUnlock(){
-  document.querySelector('.lock-title').textContent = 'Enter PIN to open';
-  if (pendingLockAction === 'openPage') {
-    showScreen('screenPage');
-  } else {
-    if (localStorage.getItem('myreg_seen_welcome') === '1') showScreen('screenCover');
-    else showScreen('screenWelcome');
-  }
-  pendingLockAction = null;
-}
-let pagePinTarget = null;
 
-/* ============ WELCOME SCREEN ============ */
-function dismissWelcome() {
-  localStorage.setItem('myreg_seen_welcome', '1');
-  showScreen('screenCover');
-}
-(function initGate(){
-  const hasPin = !!getStoredPinHash();
-  if (hasPin) {
-    pinMode = 'unlock';
-    showScreen('screenLock');
-  } else if (localStorage.getItem('myreg_seen_welcome') === '1') {
-    document.getElementById('screenWelcome').classList.remove('active');
-    document.getElementById('screenCover').classList.add('active');
+  if (AppState.darkMode) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('darkSwitch').classList.add('on');
+    document.getElementById('darkToggleIcon').textContent = '☀️';
   }
-})();
 
-/* ============ NAVIGATION BETWEEN SCREENS ============ */
-function showScreen(id) {
+  updateFontScaleCSS();
+});
+
+function loadStorage() {
+  try {
+    const saved = localStorage.getItem('myreg_appstate');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      AppState = { ...AppState, ...parsed };
+    }
+  } catch (e) {
+    console.error("Failed to load storage", e);
+  }
+}
+
+function saveStorage() {
+  try {
+    localStorage.setItem('myreg_appstate', JSON.stringify(AppState));
+  } catch (e) {
+    console.error("Failed to save storage", e);
+  }
+}
+
+function getPageKey(vol, pageNum) {
+  return `vol${vol}_p${pageNum}`;
+}
+
+function getPageData(vol, pageNum) {
+  const key = getPageKey(vol, pageNum);
+  if (!AppState.pages[key]) {
+    AppState.pages[key] = {
+      typeText: "",
+      drawData: "",
+      label: "",
+      date: "",
+      tags: [],
+      bookmarked: false,
+      locked: false,
+      isUrdu: false,
+      versions: []
+    };
+  }
+  return AppState.pages[key];
+}
+
+/* ============ SCREEN NAVIGATION ============ */
+function showScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  const target = document.getElementById(screenId);
+  if (target) {
+    target.classList.add('active');
+  }
+  if (screenId === 'screenIndex') {
+    renderIndex();
+  } else if (screenId === 'screenPage') {
+    loadPageToUI(AppState.currentPage);
+  } else if (screenId === 'screenCover') {
+    updateCoverVolLabel();
+  }
 }
-function openBook() {
-  showScreen('screenIndex');
-  renderIndex();
-}
-function closeBook() {
+
+function dismissWelcome() {
+  localStorage.setItem('myreg_welcome_seen', 'true');
   showScreen('screenCover');
-  document.getElementById('volLabel').textContent = currentVolName() + ' ▾';
 }
-function backToIndex() {
-  stopVoiceIfActive();
+
+function openBook() {
+  playPaperSound();
   showScreen('screenIndex');
-  renderIndex();
 }
 
-/* ============ INDEX RENDERING ============ */
+function closeBook() {
+  playPaperSound();
+  showScreen('screenCover');
+}
+
+function updateCoverVolLabel() {
+  const label = AppState.volumes[AppState.currentVol] || `Volume ${AppState.currentVol}`;
+  document.getElementById('volLabel').textContent = `${label} ▾`;
+}
+
+/* ============ INDEX SCREEN ============ */
 function renderIndex() {
-  const pages = getPages();
-  const query = document.getElementById('searchBox').value.trim().toLowerCase();
-
-  const resultsWrap = document.getElementById('searchResultsWrap');
-  const resultsBox = document.getElementById('searchResults');
-  if (query.length >= 2) {
-    const matches = Object.keys(pages)
-      .map(n => ({n: parseInt(n), ...pages[n]}))
-      .filter(e => !e.locked && e.text && e.text.toLowerCase().includes(query))
-      .sort((a,b) => a.n - b.n);
-    resultsWrap.style.display = 'block';
-    if (!matches.length) {
-      resultsBox.innerHTML = `<div class="tagged-empty">No pages contain "${escapeHtml(query)}".</div>`;
-    } else {
-      resultsBox.innerHTML = matches.map(e => {
-        const idx = e.text.toLowerCase().indexOf(query);
-        const start = Math.max(0, idx - 25);
-        const raw = e.text.slice(start, idx) + '<mark>' + e.text.slice(idx, idx+query.length) + '</mark>' + e.text.slice(idx+query.length, idx+query.length+35);
-        return `<div class="search-result" onclick="openPage(${e.n})">
-          <div class="sr-num">Page ${e.n}${e.tag ? ' — ' + escapeHtml(e.tag) : ''}</div>
-          <div class="sr-snippet">${start>0?'…':''}${raw}…</div>
-        </div>`;
-      }).join('');
-    }
-  } else {
-    resultsWrap.style.display = 'none';
-  }
-
-  const taggedList = document.getElementById('taggedList');
-  let entries = Object.keys(pages).map(n => ({n: parseInt(n), ...pages[n]}))
-    .filter(e => e.tag && e.tag.trim());
-  if (query) {
-    entries = entries.filter(e => e.tag.toLowerCase().includes(query) || (e.tags||[]).some(t=>t.toLowerCase().includes(query)));
-  }
-  entries.sort((a,b) => a.n - b.n);
-
-  if (!entries.length) {
-    taggedList.innerHTML = `<div class="tagged-empty">${query ? 'No matching labels.' : 'Nothing labeled yet. Open a page and add a label so you can find it again.'}</div>`;
-  } else {
-    entries.sort((a,b) => (b.bookmarked?1:0) - (a.bookmarked?1:0) || a.n - b.n);
-    taggedList.innerHTML = entries.map(e => `
-      <div class="tagged-row" onclick="openPage(${e.n})">
-        <div class="tagged-num">${e.n}</div>
-        <div style="flex:1;">
-          <div class="tagged-label">${e.locked ? '🔐 Locked page' : escapeHtml(e.tag)}</div>
-          ${(!e.locked && e.date) ? `<div class="tagged-date">${escapeHtml(e.date)}</div>` : ''}
-          ${(!e.locked && e.tags && e.tags.length) ? `<div class="tag-chips-mini">${e.tags.map(t=>`<span class="chip-mini">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-        </div>
-        ${e.bookmarked ? '<div style="font-size:16px;">🔖</div>' : ''}
-      </div>
-    `).join('');
-  }
-
   const grid = document.getElementById('pageGrid');
-  let gridHtml = '';
-  for (let i=1;i<=TOTAL_PAGES;i++) {
-    const filled = pages[i] && ((pages[i].text && pages[i].text.trim()) || pages[i].draw);
-    const locked = pages[i] && pages[i].locked;
-    gridHtml += `<div class="page-cell ${filled?'filled':''} ${locked?'locked':''}" onclick="openPage(${i})">${locked?'🔐':i}</div>`;
+  const list = document.getElementById('taggedList');
+  const filter = document.getElementById('indexFilter').value.toLowerCase().trim();
+
+  grid.innerHTML = "";
+  list.innerHTML = "";
+
+  let taggedCount = 0;
+
+  for (let i = 1; i <= TOTAL_PAGES; i++) {
+    const data = getPageData(AppState.currentVol, i);
+    const hasContent = (data.typeText && data.typeText.trim().length > 0) || (data.drawData && data.drawData.length > 0);
+    const hasLabel = data.label && data.label.trim().length > 0;
+    const hasTags = data.tags && data.tags.length > 0;
+
+    // Grid Cell
+    const cell = document.createElement('div');
+    cell.className = `page-cell ${hasContent || hasLabel ? 'filled' : ''} ${data.locked ? 'locked' : ''}`;
+    cell.textContent = i;
+    cell.onclick = () => openPage(i);
+    grid.appendChild(cell);
+
+    // Filter matching
+    const matchLabel = data.label && data.label.toLowerCase().includes(filter);
+    const matchTags = data.tags && data.tags.some(t => t.toLowerCase().includes(filter));
+    const matchContent = data.typeText && data.typeText.toLowerCase().includes(filter);
+
+    if ((hasLabel || hasTags || data.bookmarked) && (!filter || matchLabel || matchTags || matchContent)) {
+      taggedCount++;
+      const row = document.createElement('div');
+      row.className = "tagged-row";
+      row.onclick = () => openPage(i);
+
+      let tagsHtml = (data.tags || []).map(t => `<span class="chip-mini">#${t}</span>`).join('');
+      let ribbonHtml = data.bookmarked ? `<div class="ribbon"></div>` : '';
+
+      row.innerHTML = `
+        ${ribbonHtml}
+        <div class="tagged-num">${i}</div>
+        <div style="flex:1;">
+          <div class="tagged-label">${data.locked ? '🔒 Locked Page' : (data.label || 'Untitled Page')}</div>
+          <div class="tag-chips-mini" style="margin-top:4px;">${tagsHtml}</div>
+        </div>
+        <div class="tagged-date">${data.date || ''}</div>
+      `;
+      list.appendChild(row);
+    }
   }
-  grid.innerHTML = gridHtml;
-}
-function escapeHtml(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
-function jumpToPage() {
-  const n = parseInt(document.getElementById('jumpInput').value);
-  if (n >= 1 && n <= TOTAL_PAGES) openPage(n);
-}
-function goToNextEmptyPage() {
-  const pages = getPages();
-  for (let i=1;i<=TOTAL_PAGES;i++) {
-    const filled = pages[i] && ((pages[i].text && pages[i].text.trim()) || pages[i].draw);
-    if (!filled) { openPage(i); return; }
+
+  document.getElementById('taggedCount').textContent = `${taggedCount} pages`;
+  if (taggedCount === 0) {
+    list.innerHTML = `<div class="tagged-empty">No tagged or labeled pages found. Write a label or tag on any page to see it listed here!</div>`;
   }
-  alert('This register is full! Tap the volume label on the cover to start a new Volume.');
 }
 
-/* ============ PAGE EDITOR ============ */
-let ctx;
-let pendingDrawData = null;
-let textUndoStack = [], textRedoStack = [];
-let drawUndoStack = [], drawRedoStack = [];
-let textSnapshotTimer = null;
+function jumpToPageInput() {
+  const val = parseInt(document.getElementById('jumpNum').value);
+  if (val >= 1 && val <= TOTAL_PAGES) {
+    openPage(val);
+  }
+}
 
-function openPage(n) {
-  const existing = getPage(n);
-  if (existing && existing.locked) {
-    pagePinTarget = n;
-    pinMode = 'unlock-page';
-    pendingLockAction = 'openPage';
-    document.querySelector('.lock-title').textContent = 'This page is locked — enter PIN';
-    pinBuffer=''; renderPinDots();
-    document.getElementById('lockError').textContent='';
-    currentPage = n; // so openPage below (after unlock) opens the right page via direct call
-    _openPageInternal(n);
-    showScreen('screenLock');
+/* ============ PAGE EDITOR & FLIP ANIMATION ============ */
+function openPage(pageNum) {
+  const data = getPageData(AppState.currentVol, pageNum);
+  if (data.locked) {
+    promptPagePin(pageNum);
     return;
   }
-  _openPageInternal(n);
+  AppState.currentPage = pageNum;
+  playPaperSound();
   showScreen('screenPage');
 }
-function _openPageInternal(n) {
-  currentPage = n;
-  document.getElementById('pageNumBadge').textContent = 'Page ' + n;
 
-  const data = getPage(n) || {mode:'type', lang:'en', text:'', draw:null, tag:'', tags:[], date:'', bookmarked:false, locked:false};
-  currentMode = data.mode || 'type';
-  currentLang = data.lang || 'en';
-  currentTags = data.tags || [];
+function promptPagePin(pageNum) {
+  const pin = prompt("This page is locked. Enter 4-digit PIN:");
+  if (pin === AppState.pin) {
+    AppState.currentPage = pageNum;
+    playPaperSound();
+    showScreen('screenPage');
+  } else if (pin !== null) {
+    alert("Incorrect PIN!");
+  }
+}
 
-  document.getElementById('typeArea').value = data.text || '';
-  document.getElementById('tagInput').value = data.tag || '';
-  document.getElementById('dateInput').value = data.date || '';
+function loadPageToUI(pageNum) {
+  const data = getPageData(AppState.currentVol, pageNum);
+  document.getElementById('pageNumBadge').textContent = `Page ${pageNum}`;
+
+  // Mode setup
+  setMode(AppState.currentMode, false);
+
+  // Type area setup
+  const typeArea = document.getElementById('typeArea');
+  typeArea.value = data.typeText || "";
+  if (data.isUrdu) {
+    typeArea.classList.add('urdu');
+    document.getElementById('langBtn').textContent = 'اردو';
+  } else {
+    typeArea.classList.remove('urdu');
+    document.getElementById('langBtn').textContent = 'EN';
+  }
+
+  // Draw canvas setup
+  loadCanvasData(data.drawData);
+
+  // Meta setup
+  document.getElementById('pageLabelInput').value = data.label || "";
+  document.getElementById('pageDateInput').value = data.date || "";
+  renderTagChips(data.tags || []);
+
+  // Buttons state
   document.getElementById('bookmarkBtn').classList.toggle('active', !!data.bookmarked);
   document.getElementById('lockPageBtn').classList.toggle('active', !!data.locked);
-  renderTagChips();
-  pendingDrawData = data.draw || null;
 
-  textUndoStack = []; textRedoStack = [];
-  drawUndoStack = []; drawRedoStack = [];
-  lastTextValueBeforeBurst = data.text || '';
-  clearTimeout(textBurstTimer); textBurstTimer = null;
-  updateHistButtons();
+  // Clear history stacks for fresh page load
+  AppState.typeUndoStack = [];
+  AppState.typeRedoStack = [];
+  AppState.drawUndoStack = [];
+  AppState.drawRedoStack = [];
+  updateUndoRedoUI();
+}
 
-  setMode(currentMode, true);
-  setLang(currentLang, true);
-  setupCanvas();
-  setStatus('saved');
+function flipPageAnimation(direction, callback) {
+  const container = document.getElementById('pageContent');
+  const leaf = document.createElement('div');
+  const data = getPageData(AppState.currentVol, AppState.currentPage);
+
+  leaf.className = `flip-leaf flip-${direction} ${data.isUrdu ? 'urdu' : ''}`;
+  leaf.textContent = data.typeText || "(Hand-written page content)";
+
+  container.appendChild(leaf);
+  playPaperSound();
+
+  requestAnimationFrame(() => {
+    leaf.classList.add('animating');
+  });
+
+  setTimeout(() => {
+    leaf.remove();
+    if (callback) callback();
+  }, 520);
+}
+
+function prevPage() {
+  if (AppState.currentPage > 1) {
+    flipPageAnimation('prev', () => {
+      openPage(AppState.currentPage - 1);
+    });
+  }
+}
+
+function nextPage() {
+  if (AppState.currentPage < TOTAL_PAGES) {
+    flipPageAnimation('next', () => {
+      openPage(AppState.currentPage + 1);
+    });
+  }
+}
+
+/* ============ EDITING & SAVING ============ */
+function setMode(mode, save = true) {
+  AppState.currentMode = mode;
+  document.getElementById('btnModeType').classList.toggle('active', mode === 'type');
+  document.getElementById('btnModeDraw').classList.toggle('active', mode === 'draw');
+
+  const typeArea = document.getElementById('typeArea');
+  const canvas = document.getElementById('drawCanvas');
+  const typeSubbar = document.getElementById('typeSubbar');
+  const drawSubbar = document.getElementById('drawSubbar');
+
+  if (mode === 'type') {
+    typeArea.style.display = 'block';
+    canvas.style.display = 'none';
+    typeSubbar.style.display = 'flex';
+    drawSubbar.style.display = 'none';
+  } else {
+    typeArea.style.display = 'none';
+    canvas.style.display = 'block';
+    typeSubbar.style.display = 'none';
+    drawSubbar.style.display = 'flex';
+    resizeCanvas();
+  }
+  if (save) saveStorage();
+}
+
+let saveTimeout = null;
+function handleTypeInput() {
+  const text = document.getElementById('typeArea').value;
+  const data = getPageData(AppState.currentVol, AppState.currentPage);
+
+  // Push undo state
+  if (AppState.typeUndoStack.length === 0 || AppState.typeUndoStack[AppState.typeUndoStack.length - 1] !== text) {
+    AppState.typeUndoStack.push(data.typeText || "");
+    if (AppState.typeUndoStack.length > 30) AppState.typeUndoStack.shift();
+    AppState.typeRedoStack = [];
+    updateUndoRedoUI();
+  }
+
+  data.typeText = text;
+  triggerSaveIndicator('type');
+
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    pushVersionHistory(data, text);
+    saveStorage();
+    checkMilestones();
+  }, 1000);
+}
+
+function triggerSaveIndicator(mode) {
+  const el = mode === 'type' ? document.getElementById('saveStatusType') : document.getElementById('saveStatusDraw');
+  if (!el) return;
+  el.className = "save-status saving";
+  el.querySelector('.st-text').textContent = "Saving...";
+
+  setTimeout(() => {
+    el.className = "save-status saved";
+    el.querySelector('.st-text').textContent = "Saved";
+  }, 400);
+}
+
+function toggleLang() {
+  const data = getPageData(AppState.currentVol, AppState.currentPage);
+  data.isUrdu = !data.isUrdu;
+  const typeArea = document.getElementById('typeArea');
+
+  if (data.isUrdu) {
+    typeArea.classList.add('urdu');
+    document.getElementById('langBtn').textContent = 'اردو';
+  } else {
+    typeArea.classList.remove('urdu');
+    document.getElementById('langBtn').textContent = 'EN';
+  }
+  saveStorage();
+}
+
+function changeFontSize(delta) {
+  AppState.fontScale = Math.max(0.7, Math.min(1.8, AppState.fontScale + delta));
+  updateFontScaleCSS();
+  saveStorage();
+}
+
+function updateFontScaleCSS() {
+  document.documentElement.style.setProperty('--page-font-scale', AppState.fontScale);
+}
+
+function clearPageText() {
+  if (confirm("Clear all text on this page?")) {
+    document.getElementById('typeArea').value = "";
+    handleTypeInput();
+  }
+}
+
+function savePageMeta() {
+  const data = getPageData(AppState.currentVol, AppState.currentPage);
+  data.label = document.getElementById('pageLabelInput').value;
+  data.date = document.getElementById('pageDateInput').value;
+  saveStorage();
+}
+
+function handleTagKeyDown(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const val = e.target.value.trim().replace(/^#/, '');
+    if (val) {
+      const data = getPageData(AppState.currentVol, AppState.currentPage);
+      if (!data.tags) data.tags = [];
+      if (!data.tags.includes(val)) {
+        data.tags.push(val);
+        renderTagChips(data.tags);
+        saveStorage();
+      }
+      e.target.value = "";
+    }
+  }
+}
+
+function renderTagChips(tags) {
+  const wrap = document.getElementById('tagChipsWrap');
+  wrap.innerHTML = tags.map((t, idx) => `
+    <div class="chip">
+      #${t}
+      <span class="x" onclick="removeTag(${idx})">✕</span>
+    </div>
+  `).join('');
+}
+
+function removeTag(idx) {
+  const data = getPageData(AppState.currentVol, AppState.currentPage);
+  data.tags.splice(idx, 1);
+  renderTagChips(data.tags);
+  saveStorage();
 }
 
 function toggleBookmark() {
-  const data = getPage(currentPage) || {mode:currentMode, lang:currentLang, text:'', draw:null, tag:'', tags:currentTags};
+  const data = getPageData(AppState.currentVol, AppState.currentPage);
   data.bookmarked = !data.bookmarked;
-  setPage(currentPage, data);
-  document.getElementById('bookmarkBtn').classList.toggle('active', data.bookmarked);
+  document.getElementById('bookmarkBtn').classList.toggle('active', !!data.bookmarked);
+  saveStorage();
 }
+
 function togglePageLock() {
-  const data = getPage(currentPage) || {mode:currentMode, lang:currentLang, text:document.getElementById('typeArea').value, draw:pendingDrawData, tag:document.getElementById('tagInput').value, tags:currentTags};
+  if (!AppState.pin) {
+    alert("Please set up a PIN in Settings first!");
+    openSettings();
+    return;
+  }
+  const data = getPageData(AppState.currentVol, AppState.currentPage);
   data.locked = !data.locked;
-  setPage(currentPage, data);
-  document.getElementById('lockPageBtn').classList.toggle('active', data.locked);
-  if (data.locked && !getStoredPinHash()) {
-    alert('Tip: this page will only truly be protected once you also set a register PIN from Settings (⚙️ on the cover). Without a PIN, a locked page can be reopened by anyone using the toggle.');
-  }
+  document.getElementById('lockPageBtn').classList.toggle('active', !!data.locked);
+  saveStorage();
 }
 
-/* ============ TAG CHIPS ============ */
-function renderTagChips() {
-  const box = document.getElementById('tagChipsList');
-  box.innerHTML = currentTags.map((t,i) => `<span class="chip">${escapeHtml(t)}<span class="x" onclick="removeTagChip(${i})">✕</span></span>`).join('');
-}
-function onTagChipKey(e) {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    const input = document.getElementById('tagsChipInput');
-    const val = input.value.trim();
-    if (val && !currentTags.includes(val)) {
-      currentTags.push(val);
-      renderTagChips();
-      persistCurrentPage();
-    }
-    input.value = '';
-  }
-}
-function removeTagChip(i) {
-  currentTags.splice(i,1);
-  renderTagChips();
-  persistCurrentPage();
-}
+function duplicatePage() {
+  const source = getPageData(AppState.currentVol, AppState.currentPage);
+  let targetPage = null;
 
-function setupCanvas() {
-  const canvas = document.getElementById('drawCanvas');
-  const rect = canvas.parentElement.getBoundingClientRect();
-  if (rect.width === 0 || rect.height === 0) return;
-  canvas.width = rect.width * devicePixelRatio;
-  canvas.height = rect.height * devicePixelRatio;
-  ctx = canvas.getContext('2d');
-  ctx.scale(devicePixelRatio, devicePixelRatio);
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  if (pendingDrawData) {
-    const img = new Image();
-    img.onload = () => ctx.drawImage(img, 0, 0, rect.width, rect.height);
-    img.src = pendingDrawData;
-  }
-}
-
-function setMode(mode, skipSave) {
-  currentMode = mode;
-  document.getElementById('modeTypeBtn').classList.toggle('active', mode==='type');
-  document.getElementById('modeDrawBtn').classList.toggle('active', mode==='draw');
-  document.getElementById('typeArea').style.display = mode==='type' ? 'block' : 'none';
-  document.getElementById('drawCanvas').style.display = mode==='draw' ? 'block' : 'none';
-  document.getElementById('typeSubToolbar').style.display = mode==='type' ? 'flex' : 'none';
-  document.getElementById('drawSubToolbar').style.display = mode==='draw' ? 'flex' : 'none';
-  if (mode === 'draw') {
-    requestAnimationFrame(setupCanvas);
-  } else {
-    stopVoiceIfActive();
-  }
-  updateHistButtons();
-  if (!skipSave) persistCurrentPage();
-}
-
-function setLang(lang, skipSave) {
-  currentLang = lang;
-  document.getElementById('langEnBtn').classList.toggle('active', lang==='en');
-  document.getElementById('langUrBtn').classList.toggle('active', lang==='ur');
-  document.getElementById('typeArea').classList.toggle('urdu', lang==='ur');
-  if (!skipSave) persistCurrentPage();
-}
-
-let textBurstTimer = null;
-let lastTextValueBeforeBurst = '';
-function onTypeInput() {
-  if (!textBurstTimer) {
-    if (lastTextValueBeforeBurst !== document.getElementById('typeArea').value) {
-      textUndoStack.push(lastTextValueBeforeBurst);
-      if (textUndoStack.length > 40) textUndoStack.shift();
-      textRedoStack = [];
-      updateHistButtons();
+  for (let i = 1; i <= TOTAL_PAGES; i++) {
+    const d = getPageData(AppState.currentVol, i);
+    if (!d.typeText && !d.drawData && !d.label) {
+      targetPage = i;
+      break;
     }
   }
-  clearTimeout(textBurstTimer);
-  textBurstTimer = setTimeout(() => {
-    textBurstTimer = null;
-    lastTextValueBeforeBurst = document.getElementById('typeArea').value;
-  }, 800);
 
-  setStatus('saving…');
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(persistCurrentPage, 400);
-}
-function onTagInput() {
-  setStatus('saving…');
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(persistCurrentPage, 400);
-}
-
-function persistCurrentPage() {
-  const canvas = document.getElementById('drawCanvas');
-  const existing = getPage(currentPage) || {};
-  const drawData = (currentMode === 'draw') ? canvas.toDataURL('image/png') : (existing.draw || null);
-  const wasFilled = !!(existing.text && existing.text.trim()) || !!existing.draw;
-  const newText = document.getElementById('typeArea').value;
-  const newDraw = isCanvasBlank(canvas) ? null : drawData;
-
-  let versions = existing.versions || [];
-  const contentChanged = existing.text !== newText || existing.draw !== newDraw;
-  if (contentChanged && (existing.text || existing.draw)) {
-    versions = versions.concat([{ts: existing.ts || Date.now(), text: existing.text || '', draw: existing.draw || null}]);
-    if (versions.length > 10) versions = versions.slice(versions.length - 10);
-  }
-
-  setPage(currentPage, {
-    mode: currentMode,
-    lang: currentLang,
-    text: newText,
-    draw: newDraw,
-    tag: document.getElementById('tagInput').value,
-    tags: currentTags,
-    date: document.getElementById('dateInput').value || '',
-    bookmarked: !!existing.bookmarked,
-    locked: !!existing.locked,
-    versions: versions,
-    ts: Date.now()
-  });
-  markSaved();
-
-  const nowFilled = !!(newText.trim()) || (currentMode==='draw' && !isCanvasBlank(canvas));
-  if (!wasFilled && nowFilled) checkMilestone();
-}
-function isCanvasBlank(canvas) {
-  const blank = document.createElement('canvas');
-  blank.width = canvas.width; blank.height = canvas.height;
-  return canvas.toDataURL() === blank.toDataURL();
-}
-
-const MILESTONES = {10:'10 pages written!', 25:'Quarter of the register filled!', 50:'Halfway through the register!', 75:'Almost there — 75 pages filled!', 100:'Register complete! 📕✨'};
-function checkMilestone() {
-  const pages = getPages();
-  const filledCount = Object.keys(pages).filter(n => {
-    const p = pages[n];
-    return (p.text && p.text.trim()) || p.draw;
-  }).length;
-  if (MILESTONES[filledCount]) {
-    showMilestoneToast(MILESTONES[filledCount], filledCount === 100 ? '🏆' : '🎉');
-  }
-}
-function showMilestoneToast(text, icon) {
-  const toast = document.getElementById('milestoneToast');
-  document.getElementById('milestoneIcon').textContent = icon || '🎉';
-  document.getElementById('milestoneText').textContent = text;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2600);
-}
-
-/* ============ AUTO-SAVE STATUS + HEARTBEAT ============ */
-function markSaved() {
-  const el = document.getElementById('saveStatus');
-  el.className = 'save-status saved';
-  el.innerHTML = '<span class="dot"></span> ✅ Saved';
-}
-function setStatus(t) {
-  const el = document.getElementById('saveStatus');
-  if (t === 'saved') { markSaved(); return; }
-  el.className = 'save-status saving';
-  el.innerHTML = '<span class="dot"></span> ' + t;
-}
-setInterval(() => {
-  if (document.getElementById('screenPage').classList.contains('active')) {
-    persistCurrentPage();
-  }
-}, 7000);
-
-/* ============ VERSION HISTORY ============ */
-function toggleVersions() {
-  const data = getPage(currentPage) || {};
-  const versions = (data.versions || []).slice().reverse();
-  const overlay = document.getElementById('modalOverlay');
-  const title = document.getElementById('modalTitle');
-  const body = document.getElementById('modalBody');
-  title.textContent = '🕐 Version History — Page ' + currentPage;
-  if (!versions.length) {
-    body.innerHTML = '<div class="tagged-empty">No earlier versions yet — versions are saved automatically each time you make a meaningful change.</div>';
-  } else {
-    body.innerHTML = versions.map((v, i) => {
-      const d = new Date(v.ts);
-      const when = d.toLocaleString(undefined, {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
-      const snippet = v.text ? v.text.slice(0, 40) : (v.draw ? '(hand-written page)' : '(empty)');
-      return `<div class="version-item">
-        <div><div class="vtime">${when}</div><div class="vsnippet">${escapeHtml(snippet)}</div></div>
-        <button onclick="restoreVersion(${versions.length - 1 - i})">Restore</button>
-      </div>`;
-    }).join('');
-  }
-  overlay.classList.add('open');
-}
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-}
-function restoreVersion(idx) {
-  const data = getPage(currentPage) || {};
-  const versions = data.versions || [];
-  const v = versions[idx];
-  if (!v) return;
-  if (!confirm('Restore this earlier version? Your current content on this page will be replaced (but is itself saved as a version, so you can still get it back).')) return;
-  document.getElementById('typeArea').value = v.text || '';
-  pendingDrawData = v.draw || null;
-  setMode(v.text ? 'type' : (v.draw ? 'draw' : currentMode));
-  if (v.draw) { setupCanvas(); }
-  persistCurrentPage();
-  closeModal();
-}
-
-function navPage(delta) {
-  const oldPage = currentPage;
-  const oldMode = currentMode;
-  const oldLang = currentLang;
-  persistCurrentPage();
-
-  let n = oldPage + delta;
-  if (n < 1) n = 1;
-  if (n > TOTAL_PAGES) n = TOTAL_PAGES;
-  if (n === oldPage) return;
-
-  const targetData = getPage(n);
-  if (targetData && targetData.locked) {
-    openPage(n);
+  if (!targetPage) {
+    alert("No empty pages available to duplicate into!");
     return;
   }
 
-  const wrap = document.querySelector('.page-content');
-  const leaf = document.createElement('div');
-  leaf.className = 'flip-leaf ' + (delta > 0 ? 'flip-next' : 'flip-prev') + (oldLang === 'ur' ? ' urdu' : '');
-  if (oldMode === 'draw') {
-    const canvas = document.getElementById('drawCanvas');
-    leaf.style.padding = '0';
-    leaf.style.backgroundImage = "url('" + canvas.toDataURL('image/png') + "'), repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px)";
-    leaf.style.backgroundSize = 'cover, auto';
-  } else {
-    leaf.textContent = document.getElementById('typeArea').value;
+  AppState.pages[getPageKey(AppState.currentVol, targetPage)] = JSON.parse(JSON.stringify(source));
+  saveStorage();
+  alert(`Page duplicated successfully to Page ${targetPage}!`);
+}
+
+/* ============ UNDO / REDO TYPE ============ */
+function undoType() {
+  if (AppState.typeUndoStack.length > 0) {
+    const area = document.getElementById('typeArea');
+    AppState.typeRedoStack.push(area.value);
+    const prev = AppState.typeUndoStack.pop();
+    area.value = prev;
+    getPageData(AppState.currentVol, AppState.currentPage).typeText = prev;
+    saveStorage();
+    updateUndoRedoUI();
   }
-  wrap.appendChild(leaf);
-
-  playFlipSound();
-  _openPageInternal(n);
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => leaf.classList.add('animating'));
-  });
-  leaf.addEventListener('transitionend', () => leaf.remove(), {once:true});
-  setTimeout(() => { if (leaf.parentNode) leaf.remove(); }, 700);
 }
 
-let flipAudioCtx = null;
-function playFlipSound() {
-  try {
-    if (!flipAudioCtx) flipAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const ctxA = flipAudioCtx;
-    const dur = 0.22;
-    const bufferSize = ctxA.sampleRate * dur;
-    const buffer = ctxA.createBuffer(1, bufferSize, ctxA.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
-    }
-    const noise = ctxA.createBufferSource();
-    noise.buffer = buffer;
-
-    const bandpass = ctxA.createBiquadFilter();
-    bandpass.type = 'bandpass';
-    bandpass.frequency.setValueAtTime(1800, ctxA.currentTime);
-    bandpass.frequency.exponentialRampToValueAtTime(600, ctxA.currentTime + dur);
-    bandpass.Q.value = 0.7;
-
-    const gain = ctxA.createGain();
-    gain.gain.setValueAtTime(0.0001, ctxA.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.35, ctxA.currentTime + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctxA.currentTime + dur);
-
-    noise.connect(bandpass);
-    bandpass.connect(gain);
-    gain.connect(ctxA.destination);
-    noise.start();
-    noise.stop(ctxA.currentTime + dur);
-  } catch(e) { /* audio not available, ignore */ }
+function redoType() {
+  if (AppState.typeRedoStack.length > 0) {
+    const area = document.getElementById('typeArea');
+    AppState.typeUndoStack.push(area.value);
+    const next = AppState.typeRedoStack.pop();
+    area.value = next;
+    getPageData(AppState.currentVol, AppState.currentPage).typeText = next;
+    saveStorage();
+    updateUndoRedoUI();
+  }
 }
 
-/* ============ DRAWING ============ */
-function getPos(e, canvas) {
+function updateUndoRedoUI() {
+  document.getElementById('undoBtnType').disabled = AppState.typeUndoStack.length === 0;
+  document.getElementById('redoBtnType').disabled = AppState.typeRedoStack.length === 0;
+  document.getElementById('undoBtnDraw').disabled = AppState.drawUndoStack.length === 0;
+  document.getElementById('redoBtnDraw').disabled = AppState.drawRedoStack.length === 0;
+}
+
+/* ============ DRAWING CANVAS ============ */
+let canvas, ctx, isDrawing = false, lastX = 0, lastY = 0;
+
+function initCanvas() {
+  canvas = document.getElementById('drawCanvas');
+  ctx = canvas.getContext('2d');
+
+  canvas.addEventListener('mousedown', startDrawing);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stopDrawing);
+  canvas.addEventListener('mouseleave', stopDrawing);
+
+  canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+  canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+  canvas.addEventListener('touchend', stopDrawing);
+}
+
+function resizeCanvas() {
+  if (!canvas) return;
   const rect = canvas.getBoundingClientRect();
-  const point = e.touches ? e.touches[0] : e;
-  return { x: point.clientX - rect.left, y: point.clientY - rect.top };
-}
-function setPenColor(el) {
-  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-  el.classList.add('active');
-  penColor = el.dataset.color;
-  isErasing = false;
-}
-function setPenWidth() {
-  penWidth = parseFloat(document.getElementById('penWidth').value);
-}
-function setEraser() {
-  isErasing = true;
-}
-
-/* ============ UNIFIED UNDO / REDO ============ */
-function updateHistButtons() {
-  const undoAvail = currentMode === 'type' ? textUndoStack.length > 0 : drawUndoStack.length > 0;
-  const redoAvail = currentMode === 'type' ? textRedoStack.length > 0 : drawRedoStack.length > 0;
-  ['undoBtnType','undoBtnDraw'].forEach(id => { const b=document.getElementById(id); if(b) b.disabled = !undoAvail; });
-  ['redoBtnType','redoBtnDraw'].forEach(id => { const b=document.getElementById(id); if(b) b.disabled = !redoAvail; });
-}
-
-function performUndo() {
-  if (currentMode === 'type') {
-    if (!textUndoStack.length) return;
-    const ta = document.getElementById('typeArea');
-    textRedoStack.push(ta.value);
-    ta.value = textUndoStack.pop();
-    lastTextValueBeforeBurst = ta.value;
-    clearTimeout(textBurstTimer); textBurstTimer = null;
-    persistCurrentPage();
-  } else {
-    if (!drawUndoStack.length) return;
-    const canvas = document.getElementById('drawCanvas');
-    drawRedoStack.push(canvas.toDataURL('image/png'));
-    const prevSnapshot = drawUndoStack.pop();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (prevSnapshot) {
-      const img = new Image();
-      img.onload = () => {
-        const rect = canvas.getBoundingClientRect();
-        ctx.drawImage(img, 0, 0, rect.width, rect.height);
-        persistCurrentPage();
-      };
-      img.src = prevSnapshot;
-    } else {
-      persistCurrentPage();
-    }
+  if (canvas.width !== rect.width || canvas.height !== rect.height) {
+    const temp = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    ctx.putImageData(temp, 0, 0);
   }
-  updateHistButtons();
 }
 
-function performRedo() {
-  if (currentMode === 'type') {
-    if (!textRedoStack.length) return;
-    const ta = document.getElementById('typeArea');
-    textUndoStack.push(ta.value);
-    ta.value = textRedoStack.pop();
-    lastTextValueBeforeBurst = ta.value;
-    clearTimeout(textBurstTimer); textBurstTimer = null;
-    persistCurrentPage();
+function setDrawTool(tool) {
+  AppState.drawTool = tool;
+  document.getElementById('toolPen').style.outline = tool === 'pen' ? '2px solid var(--accent)' : 'none';
+  document.getElementById('toolEraser').style.outline = tool === 'eraser' ? '2px solid var(--accent)' : 'none';
+}
+
+function setPenColor(color, el) {
+  AppState.penColor = color;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+  if (el) el.classList.add('active');
+  setDrawTool('pen');
+}
+
+function setPenSize(size) {
+  AppState.penSize = parseInt(size);
+}
+
+function getCanvasCoords(e) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top
+  };
+}
+
+function startDrawing(e) {
+  isDrawing = true;
+  saveCanvasStateForUndo();
+  const coords = getCanvasCoords(e);
+  lastX = coords.x;
+  lastY = coords.y;
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  const coords = getCanvasCoords(e);
+
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(coords.x, coords.y);
+
+  if (AppState.drawTool === 'eraser') {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.lineWidth = AppState.penSize * 4;
   } else {
-    if (!drawRedoStack.length) return;
-    const canvas = document.getElementById('drawCanvas');
-    drawUndoStack.push(canvas.toDataURL('image/png'));
-    const nextSnapshot = drawRedoStack.pop();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = AppState.penColor;
+    ctx.lineWidth = AppState.penSize;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+  }
+
+  ctx.stroke();
+  lastX = coords.x;
+  lastY = coords.y;
+}
+
+function stopDrawing() {
+  if (isDrawing) {
+    isDrawing = false;
+    saveCanvasToState();
+  }
+}
+
+function handleTouchStart(e) {
+  e.preventDefault();
+  if (e.touches.length === 1) {
+    startDrawing(e.touches[0]);
+  }
+}
+
+function handleTouchMove(e) {
+  e.preventDefault();
+  if (e.touches.length === 1) {
+    draw(e.touches[0]);
+  }
+}
+
+function saveCanvasStateForUndo() {
+  if (AppState.drawUndoStack.length > 20) AppState.drawUndoStack.shift();
+  AppState.drawUndoStack.push(canvas.toDataURL());
+  AppState.drawRedoStack = [];
+  updateUndoRedoUI();
+}
+
+function undoDraw() {
+  if (AppState.drawUndoStack.length > 0) {
+    AppState.drawRedoStack.push(canvas.toDataURL());
+    const prev = AppState.drawUndoStack.pop();
+    loadCanvasData(prev);
+    saveCanvasToState();
+    updateUndoRedoUI();
+  }
+}
+
+function redoDraw() {
+  if (AppState.drawRedoStack.length > 0) {
+    AppState.drawUndoStack.push(canvas.toDataURL());
+    const next = AppState.drawRedoStack.pop();
+    loadCanvasData(next);
+    saveCanvasToState();
+    updateUndoRedoUI();
+  }
+}
+
+function saveCanvasToState() {
+  const dataUrl = canvas.toDataURL();
+  const pageData = getPageData(AppState.currentVol, AppState.currentPage);
+  pageData.drawData = dataUrl;
+  triggerSaveIndicator('draw');
+  saveStorage();
+  checkMilestones();
+}
+
+function loadCanvasData(dataUrl) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (dataUrl && dataUrl.length > 0) {
     const img = new Image();
     img.onload = () => {
-      const rect = canvas.getBoundingClientRect();
-      ctx.drawImage(img, 0, 0, rect.width, rect.height);
-      persistCurrentPage();
+      ctx.drawImage(img, 0, 0);
     };
-    img.src = nextSnapshot;
+    img.src = dataUrl;
   }
-  updateHistButtons();
 }
 
-function initCanvasEvents() {
-  const canvas = document.getElementById('drawCanvas');
-  function start(e) {
-    if (currentMode !== 'draw') return;
-    e.preventDefault();
-    drawing = true;
-    drawUndoStack.push(canvas.width ? canvas.toDataURL('image/png') : null);
-    if (drawUndoStack.length > 40) drawUndoStack.shift();
-    drawRedoStack = [];
-    updateHistButtons();
-    const p = getPos(e, canvas);
-    ctx.beginPath();
-    ctx.moveTo(p.x, p.y);
+function clearCanvas() {
+  if (confirm("Clear drawings on this page?")) {
+    saveCanvasStateForUndo();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    saveCanvasToState();
   }
-  function move(e) {
-    if (!drawing || currentMode !== 'draw') return;
-    e.preventDefault();
-    const p = getPos(e, canvas);
-    ctx.lineTo(p.x, p.y);
-    ctx.strokeStyle = isErasing ? '#F6EFDD' : penColor;
-    ctx.lineWidth = isErasing ? 22 : penWidth;
-    ctx.stroke();
-  }
-  function end() {
-    if (!drawing) return;
-    drawing = false;
-    setStatus('saving…');
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(persistCurrentPage, 300);
-  }
-  canvas.addEventListener('mousedown', start);
-  canvas.addEventListener('mousemove', move);
-  window.addEventListener('mouseup', end);
-  canvas.addEventListener('touchstart', start, {passive:false});
-  canvas.addEventListener('touchmove', move, {passive:false});
-  canvas.addEventListener('touchend', end);
 }
 
-/* ============ VOICE TO TEXT ============ */
-let recognition = null;
-let voiceActive = false;
+/* ============ VOICE DICTATION ============ */
 function toggleVoice() {
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRec) { alert('Voice typing is not supported in this browser. Try Chrome on Android or desktop.'); return; }
-  if (voiceActive) { stopVoiceIfActive(); return; }
-  recognition = new SpeechRec();
-  recognition.lang = currentLang === 'ur' ? 'ur-PK' : 'en-US';
-  recognition.continuous = true;
-  recognition.interimResults = false;
-  recognition.onresult = (e) => {
-    let finalText = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) finalText += e.results[i][0].transcript;
-    }
-    if (finalText) {
-      const ta = document.getElementById('typeArea');
-      ta.value += (ta.value && !ta.value.endsWith('\n') && !ta.value.endsWith(' ') ? ' ' : '') + finalText.trim() + ' ';
-      onTypeInput();
-    }
-  };
-  recognition.onerror = () => { stopVoiceIfActive(); };
-  recognition.onend = () => { if (voiceActive) { try{ recognition.start(); }catch(e){} } };
-  try {
-    recognition.start();
-    voiceActive = true;
-    document.getElementById('voiceBtn').classList.add('active');
-    document.getElementById('voiceBtn').textContent = '🎙️ Listening…';
-  } catch(e) { /* ignore */ }
-}
-function stopVoiceIfActive() {
-  if (recognition && voiceActive) {
-    voiceActive = false;
-    try { recognition.stop(); } catch(e){}
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Speech recognition is not supported in this browser.");
+    return;
   }
+
   const btn = document.getElementById('voiceBtn');
-  if (btn) { btn.classList.remove('active'); btn.textContent = '🎙️ Voice'; }
-}
 
-/* ============ DUPLICATE PAGE ============ */
-function duplicatePage() {
-  persistCurrentPage();
-  const pages = getPages();
-  let target = null;
-  for (let i=1;i<=TOTAL_PAGES;i++) {
-    const filled = pages[i] && ((pages[i].text && pages[i].text.trim()) || pages[i].draw);
-    if (!filled) { target = i; break; }
+  if (AppState.isListening) {
+    if (AppState.speechRec) AppState.speechRec.stop();
+    AppState.isListening = false;
+    btn.classList.remove('active');
+    btn.textContent = '🎙️ Dictate';
+  } else {
+    AppState.speechRec = new SpeechRecognition();
+    const data = getPageData(AppState.currentVol, AppState.currentPage);
+    AppState.speechRec.lang = data.isUrdu ? 'ur-PK' : 'en-US';
+    AppState.speechRec.continuous = true;
+    AppState.speechRec.interimResults = false;
+
+    AppState.speechRec.onresult = (event) => {
+      const transcript = event.results[event.results.length - 1][0].transcript;
+      const typeArea = document.getElementById('typeArea');
+      typeArea.value += (typeArea.value ? " " : "") + transcript;
+      handleTypeInput();
+    };
+
+    AppState.speechRec.onerror = () => {
+      AppState.isListening = false;
+      btn.classList.remove('active');
+      btn.textContent = '🎙️ Dictate';
+    };
+
+    AppState.speechRec.start();
+    AppState.isListening = true;
+    btn.classList.add('active');
+    btn.textContent = '🎙️ Listening...';
   }
-  if (!target) { alert('No empty page available to duplicate into — the register is full.'); return; }
-  if (!confirm('Copy this page\'s content to page ' + target + ' (the next free page)?')) return;
-  const src = getPage(currentPage);
-  setPage(target, Object.assign({}, src, {versions:[], ts:Date.now(), bookmarked:false, locked:false}));
-  alert('Copied to page ' + target + '.');
-  openPage(target);
 }
 
-/* ============ SHARE PAGE ============ */
-async function sharePage() {
-  persistCurrentPage();
-  try { await loadJsPDF(); await document.fonts.ready; }
-  catch(e){ alert('Could not prepare the file to share. Check your internet connection.'); return; }
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit:'pt', format:'a4' });
-  addPageToPDF(doc, currentPage, getPage(currentPage));
-  const blob = doc.output('blob');
-  const file = new File([blob], 'my-register-page-' + currentPage + '.pdf', {type:'application/pdf'});
-  if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) {
-    try { await navigator.share({files:[file], title:'My Register — Page ' + currentPage}); return; }
-    catch(e) { /* user cancelled or failed, fall through to download */ }
-  }
-  doc.save('my-register-page-' + currentPage + '.pdf');
-}
-
-/* ============ CURRENCY CALCULATOR ============ */
+/* ============ CALCULATOR DRAWER ============ */
 function toggleCalc() {
-  document.getElementById('calcDrawer').classList.toggle('open');
-  computeCalc();
+  const drawer = document.getElementById('calcDrawer');
+  drawer.classList.toggle('open');
+  if (drawer.classList.contains('open')) {
+    runCalc();
+  }
 }
-function setOp(btn) {
+
+function setCalcOp(op, el) {
+  AppState.calcOp = op;
   document.querySelectorAll('.calc-op button').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  calcOp = btn.dataset.op;
-  computeCalc();
+  el.classList.add('active');
+  runCalc();
 }
-function computeCalc() {
+
+function runCalc() {
+  const curr = document.getElementById('calcCurr').value;
   const a = parseFloat(document.getElementById('calcA').value) || 0;
   const b = parseFloat(document.getElementById('calcB').value) || 0;
-  let result = a;
-  if (document.getElementById('calcB').value !== '') {
-    switch(calcOp) {
-      case '+': result = a + b; break;
-      case '−': result = a - b; break;
-      case '×': result = a * b; break;
-      case '÷': result = b !== 0 ? a / b : 0; break;
-    }
+  let res = 0;
+
+  switch (AppState.calcOp) {
+    case '+': res = a + b; break;
+    case '-': res = a - b; break;
+    case '*': res = a * b; break;
+    case '/': res = b !== 0 ? a / b : 0; break;
   }
-  const cur = document.getElementById('calcCurrency').value;
-  document.getElementById('calcResult').textContent = cur + ' ' + result.toLocaleString(undefined,{maximumFractionDigits:2});
+
+  const formatted = `${curr} ${res.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+  document.getElementById('calcResult').textContent = `= ${formatted}`;
 }
-document.getElementById('calcA').addEventListener('input', computeCalc);
-document.getElementById('calcB').addEventListener('input', computeCalc);
-document.getElementById('calcCurrency').addEventListener('change', computeCalc);
 
 function insertCalcResult() {
+  const curr = document.getElementById('calcCurr').value;
   const a = document.getElementById('calcA').value;
   const b = document.getElementById('calcB').value;
-  const cur = document.getElementById('calcCurrency').value;
-  const resultText = document.getElementById('calcResult').textContent;
-  let line;
-  if (b !== '') {
-    line = `${cur} ${a} ${calcOp} ${cur} ${b} = ${resultText}`;
-  } else {
-    line = resultText;
-  }
-  if (currentMode !== 'type') setMode('type');
-  const ta = document.getElementById('typeArea');
-  ta.value += (ta.value && !ta.value.endsWith('\n') ? '\n' : '') + line + '\n';
+  const resText = document.getElementById('calcResult').textContent.replace('= ', '');
+
+  const line = `${curr} ${a} ${AppState.calcOp} ${b} = ${resText}\n`;
+  const typeArea = document.getElementById('typeArea');
+  typeArea.value += (typeArea.value ? "\n" : "") + line;
+  handleTypeInput();
   toggleCalc();
-  persistCurrentPage();
 }
 
-/* ============ SWIPE TO TURN PAGE ============ */
-function initSwipeNavigation() {
-  const zone = document.querySelector('.page-content');
-  let startX = 0, startY = 0, tracking = false;
-
-  function canStartSwipe() {
-    if (document.getElementById('calcDrawer').classList.contains('open')) return false;
-    if (currentMode !== 'type') return false;
-    return true;
-  }
-  function finishSwipe(dx, dy) {
-    if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.3) return;
-    if (dx > 0) { navPage(-1); } else { navPage(1); }
-  }
-
-  zone.addEventListener('touchstart', (e) => {
-    tracking = canStartSwipe();
-    if (!tracking) return;
-    const t = e.touches[0];
-    startX = t.clientX; startY = t.clientY;
-  }, {passive:true});
-  zone.addEventListener('touchend', (e) => {
-    if (!tracking) return;
-    tracking = false;
-    const t = e.changedTouches[0];
-    finishSwipe(t.clientX - startX, t.clientY - startY);
-  }, {passive:true});
-
-  zone.addEventListener('mousedown', (e) => {
-    tracking = canStartSwipe();
-    if (!tracking) return;
-    startX = e.clientX; startY = e.clientY;
-  });
-  window.addEventListener('mouseup', (e) => {
-    if (!tracking) return;
-    tracking = false;
-    finishSwipe(e.clientX - startX, e.clientY - startY);
-  });
-}
-initSwipeNavigation();
-
-/* ============ PDF EXPORT ============ */
-function loadJsPDF() {
-  return new Promise((resolve, reject) => {
-    if (window.jspdf && window.jspdf.jsPDF) { resolve(); return; }
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('load-failed'));
-    document.head.appendChild(script);
-  });
-}
-
-function renderTextToImage(text, lang) {
-  const isUrdu = lang === 'ur';
-  const width = 1000;
-  const fontSize = isUrdu ? 36 : 24;
-  const lineHeight = isUrdu ? 58 : 34;
-  const fontFamily = isUrdu ? "'Noto Nastaliq Urdu'" : "'Inter'";
-  const measurer = document.createElement('canvas').getContext('2d');
-  measurer.font = fontSize + 'px ' + fontFamily;
-  const maxWidth = width - 90;
-
-  let wrapped = [];
-  (text || '').split('\n').forEach(line => {
-    if (line.trim() === '') { wrapped.push(''); return; }
-    const words = line.split(' ');
-    let current = '';
-    words.forEach(word => {
-      const test = current ? current + ' ' + word : word;
-      if (measurer.measureText(test).width > maxWidth && current) {
-        wrapped.push(current);
-        current = word;
-      } else {
-        current = test;
-      }
+/* ============ VERSION HISTORY ============ */
+function pushVersionHistory(pageData, text) {
+  if (!pageData.versions) pageData.versions = [];
+  if (text && (pageData.versions.length === 0 || pageData.versions[pageData.versions.length - 1].text !== text)) {
+    pageData.versions.push({
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      text: text
     });
-    if (current) wrapped.push(current);
-  });
-  if (!wrapped.length) wrapped = [''];
-
-  const height = Math.max(160, wrapped.length * lineHeight + 90);
-  const canvas = document.createElement('canvas');
-  canvas.width = width; canvas.height = height;
-  const ctx2 = canvas.getContext('2d');
-  ctx2.fillStyle = '#FFFFFF';
-  ctx2.fillRect(0, 0, width, height);
-  ctx2.font = fontSize + 'px ' + fontFamily;
-  ctx2.fillStyle = '#2A2118';
-  ctx2.textBaseline = 'top';
-  ctx2.direction = isUrdu ? 'rtl' : 'ltr';
-  ctx2.textAlign = isUrdu ? 'right' : 'left';
-  const x = isUrdu ? width - 45 : 45;
-  wrapped.forEach((line, i) => ctx2.fillText(line, x, 45 + i * lineHeight));
-
-  return { dataURL: canvas.toDataURL('image/png'), width, height };
+    if (pageData.versions.length > 10) pageData.versions.shift();
+  }
 }
 
-function addPageToPDF(doc, pageNum, data) {
-  const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
-  const margin = 44;
+function toggleVersions() {
+  const modal = document.getElementById('modalVersions');
+  const list = document.getElementById('versionsList');
+  const data = getPageData(AppState.currentVol, AppState.currentPage);
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(13);
-  doc.setTextColor(122, 46, 46);
-  doc.text('My Register — Page ' + pageNum + (data && data.tag ? '   ·   ' + data.tag : ''), margin, 34);
-  doc.setDrawColor(201, 162, 75);
-  doc.setLineWidth(1);
-  doc.line(margin, 42, pageW - margin, 42);
-
-  const maxW = pageW - margin * 2;
-  const maxH = pageH - 70;
-
-  if (data && data.draw) {
-    try {
-      const props = doc.getImageProperties(data.draw);
-      let w = maxW, h = (props.height / props.width) * w;
-      if (h > maxH) { h = maxH; w = (props.width / props.height) * h; }
-      doc.addImage(data.draw, 'PNG', margin, 58, w, h);
-    } catch (e) { /* skip unreadable image */ }
-  } else if (data && data.text && data.text.trim()) {
-    const img = renderTextToImage(data.text, data.lang);
-    let w = maxW, h = (img.height / img.width) * w;
-    if (h > maxH) { h = maxH; w = (img.width / img.height) * h; }
-    doc.addImage(img.dataURL, 'PNG', margin, 58, w, h);
+  list.innerHTML = "";
+  if (!data.versions || data.versions.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--muted);">No edit history for this page yet.</div>`;
   } else {
-    doc.setFont('helvetica', 'italic');
-    doc.setFontSize(11);
-    doc.setTextColor(160, 150, 130);
-    doc.text('(empty page)', margin, 70);
+    data.versions.slice().reverse().forEach((v) => {
+      const item = document.createElement('div');
+      item.className = "version-item";
+      item.innerHTML = `
+        <div>
+          <div class="vtime">${v.time}</div>
+          <div class="vsnippet">${v.text}</div>
+        </div>
+        <button onclick="restoreVersion('${encodeURIComponent(v.text)}')">Restore</button>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  modal.classList.add('open');
+}
+
+function restoreVersion(encText) {
+  const text = decodeURIComponent(encText);
+  document.getElementById('typeArea').value = text;
+  handleTypeInput();
+  closeModal('modalVersions');
+}
+
+/* ============ SEARCH & STATS ============ */
+function openSearchModal() {
+  document.getElementById('modalSearch').classList.add('open');
+  document.getElementById('fullSearchInput').focus();
+}
+
+function performFullSearch() {
+  const query = document.getElementById('fullSearchInput').value.toLowerCase().trim();
+  const list = document.getElementById('searchResultsList');
+  list.innerHTML = "";
+
+  if (!query) return;
+
+  for (let i = 1; i <= TOTAL_PAGES; i++) {
+    const data = getPageData(AppState.currentVol, i);
+    if (data.typeText && data.typeText.toLowerCase().includes(query)) {
+      const idx = data.typeText.toLowerCase().indexOf(query);
+      const snippet = data.typeText.substring(Math.max(0, idx - 20), Math.min(data.typeText.length, idx + 40));
+
+      const res = document.createElement('div');
+      res.className = "search-result";
+      res.onclick = () => {
+        closeModal('modalSearch');
+        openPage(i);
+      };
+      res.innerHTML = `
+        <div class="sr-num">Page ${i} ${data.label ? '— ' + data.label : ''}</div>
+        <div class="sr-snippet">...${snippet.replace(new RegExp(query, 'gi'), m => `<mark>${m}</mark>`)}...</div>
+      `;
+      list.appendChild(res);
+    }
+  }
+
+  if (list.children.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--muted);">No matching text found.</div>`;
   }
 }
 
-async function exportPagePDF() {
-  persistCurrentPage();
-  try { await loadJsPDF(); await document.fonts.ready; }
-  catch (e) { alert('Could not load the PDF export tool. Please check your internet connection and try again.'); return; }
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-  addPageToPDF(doc, currentPage, getPage(currentPage));
-  doc.save('my-register-page-' + currentPage + '.pdf');
+function openStats() {
+  let filled = 0, totalWords = 0, bookmarks = 0, locked = 0;
+
+  for (let i = 1; i <= TOTAL_PAGES; i++) {
+    const data = getPageData(AppState.currentVol, i);
+    const hasType = data.typeText && data.typeText.trim().length > 0;
+    const hasDraw = data.drawData && data.drawData.length > 0;
+
+    if (hasType || hasDraw) filled++;
+    if (hasType) {
+      const words = data.typeText.trim().split(/\s+/).filter(Boolean).length;
+      totalWords += words;
+    }
+    if (data.bookmarked) bookmarks++;
+    if (data.locked) locked++;
+  }
+
+  document.getElementById('statPagesFilled').textContent = filled;
+  document.getElementById('statTotalWords').textContent = totalWords;
+  document.getElementById('statBookmarks').textContent = bookmarks;
+  document.getElementById('statLocked').textContent = locked;
+
+  document.getElementById('modalStats').classList.add('open');
 }
 
-async function exportRegisterPDF() {
-  const pages = getPages();
-  const filled = Object.keys(pages).map(n => parseInt(n)).filter(n => {
-    const p = pages[n];
-    return !p.locked && ((p.text && p.text.trim()) || p.draw);
-  }).sort((a, b) => a - b);
-  if (!filled.length) { alert('Your register is empty (or every written page is locked) — write something on at least one unlocked page first.'); return; }
+/* ============ MILESTONES ============ */
+function checkMilestones() {
+  let filled = 0;
+  for (let i = 1; i <= TOTAL_PAGES; i++) {
+    const d = getPageData(AppState.currentVol, i);
+    if ((d.typeText && d.typeText.trim().length > 0) || (d.drawData && d.drawData.length > 0)) filled++;
+  }
 
-  try { await loadJsPDF(); await document.fonts.ready; }
-  catch (e) { alert('Could not load the PDF export tool. Please check your internet connection and try again.'); return; }
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-  filled.forEach((n, i) => {
-    if (i > 0) doc.addPage();
-    addPageToPDF(doc, n, pages[n]);
-  });
-  doc.save('my-register-' + currentVolName().replace(/\s+/g,'-').toLowerCase() + '.pdf');
-}
-
-/* ============ SETTINGS MODAL ============ */
-function openSettings() {
-  const overlay = document.getElementById('modalOverlay');
-  document.getElementById('modalTitle').textContent = '⚙️ Settings';
-  const hasPin = !!getStoredPinHash();
-  const theme = localStorage.getItem('myreg_theme') || 'light';
-  document.getElementById('modalBody').innerHTML = `
-    <div class="settings-row">
-      <div><div class="settings-label">Dark Mode</div><div class="settings-sub">Easier on the eyes at night</div></div>
-      <div class="switch ${theme==='dark'?'on':''}" onclick="toggleDarkMode();this.classList.toggle('on')"><div class="knob"></div></div>
-    </div>
-    <div class="settings-row">
-      <div><div class="settings-label">Register PIN Lock</div><div class="settings-sub">${hasPin ? 'Currently enabled' : 'Protect the whole register with a 4-digit PIN'}</div></div>
-      <button class="mini-btn" onclick="closeModal();startPinSetup()">${hasPin ? 'Change' : 'Set PIN'}</button>
-    </div>
-    ${hasPin ? `<div class="settings-row">
-      <div><div class="settings-label">Remove PIN Lock</div><div class="settings-sub">Your pages are kept, only the lock is removed</div></div>
-      <button class="mini-btn danger" onclick="removePinLock()">Remove</button>
-    </div>` : ''}
-    <div class="settings-row">
-      <div><div class="settings-label">Volumes</div><div class="settings-sub">Currently: ${escapeHtml(currentVolName())}</div></div>
-      <button class="mini-btn" onclick="closeModal();openVolumes()">Manage</button>
-    </div>
-    <div class="settings-row">
-      <div><div class="settings-label">Backup Register</div><div class="settings-sub">Save everything as one file</div></div>
-      <button class="mini-btn" onclick="exportBackup()">⬇ Export</button>
-    </div>
-    <div class="settings-row">
-      <div><div class="settings-label">Restore Backup</div><div class="settings-sub">Load a previously exported file</div></div>
-      <button class="mini-btn" onclick="document.getElementById('restoreFileInput').click()">⬆ Import</button>
-    </div>
-    <input type="file" id="restoreFileInput" accept="application/json" style="display:none" onchange="importBackup(event)">
-    <div class="settings-row">
-      <div><div class="settings-label">Statistics</div><div class="settings-sub">See how much you've written</div></div>
-      <button class="mini-btn" onclick="closeModal();openStats()">View</button>
-    </div>
-  `;
-  overlay.classList.add('open');
-}
-function startPinSetup() {
-  pinMode = 'setup';
-  pinBuffer=''; pinFirstEntry='';
-  document.querySelector('.lock-title').textContent = 'Set a new PIN';
-  document.getElementById('lockError').textContent='';
-  renderPinDots();
-  showScreen('screenLock');
-}
-function removePinLock() {
-  if (confirm('Remove the register PIN? Your pages will stay exactly as they are.')) {
-    localStorage.removeItem('myreg_pin');
-    closeModal();
-    openSettings();
+  const milestones = [5, 10, 25, 50, 100];
+  if (milestones.includes(filled)) {
+    const key = `milestone_${AppState.currentVol}_${filled}`;
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, 'true');
+      showMilestoneToast(`You've filled ${filled} pages in this register!`);
+    }
   }
 }
 
-/* ============ VOLUMES MODAL ============ */
+function showMilestoneToast(text) {
+  const toast = document.getElementById('milestoneToast');
+  document.getElementById('milestoneText').textContent = text;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+/* ============ EXPORT & SHARE ============ */
+function exportPagePDF() {
+  window.print();
+}
+
+function sharePage() {
+  const data = getPageData(AppState.currentVol, AppState.currentPage);
+  const text = `[My Register — Vol ${AppState.currentVol}, Page ${AppState.currentPage}]\n${data.label ? 'Label: ' + data.label + '\n' : ''}\n${data.typeText}`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: `Register Page ${AppState.currentPage}`,
+      text: text
+    }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(text);
+    alert("Page text copied to clipboard!");
+  }
+}
+
+/* ============ VOLUMES MANAGEMENT ============ */
 function openVolumes() {
-  const overlay = document.getElementById('modalOverlay');
-  document.getElementById('modalTitle').textContent = '📚 Volumes';
-  const vols = getVolumes();
-  let html = vols.map(v => {
-    const pages = JSON.parse(localStorage.getItem('myreg_pages_'+v.key) || '{}');
-    const count = Object.keys(pages).filter(n => (pages[n].text&&pages[n].text.trim()) || pages[n].draw).length;
-    return `<div class="vol-item ${v.key===currentVolKey?'current':''}" onclick="switchVolume('${v.key}')">
-      <div><div class="vol-name">${escapeHtml(v.name)}${v.key===currentVolKey?' (current)':''}</div><div class="vol-count">${count}/100 pages filled</div></div>
-      <span>${v.key===currentVolKey?'✓':'→'}</span>
-    </div>`;
-  }).join('');
-  html += `<button class="btn-block blue" onclick="createVolume()">+ Create New Volume</button>`;
-  document.getElementById('modalBody').innerHTML = html;
-  overlay.classList.add('open');
+  const list = document.getElementById('volumesList');
+  list.innerHTML = "";
+
+  Object.keys(AppState.volumes).forEach(volId => {
+    const item = document.createElement('div');
+    item.className = `vol-item ${parseInt(volId) === AppState.currentVol ? 'current' : ''}`;
+    item.onclick = () => selectVolume(parseInt(volId));
+
+    let filled = 0;
+    for (let i = 1; i <= TOTAL_PAGES; i++) {
+      const d = getPageData(volId, i);
+      if ((d.typeText && d.typeText.trim().length > 0) || (d.drawData && d.drawData.length > 0)) filled++;
+    }
+
+    item.innerHTML = `
+      <div>
+        <div class="vol-name">${AppState.volumes[volId]}</div>
+        <div class="vol-count">${filled} / 100 pages filled</div>
+      </div>
+      <div>${parseInt(volId) === AppState.currentVol ? '✓ Active' : ''}</div>
+    `;
+    list.appendChild(item);
+  });
+
+  document.getElementById('modalVolumes').classList.add('open');
 }
-function switchVolume(key) {
-  currentVolKey = key;
-  localStorage.setItem('myreg_current_vol', key);
-  closeModal();
-  document.getElementById('volLabel').textContent = currentVolName() + ' ▾';
+
+function selectVolume(volId) {
+  AppState.currentVol = volId;
+  saveStorage();
+  closeModal('modalVolumes');
+  updateCoverVolLabel();
   renderIndex();
 }
-function createVolume() {
-  const name = prompt('Name for the new volume:', 'Volume ' + (getVolumes().length + 1));
-  if (!name) return;
-  const vols = getVolumes();
-  const key = 'v' + Date.now();
-  vols.push({key, name});
-  saveVolumes(vols);
-  switchVolume(key);
+
+function createNewVolume() {
+  const nextId = Object.keys(AppState.volumes).length + 1;
+  const name = prompt("Enter Volume Name:", `Volume ${nextId}`);
+  if (name) {
+    AppState.volumes[nextId] = name;
+    selectVolume(nextId);
+  }
 }
 
-/* ============ BACKUP / RESTORE ============ */
-function exportBackup() {
-  const vols = getVolumes();
-  const data = { app:'my-register', exportedAt: Date.now(), volumes: vols, theme: localStorage.getItem('myreg_theme'), pages: {} };
-  vols.forEach(v => { data.pages[v.key] = JSON.parse(localStorage.getItem('myreg_pages_'+v.key) || '{}'); });
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'my-register-backup-' + new Date().toISOString().slice(0,10) + '.json';
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
+/* ============ PIN LOCK & SETTINGS ============ */
+function openSettings() {
+  document.getElementById('pinSwitch').classList.toggle('on', AppState.pinEnabled);
+  document.getElementById('darkSwitch').classList.toggle('on', AppState.darkMode);
+  document.getElementById('modalSettings').classList.add('open');
 }
-function importBackup(e) {
+
+function togglePinSetting() {
+  if (!AppState.pinEnabled) {
+    const newPin = prompt("Set a 4-digit numeric PIN:");
+    if (newPin && /^\d{4}$/.test(newPin)) {
+      AppState.pin = newPin;
+      AppState.pinEnabled = true;
+      document.getElementById('pinSwitch').classList.add('on');
+      saveStorage();
+      alert("PIN protection enabled!");
+    } else if (newPin) {
+      alert("PIN must be exactly 4 digits!");
+    }
+  } else {
+    AppState.pinEnabled = false;
+    AppState.pin = "";
+    document.getElementById('pinSwitch').classList.remove('on');
+    saveStorage();
+    alert("PIN protection disabled!");
+  }
+}
+
+function toggleDarkMode() {
+  AppState.darkMode = !AppState.darkMode;
+  if (AppState.darkMode) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('darkSwitch').classList.add('on');
+    document.getElementById('darkToggleIcon').textContent = '☀️';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    document.getElementById('darkSwitch').classList.remove('on');
+    document.getElementById('darkToggleIcon').textContent = '🌙';
+  }
+  saveStorage();
+}
+
+function initPinPad() {
+  const pad = document.getElementById('pinPad');
+  const dots = document.getElementById('pinDots');
+  pad.innerHTML = "";
+  dots.innerHTML = '<div class="pin-dot"></div>'.repeat(4);
+
+  const keys = ['1','2','3','4','5','6','7','8','9','C','0','⌫'];
+  keys.forEach(k => {
+    const btn = document.createElement('button');
+    btn.className = "pin-key";
+    btn.textContent = k;
+    btn.onclick = () => handlePinKey(k);
+    pad.appendChild(btn);
+  });
+}
+
+function handlePinKey(key) {
+  if (key === 'C') {
+    AppState.enteredPin = "";
+  } else if (key === '⌫') {
+    AppState.enteredPin = AppState.enteredPin.slice(0, -1);
+  } else if (AppState.enteredPin.length < 4) {
+    AppState.enteredPin += key;
+  }
+
+  updatePinDots();
+
+  if (AppState.enteredPin.length === 4) {
+    setTimeout(() => {
+      if (AppState.enteredPin === AppState.pin) {
+        AppState.enteredPin = "";
+        updatePinDots();
+        showScreen('screenCover');
+      } else {
+        document.getElementById('lockError').textContent = "Incorrect PIN. Try again.";
+        AppState.enteredPin = "";
+        updatePinDots();
+      }
+    }, 150);
+  }
+}
+
+function updatePinDots() {
+  const dots = document.querySelectorAll('.pin-dot');
+  dots.forEach((d, idx) => {
+    d.classList.toggle('filled', idx < AppState.enteredPin.length);
+  });
+  if (AppState.enteredPin.length < 4) {
+    document.getElementById('lockError').textContent = "";
+  }
+}
+
+function forgotPin() {
+  if (confirm("Reset PIN protection? Your notes will NOT be erased.")) {
+    AppState.pinEnabled = false;
+    AppState.pin = "";
+    saveStorage();
+    showScreen('screenCover');
+  }
+}
+
+/* ============ BACKUP & RESTORE ============ */
+function exportBackup() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(AppState));
+  const dl = document.createElement('a');
+  dl.setAttribute("href", dataStr);
+  dl.setAttribute("download", `MyRegister_Backup_${new Date().toISOString().slice(0,10)}.json`);
+  document.body.appendChild(dl);
+  dl.click();
+  dl.remove();
+}
+
+function importBackupTrigger() {
+  document.getElementById('importFileInput').click();
+}
+
+function handleImportFile(e) {
   const file = e.target.files[0];
   if (!file) return;
+
   const reader = new FileReader();
-  reader.onload = () => {
+  reader.onload = (event) => {
     try {
-      const data = JSON.parse(reader.result);
-      if (data.app !== 'my-register' || !data.pages) throw new Error('bad file');
-      if (!confirm('This will merge the backup into your current volumes (existing pages with the same number will be overwritten in matching volumes). Continue?')) return;
-      (data.volumes || []).forEach(v => {
-        const existing = getVolumes();
-        if (!existing.find(x=>x.key===v.key)) { existing.push(v); saveVolumes(existing); }
-      });
-      Object.keys(data.pages).forEach(volKeyName => {
-        localStorage.setItem('myreg_pages_'+volKeyName, JSON.stringify(data.pages[volKeyName]));
-      });
-      alert('Backup restored successfully.');
-      closeModal();
-      renderIndex();
-    } catch(err) {
-      alert('This file does not look like a valid My Register backup.');
+      const parsed = JSON.parse(event.target.result);
+      if (parsed.pages && parsed.volumes) {
+        AppState = parsed;
+        saveStorage();
+        alert("Backup imported successfully!");
+        location.reload();
+      } else {
+        alert("Invalid backup file structure!");
+      }
+    } catch (err) {
+      alert("Failed to parse backup file!");
     }
   };
   reader.readAsText(file);
 }
 
-/* ============ STATISTICS ============ */
-function openStats() {
-  const pages = getPages();
-  const keys = Object.keys(pages);
-  let filled=0, wordCount=0, bookmarked=0, drawnPages=0, locked=0;
-  keys.forEach(n => {
-    const p = pages[n];
-    const isFilled = (p.text && p.text.trim()) || p.draw;
-    if (isFilled) filled++;
-    if (p.text) wordCount += p.text.trim().split(/\s+/).filter(Boolean).length;
-    if (p.bookmarked) bookmarked++;
-    if (p.draw) drawnPages++;
-    if (p.locked) locked++;
-  });
-  const overlay = document.getElementById('modalOverlay');
-  document.getElementById('modalTitle').textContent = '📊 Statistics — ' + currentVolName();
-  document.getElementById('modalBody').innerHTML = `
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-num">${filled}/100</div><div class="stat-label">Pages filled</div></div>
-      <div class="stat-card"><div class="stat-num">${wordCount}</div><div class="stat-label">Words typed</div></div>
-      <div class="stat-card"><div class="stat-num">${bookmarked}</div><div class="stat-label">Bookmarked</div></div>
-      <div class="stat-card"><div class="stat-num">${drawnPages}</div><div class="stat-label">Hand-written pages</div></div>
-      <div class="stat-card"><div class="stat-num">${locked}</div><div class="stat-label">Locked pages</div></div>
-      <div class="stat-card"><div class="stat-num">${100-filled}</div><div class="stat-label">Pages remaining</div></div>
-    </div>
-  `;
-  overlay.classList.add('open');
+function factoryReset() {
+  if (confirm("DANGER: Reset all register data? This cannot be undone.")) {
+    localStorage.removeItem('myreg_appstate');
+    location.reload();
+  }
 }
 
-/* ============ INIT ============ */
-initCanvasEvents();
-document.getElementById('volLabel').textContent = currentVolName() + ' ▾';
-window.addEventListener('resize', () => {
-  if (document.getElementById('screenPage').classList.contains('active') && currentMode === 'draw') {
-    _openPageInternal(currentPage);
-  }
-});
-</s<cript>
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('open');
+}
+</script>
 </body>
-/html>
+</html>
