@@ -463,6 +463,15 @@ button[onclick="toggleVoice()"].active{background:linear-gradient(135deg,#2ECC71
 .stat-card{background:#fff;border:1px solid var(--paper-line);border-radius:12px;padding:14px;text-align:center;}
 .stat-num{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:700;color:var(--accent);}
 .stat-label{font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* ============ COVER FOOTER (blog + legal links) ============ */
+.cover-footer{margin-top:24px;padding-top:20px;border-top:1px solid var(--paper-line);}
+.cover-footer-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.cover-blog-links{display:flex;flex-direction:column;gap:6px;margin-bottom:22px;}
+.cover-blog-links a{color:var(--accent);font-size:14px;font-weight:600;text-decoration:none;}
+.cover-blog-links a.view-all{color:var(--muted);font-size:13px;font-weight:600;}
+.cover-legal-links{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;}
+.cover-legal-links a{color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;}
 </style>
 </head>
 <body>
@@ -532,6 +541,22 @@ button[onclick="toggleVoice()"].active{background:linear-gradient(135deg,#2ECC71
 
     <h3>Your Data Stays Yours</h3>
     <p>Everything you write, draw, or calculate is saved locally inside your web browser. Nothing goes to an external server. You can export a JSON backup of all volumes from Settings or export individual pages as PDF files whenever you need a physical copy.</p>
+
+    <div class="cover-footer">
+      <div class="cover-footer-label">📝 From the Blog</div>
+      <div class="cover-blog-links">
+        <a href="https://myregister.online/my-notebook-online-features.html">My Notebook, Reimagined: A Complete Tour of Every Feature in My Register</a>
+        <a href="https://myregister.online/free-online-notebook-no-sign-up.html">Free Online Notebook No Sign Up: Why You Don't Need an Account to Start Writing</a>
+        <a href="https://myregister.online/online-notebook-guide.html">The Best Free Online Notebook for Students &amp; Professionals</a>
+        <a href="https://myregister.online/blog.html" class="view-all">→ View all posts</a>
+      </div>
+      <div class="cover-legal-links">
+        <a href="https://myregister.online/about.html">About</a>
+        <a href="https://myregister.online/contact.html">Contact</a>
+        <a href="https://myregister.online/privacy.html">Privacy Policy</a>
+        <a href="https://myregister.online/terms.html">Terms</a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -810,22 +835,45 @@ let AppState = {
 
 const TOTAL_PAGES = 100;
 
+/* ============ SAFE LOCALSTORAGE HELPERS ============ */
+/* Wrap every localStorage call so that if storage is blocked or unavailable
+   (private-browsing edge cases, sandboxed previews, disabled storage, etc.)
+   the app degrades gracefully instead of throwing and freezing on a screen. */
+function safeGet(key) {
+  try { return localStorage.getItem(key); } catch (e) { return null; }
+}
+function safeSet(key, val) {
+  try { localStorage.setItem(key, val); return true; } catch (e) { return false; }
+}
+function safeRemove(key) {
+  try { localStorage.removeItem(key); } catch (e) {}
+}
+
 /* ============ AUDIO SYNTHESIS / SOUNDS ============ */
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch (e) { audioCtx = null; }
+  }
+  return audioCtx;
+}
 function playPaperSound() {
   try {
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
+    const ac = getAudioCtx();
+    if (!ac) return;
+    if (ac.state === 'suspended') ac.resume();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.15);
-    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+    osc.frequency.setValueAtTime(120, ac.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(40, ac.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.15, ac.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.15);
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(ac.destination);
     osc.start();
-    osc.stop(audioCtx.currentTime + 0.15);
+    osc.stop(ac.currentTime + 0.15);
   } catch (e) {}
 }
 
@@ -834,11 +882,11 @@ window.addEventListener('DOMContentLoaded', () => {
   loadStorage();
   initCanvas();
   initPinPad();
-  
+
   if (AppState.pinEnabled && AppState.pin) {
     showScreen('screenLock');
   } else {
-    const welcomeSeen = localStorage.getItem('myreg_welcome_seen');
+    const welcomeSeen = safeGet('myreg_welcome_seen');
     if (!welcomeSeen) {
       showScreen('screenWelcome');
     } else {
@@ -857,7 +905,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function loadStorage() {
   try {
-    const saved = localStorage.getItem('myreg_appstate');
+    const saved = safeGet('myreg_appstate');
     if (saved) {
       const parsed = JSON.parse(saved);
       AppState = { ...AppState, ...parsed };
@@ -868,11 +916,7 @@ function loadStorage() {
 }
 
 function saveStorage() {
-  try {
-    localStorage.setItem('myreg_appstate', JSON.stringify(AppState));
-  } catch (e) {
-    console.error("Failed to save storage", e);
-  }
+  safeSet('myreg_appstate', JSON.stringify(AppState));
 }
 
 function getPageKey(vol, pageNum) {
@@ -914,7 +958,7 @@ function showScreen(screenId) {
 }
 
 function dismissWelcome() {
-  localStorage.setItem('myreg_welcome_seen', 'true');
+  safeSet('myreg_welcome_seen', 'true');
   showScreen('screenCover');
 }
 
@@ -1671,8 +1715,8 @@ function checkMilestones() {
   const milestones = [5, 10, 25, 50, 100];
   if (milestones.includes(filled)) {
     const key = `milestone_${AppState.currentVol}_${filled}`;
-    if (!localStorage.getItem(key)) {
-      localStorage.setItem(key, 'true');
+    if (!safeGet(key)) {
+      safeSet(key, 'true');
       showMilestoneToast(`You've filled ${filled} pages in this register!`);
     }
   }
@@ -1894,7 +1938,7 @@ function handleImportFile(e) {
 
 function factoryReset() {
   if (confirm("DANGER: Reset all register data? This cannot be undone.")) {
-    localStorage.removeItem('myreg_appstate');
+    safeRemove('myreg_appstate');
     location.reload();
   }
 }
