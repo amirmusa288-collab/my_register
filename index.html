@@ -470,6 +470,21 @@ button[onclick="toggleVoice()"].active{background:linear-gradient(135deg,#2ECC71
 .stat-num{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:700;color:var(--accent);}
 .stat-label{font-size:11px;color:var(--muted);margin-top:4px;}
 
+/* ============ GRAMMAR CHECK ============ */
+.grammar-disclaimer{font-size:12px;color:var(--muted);background:rgba(243,178,106,0.12);border:1px solid var(--paper-line);border-radius:10px;padding:10px 12px;margin-bottom:14px;line-height:1.5;}
+.grammar-issue{background:#fff;border:1px solid var(--paper-line);border-radius:10px;padding:12px;margin-bottom:10px;}
+[data-theme="dark"] .grammar-issue{background:#2A2733;}
+.grammar-issue .gi-category{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px;}
+.grammar-issue .gi-message{font-size:13.5px;color:var(--ink);margin-bottom:8px;line-height:1.5;}
+.grammar-issue .gi-context{font-size:12.5px;color:var(--muted);background:var(--paper);border-radius:6px;padding:6px 8px;margin-bottom:8px;font-family:'IBM Plex Mono',monospace;}
+.grammar-issue .gi-context mark{background:#F3B4B4;color:#7A2E2E;padding:0 2px;border-radius:3px;}
+.grammar-issue .gi-suggestions{display:flex;gap:6px;flex-wrap:wrap;}
+.grammar-issue .gi-suggestion{background:rgba(31,169,113,0.12);color:#12805A;font-size:12px;font-weight:700;padding:4px 10px;border-radius:100px;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+.grammar-issue .gi-suggestion:hover{background:rgba(31,169,113,0.22);}
+.grammar-issue .gi-suggestion:active{transform:scale(0.95);}
+.grammar-empty{text-align:center;padding:24px;color:var(--muted);font-size:13.5px;}
+.grammar-loading{text-align:center;padding:24px;color:var(--muted);font-size:13.5px;}
+
 /* ============ COVER FOOTER (blog + legal links) ============ */
 .cover-footer{margin-top:24px;padding-top:20px;border-top:1px solid var(--paper-line);}
 .cover-footer-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
@@ -531,7 +546,7 @@ button[onclick="toggleVoice()"].active{background:linear-gradient(135deg,#2ECC71
     <p>When you first arrive, you'll see the register closed, sitting in the middle of the screen exactly like a real notebook waiting on a desk. Tap or click anywhere on it to open it. The first thing you'll see is the Index — a list of every page you've already written something on, along with the short label you gave it, plus a grid of all 100 numbered pages so you can see at a glance which ones are still empty.</p>
 
     <h3>Writing By Hand or By Keyboard</h3>
-    <p>Open any page and you'll find two ways to write on it. The Type mode gives you a proper keyboard text area, styled like ruled paper, where you can type in either English or Urdu — just tap the EN or اردو button at the top and the page will switch its font and writing direction automatically. You can also dictate by voice using the microphone button instead of typing. The Hand mode turns the page into a small canvas where you can write or draw using your finger or mouse, exactly like putting a pen to paper.</p>
+    <p>Open any page and you'll find two ways to write on it. The Type mode gives you a proper keyboard text area, styled like ruled paper, where you can type in either English or Urdu — just tap the EN or اردو button at the top and the page will switch its font and writing direction automatically. You can also dictate by voice using the microphone button instead of typing, and run an English Grammar Check to catch spelling and grammar issues, with one-tap fixes for the suggestions it finds. The Hand mode turns the page into a small canvas where you can write or draw using your finger or mouse, exactly like putting a pen to paper.</p>
 
     <h3>Turning Pages Like a Real Book</h3>
     <p>Turning a page plays a short animation of the page physically lifting and flipping to the other side, along with a soft paper-turning sound, just like flicking through a real register. You can turn pages using the arrow buttons at the top, or simply swipe.</p>
@@ -546,7 +561,7 @@ button[onclick="toggleVoice()"].active{background:linear-gradient(135deg,#2ECC71
     <p>You can lock the entire register with a PIN from Settings, or lock individual sensitive pages from within the page toolbar so they stay hidden until you unlock them. My Register also supports Dark Mode for comfortable night-time writing, adjustable font size for the typed pages, and a Statistics screen that shows how much of the register you've filled.</p>
 
     <h3>Your Data Stays Yours</h3>
-    <p>Everything you write, draw, or calculate is saved locally inside your web browser. Nothing goes to an external server. You can export a JSON backup of all volumes from Settings or export individual pages as PDF files whenever you need a physical copy.</p>
+    <p>Everything you write, draw, or calculate is saved locally inside your web browser, and nothing is uploaded automatically. The one exception is the optional Grammar Check button: if you tap it, that page's English text (and only that text, only at that moment) is sent to the free LanguageTool.org service to get spelling and grammar suggestions. You can export a JSON backup of all volumes from Settings or export individual pages as PDF files whenever you need a physical copy.</p>
 
     <div class="cover-footer">
       <div class="cover-footer-label">📝 From the Blog</div>
@@ -624,6 +639,7 @@ button[onclick="toggleVoice()"].active{background:linear-gradient(135deg,#2ECC71
       <button class="mini-btn" id="redoBtnType" onclick="redoType()" title="Redo typing">↷ Redo</button>
     </div>
     <button class="mini-btn" onclick="toggleVoice()" id="voiceBtn" title="Voice dictation">🎙️ Dictate</button>
+    <button class="mini-btn" onclick="checkGrammar()" id="grammarBtn" title="Check grammar (sends text to LanguageTool.org)">✅ Grammar</button>
     <button class="mini-btn" onclick="toggleCalc()">🧮 Calc</button>
     <button class="mini-btn" onclick="toggleVersions()">📜 History</button>
     <button class="mini-btn" onclick="duplicatePage()" title="Duplicate page">📋 Copy</button>
@@ -803,6 +819,18 @@ button[onclick="toggleVoice()"].active{background:linear-gradient(135deg,#2ECC71
         <div class="stat-label">Locked Pages</div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- GRAMMAR CHECK MODAL -->
+<div class="modal-overlay" id="modalGrammar">
+  <div class="modal-sheet">
+    <div class="modal-title-row">
+      <div class="modal-title">Grammar &amp; Spelling Check</div>
+      <button class="mini-btn" onclick="closeModal('modalGrammar')">✕</button>
+    </div>
+    <div class="grammar-disclaimer">This sends your page text to the free LanguageTool.org service to check it. Only use this for pages you don't mind leaving your device.</div>
+    <div id="grammarResultsList"></div>
   </div>
 </div>
 
@@ -1568,6 +1596,88 @@ function toggleVoice() {
     btn.classList.add('active');
     btn.textContent = '🎙️ Listening...';
   }
+}
+
+/* ============ GRAMMAR CHECK (LanguageTool.org) ============ */
+async function checkGrammar() {
+  const text = document.getElementById('typeArea').value;
+  const listEl = document.getElementById('grammarResultsList');
+  const modal = document.getElementById('modalGrammar');
+  const data = getPageData(AppState.currentVol, AppState.currentPage);
+
+  if (!text || !text.trim()) {
+    listEl.innerHTML = `<div class="grammar-empty">This page is empty — write something first.</div>`;
+    modal.classList.add('open');
+    return;
+  }
+
+  if (data.isUrdu) {
+    listEl.innerHTML = `<div class="grammar-empty">Grammar check currently supports English text only. Switch this page to EN mode (top toolbar) to use it.</div>`;
+    modal.classList.add('open');
+    return;
+  }
+
+  listEl.innerHTML = `<div class="grammar-loading">Checking with LanguageTool…</div>`;
+  modal.classList.add('open');
+
+  try {
+    const resp = await fetch('https://api.languagetool.org/v2/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ text: text, language: 'en-US' })
+    });
+
+    if (!resp.ok) throw new Error('Request failed: ' + resp.status);
+    const result = await resp.json();
+    renderGrammarResults(result.matches || [], text);
+  } catch (e) {
+    listEl.innerHTML = `<div class="grammar-empty">Couldn't reach the grammar checking service. Check your internet connection and try again.</div>`;
+  }
+}
+
+function renderGrammarResults(matches, originalText) {
+  const listEl = document.getElementById('grammarResultsList');
+
+  if (!matches.length) {
+    listEl.innerHTML = `<div class="grammar-empty">✅ No issues found — looks good!</div>`;
+    return;
+  }
+
+  listEl.innerHTML = matches.map(m => {
+    const category = (m.rule && m.rule.category && m.rule.category.name) || 'Issue';
+    const message = m.message || '';
+    const ctx = m.context || { text: '', offset: 0, length: 0 };
+    const before = ctx.text.slice(0, ctx.offset);
+    const bad = ctx.text.slice(ctx.offset, ctx.offset + ctx.length);
+    const after = ctx.text.slice(ctx.offset + ctx.length);
+    const suggestions = (m.replacements || []).slice(0, 5).map(r => r.value).filter(Boolean);
+    const offset = m.offset;
+    const length = m.length;
+
+    return `
+      <div class="grammar-issue">
+        <div class="gi-category">${escapeGrammarHtml(category)}</div>
+        <div class="gi-message">${escapeGrammarHtml(message)}</div>
+        <div class="gi-context">${escapeGrammarHtml(before)}<mark>${escapeGrammarHtml(bad)}</mark>${escapeGrammarHtml(after)}</div>
+        ${suggestions.length ? `<div class="gi-suggestions">${suggestions.map(s => `<button type="button" class="gi-suggestion" onclick="applyGrammarSuggestion(${offset}, ${length}, '${encodeURIComponent(s)}')">${escapeGrammarHtml(s)}</button>`).join('')}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function applyGrammarSuggestion(offset, length, encodedValue) {
+  const value = decodeURIComponent(encodedValue);
+  const ta = document.getElementById('typeArea');
+  const current = ta.value;
+  ta.value = current.slice(0, offset) + value + current.slice(offset + length);
+  handleTypeInput();
+  closeModal('modalGrammar');
+}
+
+function escapeGrammarHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : s;
+  return d.innerHTML;
 }
 
 /* ============ CALCULATOR DRAWER ============ */
