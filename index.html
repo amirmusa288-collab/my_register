@@ -95,6 +95,16 @@ button{font-family:inherit; cursor:pointer;}
 .tapHint{font-size:12px; color:rgba(244,238,218,.55);}
 .featureChips{display:flex; flex-wrap:wrap; gap:8px; max-width:360px; justify-content:center;}
 .chip{font-size:11px; background:rgba(244,238,218,.08); border:1px solid rgba(184,147,74,.4); padding:5px 10px; border-radius:20px; color:var(--paper);}
+.coverFooter{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-top:6px;}
+.footLink{background:none; border:none; color:rgba(244,238,218,.7); font-size:12px; text-decoration:underline; text-underline-offset:3px; padding:2px 2px;}
+.footLink:hover{color:var(--brass-light);}
+.footDot{color:rgba(244,238,218,.35); font-size:12px;}
+.staticPage h2{font-family:var(--font-display); margin-top:0;}
+.staticPage p{line-height:1.7; font-size:14px; color:var(--ink-text);}
+.staticPage .blogPost{padding:12px 0; border-bottom:1px solid var(--paper-line);}
+.staticPage .blogPost:last-child{border-bottom:none;}
+.staticPage .blogPost h4{margin:0 0 4px; font-family:var(--font-display);}
+.staticPage .blogPost p{margin:0; color:var(--ink-faint); font-size:13px;}
 
 /* ---------- Book shell ---------- */
 #bookShell{
@@ -252,6 +262,17 @@ button{font-family:inherit; cursor:pointer;}
       <span class="chip">🔎 full search</span>
       <span class="chip">📄 PDF export</span>
     </div>
+    <div class="coverFooter">
+      <button class="footLink" data-page="blog">📝 Blog</button>
+      <span class="footDot">·</span>
+      <button class="footLink" data-page="about">About</button>
+      <span class="footDot">·</span>
+      <button class="footLink" data-page="contact">Contact</button>
+      <span class="footDot">·</span>
+      <button class="footLink" data-page="privacy">Privacy Policy</button>
+      <span class="footDot">·</span>
+      <button class="footLink" data-page="terms">Terms</button>
+    </div>
   </div>
 
   <!-- BOOK SHELL -->
@@ -278,6 +299,17 @@ button{font-family:inherit; cursor:pointer;}
         </div>
         <div class="sectionLabel">All Pages</div>
         <div class="pageGrid" id="pageGrid"></div>
+        <div class="coverFooter" style="margin-top:24px; justify-content:flex-start;">
+          <button class="footLink" data-page="blog" style="color:var(--ink-faint);">📝 Blog</button>
+          <span class="footDot">·</span>
+          <button class="footLink" data-page="about" style="color:var(--ink-faint);">About</button>
+          <span class="footDot">·</span>
+          <button class="footLink" data-page="contact" style="color:var(--ink-faint);">Contact</button>
+          <span class="footDot">·</span>
+          <button class="footLink" data-page="privacy" style="color:var(--ink-faint);">Privacy Policy</button>
+          <span class="footDot">·</span>
+          <button class="footLink" data-page="terms" style="color:var(--ink-faint);">Terms</button>
+        </div>
       </div>
 
       <!-- PAGE -->
@@ -439,6 +471,14 @@ button{font-family:inherit; cursor:pointer;}
       <button class="btn ghost" data-tpl="contact">👤 Contact Card</button>
       <button class="btn ghost" data-tpl="meeting">🗒️ Meeting Notes</button>
     </div>
+  </div>
+</div>
+
+<!-- STATIC PAGES MODAL -->
+<div class="modalOverlay hidden" id="staticModal">
+  <div class="modalBox" style="width:min(560px,100%);">
+    <div class="modalHead"><h3 id="staticTitle">About</h3><button class="iconBtn" data-close="staticModal">✕</button></div>
+    <div class="modalBody staticPage" id="staticBody"></div>
   </div>
 </div>
 
@@ -626,6 +666,53 @@ function wireEvents(){
   $('resetAllBtn').addEventListener('click', resetAll);
 
   $('searchInput').addEventListener('input', doSearch);
+
+  document.querySelectorAll('.footLink[data-page]').forEach(b=>{
+    b.addEventListener('click', ()=> openStaticPage(b.getAttribute('data-page')));
+  });
+}
+
+/* ====================== STATIC PAGES (About / Blog / Contact / Privacy / Terms) ====================== */
+const STATIC_PAGES = {
+  about: {
+    title:'About My Register',
+    html:`<p>My Register is a free digital notebook built to feel like a real paper ledger — open it, find a free page, write, and remember the page number. No folders, no forced structure, no account required.</p>
+    <p>Everything you write is stored on your own device. There's no server collecting your notes, no login wall, and no ads. It's meant to be the kind of quiet, dependable tool a real notebook is — just one that can search itself, back itself up, and never runs out of pages.</p>`
+  },
+  contact: {
+    title:'Contact',
+    html:`<p>Have feedback, found a bug, or want to suggest a feature? We'd love to hear from you.</p>
+    <p>📧 Email: <b>hello@myregister.online</b></p>
+    <p>We read every message, though replies may take a few days since this is a small, independent project.</p>`
+  },
+  privacy: {
+    title:'Privacy Policy',
+    html:`<p><b>Your data stays on your device.</b> My Register does not require sign-up and does not upload your notes to any server by default.</p>
+    <p><b>Grammar Check:</b> if you tap the ✅ Grammar button, that page's text (and only that text, only at that moment) is sent to the free LanguageTool.org service to check spelling and grammar.</p>
+    <p><b>Live currency rates:</b> tapping 🌐 Live Rates fetches current exchange rates from a public rates API — no personal data is sent, only the request for rates.</p>
+    <p><b>Backups:</b> when you export a JSON backup or a PDF, that file is generated and downloaded directly to your device — it does not pass through our servers.</p>
+    <p>We don't use tracking cookies or sell data, because we don't collect any to begin with.</p>`
+  },
+  terms: {
+    title:'Terms of Use',
+    html:`<p>My Register is provided as-is, free to use, for personal note-taking. Since your data lives in your browser's storage, clearing your browser data or switching devices will remove it unless you've exported a backup first.</p>
+    <p>We recommend exporting a JSON backup regularly (Settings → Export Backup) for anything important.</p>
+    <p>We're not liable for data loss, so please keep your own backups of anything you can't afford to lose.</p>`
+  },
+  blog: {
+    title:'From the Blog',
+    html:`
+    <div class="blogPost"><h4>My Notebook, Reimagined: A Complete Tour of Every Feature</h4><p>A walkthrough of every corner of the register — from hand-drawn pages to the currency calculator.</p></div>
+    <div class="blogPost"><h4>Free Online Notebook, No Sign-Up: Why You Don't Need an Account to Start Writing</h4><p>Why we built this without logins, and what that means for your privacy.</p></div>
+    <div class="blogPost"><h4>The Best Free Online Notebook for Students &amp; Professionals</h4><p>How people are using My Register for study notes, expense tracking, and daily journaling.</p></div>
+    <div class="blogPost"><h4>Writing By Hand vs. Typing: Why We Kept Both</h4><p>The case for keeping a pen-and-paper feel alive inside a digital tool.</p></div>`
+  }
+};
+function openStaticPage(key){
+  const p = STATIC_PAGES[key]; if(!p) return;
+  $('staticTitle').textContent = p.title;
+  $('staticBody').innerHTML = p.html;
+  openModal('staticModal');
 }
 
 /* ====================== UNLOCK ====================== */
