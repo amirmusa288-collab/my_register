@@ -108,9 +108,9 @@ button{font-family:inherit; cursor:pointer;}
 
 /* ---------- Book shell ---------- */
 #bookShell{
-  width:min(960px, 96vw); height:min(680px, 92vh); background:var(--paper); border-radius:var(--radius);
-  box-shadow:var(--shadow); display:flex; flex-direction:column; overflow:hidden; position:relative;
-  border:1px solid var(--paper-line);
+  width:100vw; height:100vh; background:var(--paper); border-radius:0;
+  box-shadow:none; display:flex; flex-direction:column; overflow:hidden; position:fixed; inset:0; z-index:50;
+  border:none;
 }
 #topBar{
   display:flex; align-items:center; justify-content:space-between; padding:10px 16px;
@@ -221,7 +221,6 @@ button{font-family:inherit; cursor:pointer;}
 #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
 @media (max-width:640px){
-  #bookShell{height:94vh; width:100vw; border-radius:0;}
   .pageGrid{grid-template-columns:repeat(auto-fill,minmax(46px,1fr));}
   #bookCover{width:230px; height:320px;}
 }
