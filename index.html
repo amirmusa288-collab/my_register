@@ -3,2089 +3,1162 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#3A4F8A">
-<title>My Register - Free Online Digital Notebook</title>
-<meta name="description" content="My Register is a free online digital notebook and register. Write, save, organize, and download your notes as PDF without signing up.">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Noto+Nastaliq+Urdu:wght@500;700&family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<title>My Register — Digital Notebook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --cover:#3A4F8A;
-  --cover-2:#5B4B9A;
-  --gold:#F3B26A;
-  --paper:#FBF7EE;
-  --paper-line:#E7DCC6;
-  --paper-shadow:#EFE6D2;
-  --ink:#2B2A33;
-  --muted:#8892A6;
-  --accent:#6C63D6;
-  --green:#1FA971;
-  --blue:#3E8FD9;
-  --sky:#6FC6E8;
-  --orange:#F2994A;
-  --red:#E4574C;
-  --gold-deep:#D98F3D;
-  --shadow-soft:0 8px 22px rgba(60,60,110,0.16);
-  --shadow-btn:0 6px 16px rgba(60,60,110,0.22);
-  --page-font-scale:1;
+  --ink-navy:#1B2A44;
+  --ink-navy-2:#233657;
+  --paper:#F4EEDA;
+  --paper-dark:#E9E0C4;
+  --paper-line:#D9CCA3;
+  --brass:#B8934A;
+  --brass-light:#D9B876;
+  --maroon:#7A2E2E;
+  --sage:#4C6B54;
+  --ink-text:#2A2418;
+  --ink-faint:#8A8168;
+  --shadow:0 18px 50px rgba(10,14,26,.45);
+  --radius:14px;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
 }
-[data-theme="dark"]{
-  --paper:#1E1C24;
-  --paper-line:#33303D;
-  --paper-shadow:#161520;
-  --ink:#EDEAE0;
-  --muted:#8B87A0;
+body.dark{
+  --paper:#20272E;
+  --paper-dark:#1A2026;
+  --paper-line:#31393F;
+  --ink-text:#E8E2D0;
+  --ink-faint:#8E9299;
 }
-[data-theme="dark"] body{
-  background:linear-gradient(160deg,#14131C 0%,#1B1926 45%,#231E2E 100%);
-}
-[data-theme="dark"] .index-body,[data-theme="dark"] #screenIndex,[data-theme="dark"] #screenPage{background:var(--paper);}
-[data-theme="dark"] .search-box,[data-theme="dark"] .tagged-row,[data-theme="dark"] .page-cell,[data-theme="dark"] .jump-row input,
-[data-theme="dark"] .version-item,[data-theme="dark"] .search-result,[data-theme="dark"] .calc-row input,[data-theme="dark"] .calc-row select,
-[data-theme="dark"] .tag-bar input, [data-theme="dark"] .date-input, [data-theme="dark"] .tag-chip-input{
-  background:#2A2733;color:var(--ink);border-color:var(--paper-line);
-}
-[data-theme="dark"] .sub-toolbar{background:#241F30;border-color:var(--paper-line);}
-[data-theme="dark"] .calc-drawer{background:#241F30;}
-[data-theme="dark"] .calc-op button{background:#2A2733;color:var(--ink);}
-[data-theme="dark"] .modal-sheet{background:var(--paper);}
-[data-theme="dark"] #typeArea,[data-theme="dark"] #drawCanvas,[data-theme="dark"] .flip-leaf{
-  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
-  color:var(--ink);
-}
-[data-theme="dark"] .stat-card{background:#2A2733;}
-html,body{height:100%;overflow:hidden;}
-html{height:100dvh;}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;}
 body{
-  font-family:'Inter',sans-serif;
-  background:linear-gradient(160deg,#EAF0FB 0%,#F3EEFB 45%,#FFF6EA 100%);
-  color:var(--ink);
-  -webkit-user-select:none;user-select:none;
-  touch-action:manipulation;
-  height:100dvh;
-  width:100vw;
-  overscroll-behavior:none;
+  background:radial-gradient(circle at 30% 10%, var(--ink-navy-2), var(--ink-navy) 65%);
+  font-family:var(--font-body);
+  color:var(--ink-text);
+  min-height:100vh;
+  overflow-x:hidden;
+  transition:background .4s;
 }
-.screen{
-  position:fixed;inset:0;display:none;
-  flex-direction:column;
-  height:100dvh;
-  padding-top:env(safe-area-inset-top);
-  padding-bottom:env(safe-area-inset-bottom);
-  padding-left:env(safe-area-inset-left);
-  padding-right:env(safe-area-inset-right);
-}
-.screen.active{display:flex;}
+button{font-family:inherit; cursor:pointer;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:var(--brass); border-radius:8px;}
 
-/* ============ LOCK SCREEN ============ */
-#screenLock{
-  background:radial-gradient(ellipse at 30% 20%, var(--cover-2), var(--cover) 60%);
-  align-items:center;justify-content:center;padding:30px;text-align:center;
-}
-.lock-icon{font-size:56px;margin-bottom:10px;}
-.lock-title{font-family:'Fraunces',serif;font-weight:800;font-size:22px;color:#fff;margin-bottom:18px;}
-.pin-dots{display:flex;gap:14px;margin-bottom:22px;}
-.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--gold);background:transparent;}
-.pin-dot.filled{background:var(--gold);}
-.pin-pad{display:grid;grid-template-columns:repeat(3,64px);gap:14px;margin-bottom:16px;}
-.pin-key{width:64px;height:64px;border-radius:50%;border:1px solid rgba(243,178,106,0.4);background:rgba(255,255,255,0.08);color:#fff;font-size:20px;font-weight:700;cursor:pointer;}
-.pin-key:active{background:rgba(243,178,106,0.3);}
-.lock-error{color:#F3B4B4;font-size:12.5px;height:16px;margin-bottom:6px;}
-.lock-forgot{color:rgba(255,255,255,0.6);font-size:12px;text-decoration:underline;cursor:pointer;margin-top:6px;}
+#app{position:relative; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
+.hidden{display:none !important;}
 
-/* ============ COVER ============ */
-#screenCover{
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
-  align-items:stretch;justify-content:flex-start;
+/* ---------- Lock screen ---------- */
+#lockScreen{
+  position:fixed; inset:0; background:var(--ink-navy); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; z-index:500; color:var(--paper); gap:18px;
+}
+.seal{font-size:52px;}
+#lockScreen h2{font-family:var(--font-display); font-weight:600; margin:0;}
+#pinInput{
+  font-family:var(--font-mono); font-size:28px; letter-spacing:14px; text-align:center;
+  width:220px; padding:12px; border-radius:10px; border:2px solid var(--brass); background:#0f1725; color:var(--paper);
+}
+.lockBtnRow{display:flex; gap:10px;}
+.btn{
+  background:var(--brass); color:#241a06; border:none; padding:10px 18px; border-radius:9px; font-weight:600;
+  font-size:14px; transition:transform .15s, background .2s;
+}
+.btn:hover{background:var(--brass-light); transform:translateY(-1px);}
+.btn.ghost{background:transparent; border:1px solid rgba(244,238,218,.4); color:var(--paper);}
+.btn.danger{background:var(--maroon); color:#fff;}
+#lockError{color:#e08a8a; font-size:13px; min-height:16px;}
+
+/* ---------- Cover ---------- */
+#coverStage{display:flex; flex-direction:column; align-items:center; gap:22px; color:var(--paper); text-align:center;}
+.tagline{font-family:var(--font-display); font-style:italic; color:var(--brass-light); font-size:15px; margin:0;}
+#bookCover{
+  width:280px; height:380px; border-radius:6px 14px 14px 6px; cursor:pointer; position:relative;
   background:
-    radial-gradient(ellipse at 30% 20%, var(--cover-2), var(--cover) 60%);
+    repeating-linear-gradient(90deg, rgba(0,0,0,.05) 0 2px, transparent 2px 6px),
+    linear-gradient(135deg, var(--maroon), #5c2222 60%);
+  box-shadow:var(--shadow), inset -6px 0 14px rgba(0,0,0,.35);
+  display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px;
+  transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  border:1px solid rgba(184,147,74,.5);
 }
-.cover-topbar{position:absolute;top:calc(env(safe-area-inset-top) + 12px);right:16px;display:flex;gap:8px;z-index:10;}
-.icon-btn{
-  width:38px;height:38px;border-radius:50%;border:1px solid rgba(243,178,106,0.5);
-  background:rgba(243,178,106,0.14);color:var(--gold);font-size:16px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
+#bookCover:hover{transform:translateY(-6px) rotateZ(-1deg);}
+#bookCover::before{
+  content:''; position:absolute; left:14px; top:10px; bottom:10px; width:2px; background:rgba(184,147,74,.55);
 }
-.nav-link-btn{
-  padding:9px 16px;border-radius:100px;
-  border:1px solid rgba(243,178,106,0.5);
-  background:rgba(243,178,106,0.14);color:var(--gold);
-  font-size:13px;font-weight:700;text-decoration:none;
-  display:flex;align-items:center;
-  font-family:'Inter',sans-serif;
-}
-.cover-hero{
-  min-height:100dvh;flex-shrink:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;padding:20px;
-}
-.cover-article{
-  background:var(--paper);color:var(--ink);
-  padding:36px 22px 60px;
-  max-width:680px;margin:0 auto;
-}
-.cover-article h2{
-  font-family:'Fraunces',serif;font-size:clamp(22px,5vw,28px);font-weight:800;
-  color:var(--accent);margin-bottom:16px;line-height:1.3;
-}
-.cover-article h3{
-  font-family:'Fraunces',serif;font-size:18px;font-weight:700;
-  color:var(--ink);margin:26px 0 10px;
-}
-.cover-article p{
-  font-family:'Inter',sans-serif;font-size:15px;line-height:1.85;color:#4A4030;margin-bottom:14px;
-}
-[data-theme="dark"] .cover-article p{color:#C9C4B6;}
-.cover-article ul{padding-left:20px;margin-bottom:14px;}
-.cover-article li{font-size:15px;line-height:1.8;color:#4A4030;margin-bottom:6px;}
-.book{
-  width:min(320px,80vw);aspect-ratio:3/4;
-  background:linear-gradient(135deg,#3A4F8A,#5B4B9A 65%,#6C63D6);
-  border:3px solid var(--gold);border-radius:10px;
-  box-shadow:0 20px 60px rgba(30,20,70,0.5), inset 0 0 0 6px rgba(243,178,106,0.15);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:14px;position:relative;
-  transition:transform .25s, box-shadow .25s;
-}
-.book:hover{box-shadow:0 26px 70px rgba(30,20,70,0.6), inset 0 0 0 6px rgba(243,178,106,0.2);}
-.book:active{transform:scale(0.97);}
-.book-orn{width:56px;height:56px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;}
-.book-title{font-family:'Fraunces',serif;font-weight:900;font-size:26px;color:var(--gold);letter-spacing:.02em;text-align:center;padding:0 20px;}
-.book-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#F3B26A99;}
-.book-vol{position:absolute;bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F3B26A77;cursor:pointer;text-decoration:underline;}
-.tap-hint{margin-top:26px;color:#F3B26A88;font-size:12px;letter-spacing:.05em;font-family:'Inter',sans-serif;}
+.coverEmblem{font-size:44px;}
+.coverTitle{font-family:var(--font-display); font-size:26px; font-weight:600; color:var(--brass-light);}
+.coverSub{font-family:var(--font-mono); font-size:11px; letter-spacing:3px; color:rgba(244,238,218,.65); text-transform:uppercase;}
+.ribbon{position:absolute; top:-4px; right:34px; width:18px; height:64px; background:var(--brass);
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%); box-shadow:0 4px 10px rgba(0,0,0,.3);}
+.tapHint{font-size:12px; color:rgba(244,238,218,.55);}
+.featureChips{display:flex; flex-wrap:wrap; gap:8px; max-width:360px; justify-content:center;}
+.chip{font-size:11px; background:rgba(244,238,218,.08); border:1px solid rgba(184,147,74,.4); padding:5px 10px; border-radius:20px; color:var(--paper);}
 
-.screen.active{ animation:screenIn .38s cubic-bezier(.22,.8,.32,1); }
-@keyframes screenIn{ from{opacity:0;transform:translateY(10px) scale(.99);} to{opacity:1;transform:translateY(0) scale(1);} }
+/* ---------- Book shell ---------- */
+#bookShell{
+  width:min(960px, 96vw); height:min(680px, 92vh); background:var(--paper); border-radius:var(--radius);
+  box-shadow:var(--shadow); display:flex; flex-direction:column; overflow:hidden; position:relative;
+  border:1px solid var(--paper-line);
+}
+#topBar{
+  display:flex; align-items:center; justify-content:space-between; padding:10px 16px;
+  background:var(--ink-navy); color:var(--paper);
+}
+#topBar .brandMini{font-family:var(--font-display); font-weight:600; display:flex; align-items:center; gap:8px;}
+.iconBtn{
+  background:transparent; border:none; color:var(--paper); font-size:17px; padding:6px 9px; border-radius:7px;
+}
+.iconBtn:hover{background:rgba(244,238,218,.12);}
+#topActions{display:flex; gap:4px; align-items:center;}
 
-.topbar-btn, .nav-btn, .mode-btn, .mini-btn, .jump-row button, .type-tab, .btn-add, .btn-ghost, .btn-savecard, .btn-share, .calc-op button, .calc-actions button, .cookie-accept, .cookie-decline, .icon-btn, .pin-key, .vol-item, .stat-card{
-  transition:transform .12s ease, box-shadow .12s ease, background .15s ease, opacity .15s ease;
-}
-.topbar-btn:hover, .mini-btn:hover, .jump-row button:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,0.12);}
-.nav-btn:active, .topbar-btn:active, .mini-btn:active, .mode-btn:active, .jump-row button:active, .tagged-row:active, .page-cell:active, .icon-btn:active{
-  transform:scale(0.94);
-}
-.tagged-row, .page-cell{transition:transform .1s ease, box-shadow .15s ease, background .15s ease;}
-.tagged-row:hover{box-shadow:0 4px 14px rgba(122,46,46,0.12);border-color:var(--accent);}
+#stage{flex:1; overflow:hidden; position:relative; background:var(--paper);}
+.view{position:absolute; inset:0; overflow-y:auto; padding:22px 26px; animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
 
-.save-status{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:4px 10px;border-radius:100px;background:rgba(122,46,46,0.06);
-  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);
-  align-self:center;transition:all .2s;
+/* ---------- Index view ---------- */
+#indexView h2{font-family:var(--font-display); margin:0 0 4px;}
+.indexSub{color:var(--ink-faint); font-size:13px; margin-bottom:14px;}
+.indexToolbar{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; align-items:center;}
+.indexToolbar input[type=text]{
+  flex:1; min-width:160px; padding:8px 12px; border-radius:8px; border:1px solid var(--paper-line); background:var(--paper-dark);
+  color:var(--ink-text); font-family:var(--font-body);
 }
-.save-status .dot{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block;}
-.save-status.saved{color:#12805A;background:rgba(31,169,113,0.1);}
-.save-status.saved .dot{background:var(--green);}
-.save-status.saving{color:var(--gold-deep);background:rgba(243,178,106,0.14);}
-.save-status.saving .dot{background:var(--gold);animation:pulseDot 1s infinite;}
-.word-count-badge{
-  display:inline-flex;align-items:center;padding:4px 10px;border-radius:100px;
-  background:rgba(108,99,214,0.1);color:var(--accent);
-  font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;
-  align-self:center;white-space:nowrap;
+.pageGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(64px,1fr)); gap:8px;}
+.pageCell{
+  aspect-ratio:1; border-radius:8px; border:1px solid var(--paper-line); background:var(--paper-dark);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:var(--font-mono);
+  font-size:12px; color:var(--ink-faint); position:relative; transition:transform .12s, box-shadow .12s;
 }
-@keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:.3;}}
+.pageCell:hover{transform:translateY(-2px); box-shadow:0 6px 14px rgba(0,0,0,.15);}
+.pageCell.filled{background:linear-gradient(160deg, var(--brass-light), var(--brass)); color:#241a06; font-weight:700;}
+.pageCell .bkmk{position:absolute; top:-3px; right:6px; font-size:11px;}
+.pageCell .lockdot{position:absolute; bottom:3px; right:5px; font-size:9px;}
+.recentList{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px;}
+.recentList li{
+  display:flex; justify-content:space-between; gap:10px; padding:8px 10px; background:var(--paper-dark);
+  border-radius:8px; border:1px solid var(--paper-line); font-size:13px; cursor:pointer;
+}
+.recentList li:hover{border-color:var(--brass);}
+.sectionLabel{font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--brass); margin:20px 0 10px;}
 
-.hist-group{display:flex;gap:4px;}
-.hist-group .mini-btn:disabled{opacity:.35;cursor:default;}
-.hist-group .mini-btn:disabled:hover{transform:none;box-shadow:none;}
-
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(20,10,10,0.55);z-index:300;
-  display:none;align-items:flex-end;justify-content:center;
+/* ---------- Page view ---------- */
+#pageView{display:flex; flex-direction:column; height:100%; padding:0;}
+.pageHead{display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid var(--paper-line); gap:10px; flex-wrap:wrap;}
+.pageNumBadge{font-family:var(--font-mono); background:var(--ink-navy); color:var(--brass-light); padding:5px 12px; border-radius:20px; font-size:12px;}
+.modeToggle{display:flex; background:var(--paper-dark); border-radius:20px; padding:3px; gap:2px;}
+.modeToggle button{border:none; background:transparent; padding:6px 14px; border-radius:16px; font-size:13px; color:var(--ink-faint); font-weight:600;}
+.modeToggle button.active{background:var(--brass); color:#241a06;}
+.pageToolsRow{display:flex; gap:6px; flex-wrap:wrap; padding:8px 20px; border-bottom:1px solid var(--paper-line); align-items:center;}
+.toolBtn{
+  border:1px solid var(--paper-line); background:var(--paper-dark); color:var(--ink-text); font-size:13px;
+  padding:6px 10px; border-radius:7px; display:flex; align-items:center; gap:5px;
 }
-.modal-overlay.open{display:flex;}
-.modal-sheet{
-  background:var(--paper);width:100%;max-width:420px;max-height:80dvh;
-  border-radius:18px 18px 0 0;padding:18px;overflow-y:auto;
-  box-shadow:0 -10px 40px rgba(0,0,0,0.35);
-  animation:sheetUp .25s ease;color:var(--ink);
-}
-@keyframes sheetUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-.modal-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
-.modal-title{font-family:'Fraunces',serif;font-weight:700;font-size:17px;color:var(--accent);}
-.version-item{
-  display:flex;justify-content:space-between;align-items:center;gap:10px;
-  padding:10px 12px;border:1px solid var(--paper-line);border-radius:10px;background:#fff;margin-bottom:8px;
-}
-[data-theme="dark"] .version-item{background:#2A2733;}
-.version-item .vtime{font-size:12px;color:var(--muted);}
-.version-item .vsnippet{font-size:12px;color:var(--ink);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.version-item button{padding:6px 12px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;cursor:pointer;}
-.search-result{padding:10px 12px;border:1px solid var(--paper-line);border-radius:10px;background:#fff;margin-bottom:8px;cursor:pointer;}
-.search-result .sr-num{font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--accent);font-size:12px;}
-.search-result .sr-snippet{font-size:13px;color:var(--ink);margin-top:3px;}
-.search-result mark{background:#F3D98C;padding:0 1px;}
-#screenIndex{background:var(--paper);}
-.topbar{
-  background:var(--cover);color:var(--gold);
-  padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;
-  flex-shrink:0;
-}
-.topbar-btn{
-  background:linear-gradient(135deg,rgba(243,178,106,0.22),rgba(243,178,106,0.1));
-  border:1px solid rgba(243,178,106,0.5);color:var(--gold);
-  border-radius:12px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;
-  box-shadow:0 3px 10px rgba(0,0,0,0.12);
-}
-.topbar-btn:active{background:linear-gradient(135deg,rgba(243,178,106,0.4),rgba(243,178,106,0.2));}
-.topbar-title{font-family:'Fraunces',serif;font-weight:700;font-size:16px;}
-.index-body{flex:1;overflow-y:auto;padding:14px;}
-.search-box{
-  width:100%;padding:11px 14px;border:1px solid var(--paper-line);border-radius:10px;
-  background:#fff;font-size:14px;margin-bottom:14px;font-family:'Inter',sans-serif;color:var(--ink);
-}
-.index-section-label{
-  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--muted);margin:16px 4px 8px;display:flex;justify-content:space-between;align-items:center;
-}
-.tagged-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
-.tagged-row{
-  display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--paper-line);
-  border-radius:8px;padding:10px 12px;cursor:pointer;
-}
-[data-theme="dark"] .tagged-row, [data-theme="dark"] .search-result, [data-theme="dark"] .page-cell{background:#2A2733;}
-.tagged-num{
-  width:34px;height:34px;border-radius:50%;background:var(--cover);color:var(--gold);
-  display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:12px;flex-shrink:0;
-}
-.tagged-label{flex:1;font-size:14px;font-weight:600;color:var(--ink);}
-.tagged-date{font-size:10.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
-.tag-chips-mini{display:flex;gap:4px;flex-wrap:wrap;}
-.chip-mini{background:rgba(108,99,214,0.12);color:var(--accent);font-size:10px;padding:2px 7px;border-radius:100px;font-weight:700;}
-.tagged-empty{padding:20px;text-align:center;color:var(--muted);font-size:13px;}
-
-.page-grid{
-  display:grid;grid-template-columns:repeat(8,1fr);gap:6px;
-}
-.page-cell{
-  aspect-ratio:1;border-radius:6px;border:1px solid var(--paper-line);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);
-  background:#fff;cursor:pointer;
-}
-.page-cell.filled{background:var(--cover);color:var(--gold);border-color:var(--cover);}
-.page-cell.locked{background:#5A5A5A;color:#fff;}
-.jump-row{display:flex;gap:8px;margin-bottom:4px;}
-.jump-row input{flex:1;padding:10px 12px;border:1px solid var(--paper-line);border-radius:10px;font-size:14px;background:#fff;color:var(--ink);}
-.jump-row button{padding:10px 18px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--blue));color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:var(--shadow-btn);}
-.btn-ghost{
-  padding:13px;border:none;border-radius:12px;
-  background:linear-gradient(135deg,var(--red),#C9453B);
-  color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;
-  box-shadow:var(--shadow-btn);
-}
-.btn-ghost:hover{filter:brightness(1.06);}
-.btn-ghost:disabled{opacity:.5;cursor:default;}
-.btn-block{
-  width:100%;padding:13px;border:none;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;
-  font-family:'Inter',sans-serif;box-shadow:var(--shadow-btn);margin-bottom:10px;color:#fff;
-}
-.btn-block.blue{background:linear-gradient(135deg,var(--blue),#2E6FB0);}
-.btn-block.purple{background:linear-gradient(135deg,var(--accent),#564BB8);}
-.btn-block.green{background:linear-gradient(135deg,var(--green),#178A5E);}
-.btn-block.orange{background:linear-gradient(135deg,var(--orange),var(--gold-deep));}
-
-/* ============ PAGE EDITOR ============ */
-#screenPage{background:var(--paper);}
-.page-toolbar{
-  background:var(--cover);padding:10px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;
-}
-.nav-btn{
-  background:linear-gradient(135deg,rgba(243,178,106,0.22),rgba(243,178,106,0.08));
-  border:1px solid rgba(243,178,106,0.45);color:var(--gold);
-  border-radius:10px;width:38px;height:38px;font-size:16px;cursor:pointer;flex-shrink:0;
-  box-shadow:0 3px 8px rgba(0,0,0,0.12);
-}
-.page-num-badge{
-  font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:13px;font-weight:700;
-  flex:1;text-align:center;min-width:70px;
-}
-.mode-toggle{display:flex;border:1px solid rgba(243,178,106,0.4);border-radius:10px;overflow:hidden;}
-.mode-btn{
-  padding:8px 12px;font-size:12px;font-weight:700;background:transparent;color:var(--gold);border:none;cursor:pointer;font-family:'Inter',sans-serif;
-}
-.mode-btn.active{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#2B1A08;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.3);}
-
-.sub-toolbar{
-  background:#EADFC1;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;
-  border-bottom:1px solid var(--paper-line);
-}
-.sub-toolbar select, .sub-toolbar input[type=text]{
-  padding:6px 8px;border:1px solid var(--paper-line);border-radius:6px;font-size:12px;background:#fff;
-}
-.mini-btn{
-  padding:7px 12px;border:1px solid var(--paper-line);border-radius:9px;background:#fff;font-size:12px;cursor:pointer;font-weight:700;
-  box-shadow:0 2px 6px rgba(60,60,110,0.08);
-}
-.mini-btn.danger{color:#A03B2C;}
-.mini-btn.active{outline:2px solid var(--accent);}
-#undoBtnType,#undoBtnDraw{background:linear-gradient(135deg,#8B6FE0,#6C55C9);color:#fff;border-color:transparent;}
-#redoBtnType,#redoBtnDraw{background:linear-gradient(135deg,#4FC7DE,#2E9FB8);color:#fff;border-color:transparent;}
-.hist-group .mini-btn:disabled{background:#EEE9F5 !important;color:#B7AFC9 !important;}
-button[onclick="exportPagePDF()"]{background:linear-gradient(135deg,var(--red),#C9453B);color:#fff;border-color:transparent;}
-button[onclick="toggleCalc()"]{background:linear-gradient(135deg,var(--orange),var(--gold-deep));color:#fff;border-color:transparent;}
-button[onclick="toggleVersions()"]{background:linear-gradient(135deg,var(--blue),#2E6FB0);color:#fff;border-color:transparent;}
-button[onclick="sharePage()"]{background:linear-gradient(135deg,#20B2AA,#178A80);color:#fff;border-color:transparent;}
-button[onclick="duplicatePage()"]{background:linear-gradient(135deg,#B084E8,#8B5CD6);color:#fff;border-color:transparent;}
-button[onclick="toggleVoice()"]{background:linear-gradient(135deg,#E4574C,#C9453B);color:#fff;border-color:transparent;}
-button[onclick="toggleVoice()"].active{background:linear-gradient(135deg,#2ECC71,#27AE60);animation:pulseDot 1s infinite;}
-#bookmarkBtn.active{background:linear-gradient(135deg,var(--gold),var(--gold-deep)) !important;color:#2B1A08 !important;}
-#lockPageBtn.active{background:linear-gradient(135deg,#5A5A5A,#333) !important;color:#fff !important;}
-.color-dot{width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--paper-line),0 2px 5px rgba(0,0,0,0.15);cursor:pointer;flex-shrink:0;}
-.color-dot.active{box-shadow:0 0 0 2px var(--accent),0 2px 5px rgba(0,0,0,0.15);}
-.fontsize-group{display:flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--paper-line);border-radius:9px;padding:2px;}
-.fontsize-group button{border:none;background:transparent;width:26px;height:26px;font-weight:800;cursor:pointer;border-radius:6px;}
-.fontsize-group button:active{background:var(--paper-line);}
-
-.page-content{flex:1;position:relative;overflow:hidden;perspective:1400px;}
-.flip-leaf{
-  position:absolute;inset:0;z-index:30;
-  transform-style:preserve-3d;backface-visibility:hidden;
-  background:var(--paper);
-  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
-  padding:24px 20px;font-size:19px;line-height:34px;color:var(--ink);font-family:'Inter',sans-serif;
-  overflow:hidden;white-space:pre-wrap;
-  box-shadow:0 0 40px rgba(0,0,0,0.25);
-  transition:transform .55s cubic-bezier(.4,.1,.3,1), box-shadow .55s;
-}
-.flip-leaf.urdu{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;text-align:right;font-size:22px;line-height:44px;}
-.flip-leaf::after{
-  content:'';position:absolute;inset:0;background:linear-gradient(90deg, rgba(0,0,0,0.25), transparent 40%);
-  opacity:0;transition:opacity .55s;pointer-events:none;
-}
-.flip-leaf.flip-next{transform-origin:left center;}
-.flip-leaf.flip-prev{transform-origin:right center;}
-.flip-leaf.flip-next.animating{transform:rotateY(-160deg);box-shadow:0 0 60px rgba(0,0,0,0.4);}
-.flip-leaf.flip-prev.animating{transform:rotateY(160deg);box-shadow:0 0 60px rgba(0,0,0,0.4);}
-.flip-leaf.animating::after{opacity:1;}
-#drawCanvas{
-  position:absolute;inset:0;width:100%;height:100%;touch-action:none;
-  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px);
-}
+.toolBtn:hover{border-color:var(--brass);}
+.toolBtn.active{background:var(--brass); color:#241a06; border-color:var(--brass);}
+#pageBody{flex:1; overflow-y:auto; padding:18px 26px; position:relative;}
 #typeArea{
-  position:absolute;inset:0;width:100%;height:100%;border:none;outline:none;resize:none;
-  padding:24px 20px;font-size:calc(19px * var(--page-font-scale));line-height:calc(34px * var(--page-font-scale));color:var(--ink);
-  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) calc(33px * var(--page-font-scale)), var(--paper-line) calc(34px * var(--page-font-scale)));
-  background-attachment:local;
-  font-family:'Inter',sans-serif;
+  min-height:260px; outline:none; line-height:1.7; font-size:16px; padding:14px;
+  background:
+    repeating-linear-gradient(var(--paper) 0 31px, var(--paper-line) 31px 32px);
+  border-radius:8px; border:1px solid var(--paper-line);
 }
-#typeArea.urdu{
-  font-family:'Noto Nastaliq Urdu',serif;direction:rtl;text-align:right;font-size:calc(22px * var(--page-font-scale));line-height:calc(44px * var(--page-font-scale));
-  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) calc(43px * var(--page-font-scale)), var(--paper-line) calc(44px * var(--page-font-scale)));
+#typeArea[dir=rtl]{font-family:'Noto Nastaliq Urdu','Fraunces',serif; font-size:19px; line-height:2.2;}
+#drawWrap{position:relative; border:1px solid var(--paper-line); border-radius:8px; overflow:hidden; touch-action:none;}
+#drawCanvas{display:block; width:100%; background:var(--paper); cursor:crosshair;}
+.penOptions{display:flex; gap:8px; align-items:center; padding:8px 20px; border-top:1px solid var(--paper-line); flex-wrap:wrap;}
+.swatch{width:22px; height:22px; border-radius:50%; border:2px solid transparent; cursor:pointer;}
+.swatch.selected{border-color:var(--brass);}
+.pageMeta{display:flex; gap:10px; flex-wrap:wrap; padding:10px 20px; border-top:1px solid var(--paper-line); align-items:center;}
+.pageMeta input, .pageMeta select{
+  padding:6px 10px; border-radius:7px; border:1px solid var(--paper-line); background:var(--paper-dark); color:var(--ink-text); font-size:13px;
 }
+.tagPill{background:var(--sage); color:#fff; font-size:11px; padding:3px 9px; border-radius:12px; display:inline-flex; gap:5px; align-items:center;}
+.tagPill button{background:none; border:none; color:#fff; font-size:12px; padding:0;}
+.pageFooter{display:flex; justify-content:space-between; align-items:center; padding:8px 20px; font-size:12px; color:var(--ink-faint);}
+.imgThumb{max-width:140px; border-radius:6px; border:1px solid var(--paper-line); margin:6px 6px 0 0;}
+.templateRow{display:flex; gap:6px; flex-wrap:wrap;}
 
-.tag-bar{
-  background:#EADFC1;padding:8px 12px;display:flex;gap:8px;flex-shrink:0;border-top:1px solid var(--paper-line);flex-wrap:wrap;align-items:center;
-}
-[data-theme="dark"] .tag-bar, [data-theme="dark"] .sub-toolbar{background:#241F30;}
-.tag-chip-input{
-  flex:1;min-width:140px;padding:9px 12px;border:1px solid var(--paper-line);border-radius:8px;font-size:13px;background:#fff;color:var(--ink);
-}
-.date-input{padding:9px 8px;border:1px solid var(--paper-line);border-radius:8px;font-size:12px;background:#fff;color:var(--ink);}
-.tag-chips-wrap{display:flex;gap:5px;flex-wrap:wrap;width:100%;order:5;}
-.chip{background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 8px;border-radius:100px;display:flex;align-items:center;gap:5px;}
-.chip .x{cursor:pointer;opacity:.8;}
+/* ---------- Modal ---------- */
+.modalOverlay{position:fixed; inset:0; background:rgba(10,14,26,.55); display:flex; align-items:center; justify-content:center; z-index:400; padding:16px;}
+.modalBox{background:var(--paper); color:var(--ink-text); border-radius:14px; width:min(480px,100%); max-height:86vh; overflow-y:auto; box-shadow:var(--shadow); border:1px solid var(--paper-line);}
+.modalHead{display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid var(--paper-line);}
+.modalHead h3{margin:0; font-family:var(--font-display);}
+.modalBody{padding:16px 18px; display:flex; flex-direction:column; gap:14px;}
+.settingRow{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--paper-line);}
+.settingRow:last-child{border-bottom:none;}
+.settingLabel strong{display:block; font-size:14px;}
+.settingLabel span{font-size:12px; color:var(--ink-faint);}
+.switch{position:relative; width:42px; height:24px; background:var(--paper-line); border-radius:14px; border:none; flex:none;}
+.switch.on{background:var(--brass);}
+.switch::after{content:''; position:absolute; top:2px; left:2px; width:20px; height:20px; background:#fff; border-radius:50%; transition:transform .18s;}
+.switch.on::after{transform:translateX(18px);}
+.statGrid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px;}
+.statCard{background:var(--paper-dark); border-radius:10px; padding:14px; text-align:center; border:1px solid var(--paper-line);}
+.statCard .num{font-family:var(--font-display); font-size:26px; font-weight:700; color:var(--brass);}
+.statCard .lbl{font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:1px;}
+.volList{display:flex; flex-direction:column; gap:8px;}
+.volRow{display:flex; align-items:center; gap:8px; padding:8px; border:1px solid var(--paper-line); border-radius:9px; background:var(--paper-dark);}
+.volRow .swatch{width:16px; height:16px;}
+.volRow span{flex:1; font-size:13px;}
+.searchResult{padding:8px; border-radius:8px; background:var(--paper-dark); border:1px solid var(--paper-line); cursor:pointer; font-size:13px;}
+.searchResult b{color:var(--maroon);}
 
-.ribbon{
-  position:absolute;top:0;right:14px;width:16px;height:26px;
-  background:var(--gold);
-  clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);
-  z-index:5;
-}
-.tagged-row{position:relative;}
+/* Toast */
+#toast{position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink-navy); color:var(--brass-light);
+  padding:12px 20px; border-radius:10px; font-size:13px; z-index:600; opacity:0; transition:all .3s; box-shadow:var(--shadow); text-align:center;}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
-.milestone-toast{
-  position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);
-  background:linear-gradient(135deg,var(--cover),var(--cover-2));
-  border:1.5px solid var(--gold);border-radius:14px;
-  padding:14px 22px;display:flex;align-items:center;gap:12px;
-  box-shadow:0 14px 40px rgba(0,0,0,0.5);z-index:200;
-  opacity:0;transition:all .35s ease;pointer-events:none;max-width:90vw;
+@media (max-width:640px){
+  #bookShell{height:94vh; width:100vw; border-radius:0;}
+  .pageGrid{grid-template-columns:repeat(auto-fill,minmax(46px,1fr));}
+  #bookCover{width:230px; height:320px;}
 }
-.milestone-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.milestone-icon{font-size:28px;}
-.milestone-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);}
-.milestone-text{font-family:'Fraunces',serif;font-size:14px;color:#F3EFDD;font-weight:700;}
-.calc-drawer{
-  position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--accent);
-  padding:14px;transform:translateY(100%);transition:transform .25s;z-index:20;
-  box-shadow:0 -8px 24px rgba(0,0,0,0.15);
-}
-.calc-drawer.open{transform:translateY(0);}
-.calc-row{display:flex;gap:8px;margin-bottom:10px;align-items:center;}
-.calc-row select{padding:9px;border:1px solid var(--paper-line);border-radius:8px;font-size:13px;background:#fff;}
-.calc-row input{flex:1;padding:9px;border:1px solid var(--paper-line);border-radius:8px;font-size:15px;font-family:'IBM Plex Mono',monospace;min-width:0;}
-.calc-op{display:flex;gap:6px;margin-bottom:10px;}
-.calc-op button{flex:1;padding:8px;border:1px solid var(--paper-line);border-radius:8px;background:#F6EFDD;font-weight:700;cursor:pointer;font-size:15px;}
-.calc-op button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-.calc-result{
-  font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;text-align:center;
-  padding:10px;background:var(--paper);border-radius:8px;margin-bottom:10px;color:var(--green);
-}
-.calc-actions{display:flex;gap:8px;}
-.calc-actions button{flex:1;padding:10px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;}
-.calc-actions .insert{background:linear-gradient(135deg,var(--green),#178A5E);color:#fff;}
-.calc-actions .close{background:#E8E1CF;color:var(--ink);}
-
-/* ============ WELCOME SCREEN ============ */
-#screenWelcome{
-  background:linear-gradient(160deg,#3A4F8A 0%,#5B4B9A 55%,#6C63D6 100%);
-  align-items:center;justify-content:center;padding:40px 26px;text-align:center;
-}
-.welcome-illustration{font-size:78px;margin-bottom:6px;filter:drop-shadow(0 12px 26px rgba(0,0,0,0.35));animation:floatBook 3.2s ease-in-out infinite;}
-@keyframes floatBook{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-10px) rotate(2deg);}}
-.welcome-title{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(24px,6vw,32px);color:#fff;margin:14px 0 6px;}
-.welcome-sub{font-family:'Inter',sans-serif;color:rgba(255,255,255,0.85);font-size:14.5px;margin-bottom:26px;}
-.welcome-features{display:flex;flex-direction:column;gap:12px;width:100%;max-width:320px;margin-bottom:34px;}
-.welcome-feature{
-  display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.12);
-  border:1px solid rgba(255,255,255,0.18);border-radius:14px;padding:12px 16px;
-  color:#fff;font-size:13.5px;font-weight:600;text-align:left;backdrop-filter:blur(6px);
-}
-.welcome-feature .wf-icon{font-size:20px;flex-shrink:0;}
-.welcome-cta{
-  padding:15px 42px;border:none;border-radius:100px;cursor:pointer;
-  background:linear-gradient(135deg,#F3B26A,#D98F3D);color:#2B1A08;
-  font-weight:800;font-size:15px;font-family:'Inter',sans-serif;
-  box-shadow:0 12px 30px rgba(217,143,61,0.45);
-  transition:transform .15s ease, box-shadow .15s ease;
-}
-.welcome-cta:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(217,143,61,0.55);}
-.welcome-cta:active{transform:scale(0.96);}
-.welcome-hint{margin-top:16px;color:rgba(255,255,255,0.6);font-size:11.5px;}
-
-/* ============ SETTINGS / VOLUMES / STATS ============ */
-.settings-row{display:flex;justify-content:space-between;align-items:center;padding:12px 4px;border-bottom:1px solid var(--paper-line);}
-.settings-row:last-child{border-bottom:none;}
-.settings-label{font-size:14px;font-weight:600;}
-.settings-sub{font-size:11.5px;color:var(--muted);margin-top:2px;}
-.switch{position:relative;width:44px;height:24px;background:#D8D2C0;border-radius:100px;cursor:pointer;flex-shrink:0;}
-.switch.on{background:var(--accent);}
-.switch .knob{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s;}
-.switch.on .knob{left:23px;}
-.vol-item{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--paper-line);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer;}
-[data-theme="dark"] .vol-item{background:#2A2733;}
-.vol-item.current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
-.vol-name{font-weight:700;font-size:13.5px;}
-.vol-count{font-size:11px;color:var(--muted);}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-.stat-card{background:#fff;border:1px solid var(--paper-line);border-radius:12px;padding:14px;text-align:center;}
-.stat-num{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:700;color:var(--accent);}
-.stat-label{font-size:11px;color:var(--muted);margin-top:4px;}
-
-/* ============ GRAMMAR CHECK ============ */
-.grammar-disclaimer{font-size:12px;color:var(--muted);background:rgba(243,178,106,0.12);border:1px solid var(--paper-line);border-radius:10px;padding:10px 12px;margin-bottom:14px;line-height:1.5;}
-.grammar-issue{background:#fff;border:1px solid var(--paper-line);border-radius:10px;padding:12px;margin-bottom:10px;}
-[data-theme="dark"] .grammar-issue{background:#2A2733;}
-.grammar-issue .gi-category{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px;}
-.grammar-issue .gi-message{font-size:13.5px;color:var(--ink);margin-bottom:8px;line-height:1.5;}
-.grammar-issue .gi-context{font-size:12.5px;color:var(--muted);background:var(--paper);border-radius:6px;padding:6px 8px;margin-bottom:8px;font-family:'IBM Plex Mono',monospace;}
-.grammar-issue .gi-context mark{background:#F3B4B4;color:#7A2E2E;padding:0 2px;border-radius:3px;}
-.grammar-issue .gi-suggestions{display:flex;gap:6px;flex-wrap:wrap;}
-.grammar-issue .gi-suggestion{background:rgba(31,169,113,0.12);color:#12805A;font-size:12px;font-weight:700;padding:4px 10px;border-radius:100px;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
-.grammar-issue .gi-suggestion:hover{background:rgba(31,169,113,0.22);}
-.grammar-issue .gi-suggestion:active{transform:scale(0.95);}
-.grammar-empty{text-align:center;padding:24px;color:var(--muted);font-size:13.5px;}
-.grammar-loading{text-align:center;padding:24px;color:var(--muted);font-size:13.5px;}
-
-/* ============ COVER FOOTER (blog + legal links) ============ */
-.cover-footer{margin-top:24px;padding-top:20px;border-top:1px solid var(--paper-line);}
-.cover-footer-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
-.cover-blog-links{display:flex;flex-direction:column;gap:6px;margin-bottom:22px;}
-.cover-blog-links a{color:var(--accent);font-size:14px;font-weight:600;text-decoration:none;}
-.cover-blog-links a.view-all{color:var(--muted);font-size:13px;font-weight:600;}
-.cover-legal-links{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;}
-.cover-legal-links a{color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;}
 </style>
 </head>
 <body>
+<div id="app">
 
-<!-- ============ LOCK SCREEN ============ -->
-<div class="screen" id="screenLock">
-  <div class="lock-icon">🔒</div>
-  <div class="lock-title">Enter PIN to open</div>
-  <div class="pin-dots" id="pinDots"></div>
-  <div class="lock-error" id="lockError"></div>
-  <div class="pin-pad" id="pinPad"></div>
-  <div class="lock-forgot" onclick="forgotPin()">Forgot PIN? Reset (erases lock only)</div>
-</div>
-
-<!-- ============ WELCOME SCREEN ============ -->
-<div class="screen active" id="screenWelcome">
-  <div class="welcome-illustration">📔✨</div>
- <h1 class="welcome-title">My Register – Free Online Digital Notebook</h1>
-  <div class="welcome-sub">Your premium digital notebook — write, save, and organize your world.</div>
-  <div class="welcome-features">
-    <div class="welcome-feature"><span class="wf-icon">📝</span> Write your thoughts, by hand or keyboard</div>
-    <div class="welcome-feature"><span class="wf-icon">☁️</span> Save your memories — automatically, instantly</div>
-    <div class="welcome-feature"><span class="wf-icon">🔖</span> Organize your ideas with labels &amp; bookmarks</div>
-  </div>
-  <button class="welcome-cta" onclick="dismissWelcome()">Get Started →</button>
-  <div class="welcome-hint">Everything is saved on this device automatically.</div>
-</div>
-
-<!-- ============ COVER SCREEN ============ -->
-<div class="screen" id="screenCover">
-  <div class="cover-topbar">
-    <a class="nav-link-btn" href="https://myregister.online/blog.html">📝 Blog</a>
-    
-    <button class="icon-btn" onclick="toggleDarkMode()" id="darkToggleIcon" title="Dark mode">🌙</button>
-    <button class="icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
-  </div>
-  <div class="cover-hero" onclick="openBook()">
-    <div class="book">
-      <div class="book-orn">📖</div>
-      <div class="book-title">My<br>Register</div>
-      <div class="book-sub">Hand-written &amp; typed ledger</div>
-      <div class="book-vol" id="volLabel" onclick="event.stopPropagation();openVolumes()">Volume 1 ▾</div>
+  <!-- LOCK SCREEN -->
+  <div id="lockScreen" class="hidden">
+    <div class="seal">🔒</div>
+    <h2>Enter PIN</h2>
+    <input id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
+    <div id="lockError"></div>
+    <div class="lockBtnRow">
+      <button class="btn" id="unlockBtn">Unlock</button>
+      <button class="btn ghost" id="forgotPinBtn">Forgot PIN?</button>
     </div>
-    <div class="tap-hint">tap the register to open it</div>
   </div>
 
-  <div class="cover-article">
-    <h2>How to Use My Register — A Digital Notebook That Works Like a Real One</h2>
+  <!-- COVER -->
+  <div id="coverStage">
+    <p class="tagline">a ledger that remembers everything, forgets nothing</p>
+    <div id="bookCover">
+      <div class="ribbon"></div>
+      <div class="coverEmblem">📖</div>
+      <div class="coverTitle">My Register</div>
+      <div class="coverSub" id="coverVolName">Volume I</div>
+    </div>
+    <p class="tapHint">tap the register to open it</p>
+    <div class="featureChips">
+      <span class="chip">✍️ hand or type</span>
+      <span class="chip">🌐 English / اردو</span>
+      <span class="chip">🎙️ voice dictate</span>
+      <span class="chip">🧮 live currency</span>
+      <span class="chip">📎 photo attach</span>
+      <span class="chip">⏰ reminders</span>
+      <span class="chip">🔎 full search</span>
+      <span class="chip">📄 PDF export</span>
+    </div>
+  </div>
 
-    <p>Most note-taking apps ask you to create folders, tags, and endless nested pages until your notes are technically organized but practically impossible to find. My Register takes the opposite approach. It works the way a physical register or accounts book has worked for generations: you open it, you find a free page, you write something down, and you remember the page number. That's it. No folders, no sign-up, no cloud account — just a book that lives entirely on your own device.</p>
-
-    <h3>Opening the Register</h3>
-    <p>When you first arrive, you'll see the register closed, sitting in the middle of the screen exactly like a real notebook waiting on a desk. Tap or click anywhere on it to open it. The first thing you'll see is the Index — a list of every page you've already written something on, along with the short label you gave it, plus a grid of all 100 numbered pages so you can see at a glance which ones are still empty.</p>
-
-    <h3>Writing By Hand or By Keyboard</h3>
-    <p>Open any page and you'll find two ways to write on it. The Type mode gives you a proper keyboard text area, styled like ruled paper, where you can type in either English or Urdu — just tap the EN or اردو button at the top and the page will switch its font and writing direction automatically. You can also dictate by voice using the microphone button instead of typing, and run an English Grammar Check to catch spelling and grammar issues, with one-tap fixes for the suggestions it finds. The Hand mode turns the page into a small canvas where you can write or draw using your finger or mouse, exactly like putting a pen to paper.</p>
-
-    <h3>Turning Pages Like a Real Book</h3>
-    <p>Turning a page plays a short animation of the page physically lifting and flipping to the other side, along with a soft paper-turning sound, just like flicking through a real register. You can turn pages using the arrow buttons at the top, or simply swipe.</p>
-
-    <h3>Labels, Multiple Tags &amp; Dates</h3>
-    <p>At the bottom of every page you can give it a short Index Label, add one or more small tags like "expense" or "contact" to group similar pages together, and optionally attach a date to the page so it behaves a little like a diary entry too. All of this shows up back on the Index page so you can find things later at a glance.</p>
-
-    <h3>Doing the Math — With Any Currency</h3>
-    <p>Every page in Type mode has a small currency calculator built in. Choose a currency, enter two amounts, pick an operation, and insert the result straight into your page as a written line.</p>
-
-    <h3>Keeping Your Register Safe</h3>
-    <p>You can lock the entire register with a PIN from Settings, or lock individual sensitive pages from within the page toolbar so they stay hidden until you unlock them. My Register also supports Dark Mode for comfortable night-time writing, adjustable font size for the typed pages, and a Statistics screen that shows how much of the register you've filled.</p>
-
-    <h3>Your Data Stays Yours</h3>
-    <p>Everything you write, draw, or calculate is saved locally inside your web browser, and nothing is uploaded automatically. The one exception is the optional Grammar Check button: if you tap it, that page's English text (and only that text, only at that moment) is sent to the free LanguageTool.org service to get spelling and grammar suggestions. You can export a JSON backup of all volumes from Settings or export individual pages as PDF files whenever you need a physical copy.</p>
-
-    <div class="cover-footer">
-      <div class="cover-footer-label">📝 From the Blog</div>
-      <div class="cover-blog-links">
-        <a href="https://myregister.online/my-notebook-online-features.html">My Notebook, Reimagined: A Complete Tour of Every Feature in My Register</a>
-        <a href="https://myregister.online/free-online-notebook-no-sign-up.html">Free Online Notebook No Sign Up: Why You Don't Need an Account to Start Writing</a>
-        <a href="https://myregister.online/online-notebook-guide.html">The Best Free Online Notebook for Students &amp; Professionals</a>
-        <a href="https://myregister.online/blog.html" class="view-all">→ View all posts</a>
-      </div>
-      <div class="cover-legal-links">
-        <a href="https://myregister.online/about.html">About</a>
-        <a href="https://myregister.online/contact.html">Contact</a>
-        <a href="https://myregister.online/privacy.html">Privacy Policy</a>
-        <a href="https://myregister.online/terms.html">Terms</a>
+  <!-- BOOK SHELL -->
+  <div id="bookShell" class="hidden">
+    <div id="topBar">
+      <div class="brandMini">📔 <span id="volTitleTop">My Register</span></div>
+      <div id="topActions">
+        <button class="iconBtn" id="searchOpenBtn" title="Search">🔍</button>
+        <button class="iconBtn" id="statsOpenBtn" title="Statistics">📊</button>
+        <button class="iconBtn" id="settingsOpenBtn" title="Settings">⚙️</button>
+        <button class="iconBtn" id="closeBookBtn" title="Close book">📕</button>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- ============ INDEX SCREEN ============ -->
-<div class="screen" id="screenIndex">
-  <div class="topbar">
-    <button class="topbar-btn" onclick="closeBook()">📕 Close Book</button>
-    <div class="topbar-title">Index</div>
-    <div style="display:flex;gap:6px;">
-      <button class="topbar-btn" onclick="openStats()" title="Statistics">📊</button>
-      <button class="topbar-btn" onclick="openSearchModal()" title="Search">🔍</button>
-    </div>
-  </div>
-
-  <div class="index-body">
-    <input type="text" class="search-box" id="indexFilter" placeholder="Filter pages by label or tag..." oninput="renderIndex()">
-
-    <div class="jump-row">
-      <input type="number" id="jumpNum" placeholder="Page # (1-100)" min="1" max="100">
-      <button onclick="jumpToPageInput()">Go →</button>
-    </div>
-
-    <div class="index-section-label">
-      <span>Tagged / Labeled Pages</span>
-      <span id="taggedCount" style="color:var(--accent);">0 pages</span>
-    </div>
-    <div class="tagged-list" id="taggedList"></div>
-
-    <div class="index-section-label">
-      <span>All Pages (1 — 100)</span>
-      <span>Tap to open</span>
-    </div>
-    <div class="page-grid" id="pageGrid"></div>
-  </div>
-</div>
-
-<!-- ============ PAGE EDITOR SCREEN ============ -->
-<div class="screen" id="screenPage">
-  <div class="page-toolbar">
-    <button class="nav-btn" onclick="showScreen('screenIndex')">📋</button>
-    <button class="nav-btn" onclick="prevPage()">◀</button>
-    <div class="page-num-badge" id="pageNumBadge">Page 1</div>
-    <button class="nav-btn" onclick="nextPage()">▶</button>
-
-    <div class="mode-toggle">
-      <button class="mode-btn active" id="btnModeType" onclick="setMode('type')">✍️ Type</button>
-      <button class="mode-btn" id="btnModeDraw" onclick="setMode('draw')">🖌️ Hand</button>
-    </div>
-  </div>
-
-  <div class="sub-toolbar" id="typeSubbar">
-    <button class="mini-btn" id="langBtn" onclick="toggleLang()">EN / اردو</button>
-    <div class="fontsize-group">
-      <button onclick="changeFontSize(-0.1)">A-</button>
-      <button onclick="changeFontSize(0.1)">A+</button>
-    </div>
-    <div class="hist-group">
-      <button class="mini-btn" id="undoBtnType" onclick="undoType()" title="Undo typing">↶ Undo</button>
-      <button class="mini-btn" id="redoBtnType" onclick="redoType()" title="Redo typing">↷ Redo</button>
-    </div>
-    <button class="mini-btn" onclick="toggleVoice()" id="voiceBtn" title="Voice dictation">🎙️ Dictate</button>
-    <button class="mini-btn" onclick="checkGrammar()" id="grammarBtn" title="Check grammar (sends text to LanguageTool.org)">✅ Grammar</button>
-    <button class="mini-btn" onclick="toggleCalc()">🧮 Calc</button>
-    <button class="mini-btn" onclick="toggleVersions()">📜 History</button>
-    <button class="mini-btn" onclick="duplicatePage()" title="Duplicate page">📋 Copy</button>
-    <button class="mini-btn" onclick="exportPagePDF()" title="Save as PDF">📄 PDF</button>
-    <button class="mini-btn" onclick="sharePage()" title="Share page text">📤 Share</button>
-    <button class="mini-btn" id="bookmarkBtn" onclick="toggleBookmark()" title="Bookmark page">🔖</button>
-    <button class="mini-btn" id="lockPageBtn" onclick="togglePageLock()" title="Lock page with PIN">🔒</button>
-    <button class="mini-btn danger" onclick="clearPageText()">🗑️ Clear</button>
-    <div class="word-count-badge" id="wordCountBadge">0 words</div>
-    <div class="save-status" id="saveStatusType"><span class="dot"></span><span class="st-text">Saved</span></div>
-  </div>
-
-  <div class="sub-toolbar" id="drawSubbar" style="display:none;">
-    <button class="mini-btn" id="toolPen" onclick="setDrawTool('pen')" style="outline:2px solid var(--accent)">🖊️ Pen</button>
-    <button class="mini-btn" id="toolEraser" onclick="setDrawTool('eraser')">🧹 Eraser</button>
-
-    <div style="display:flex;gap:4px;align-items:center;">
-      <div class="color-dot active" style="background:#2B2A33;" onclick="setPenColor('#2B2A33',this)"></div>
-      <div class="color-dot" style="background:#2563EB;" onclick="setPenColor('#2563EB',this)"></div>
-      <div class="color-dot" style="background:#DC2626;" onclick="setPenColor('#DC2626',this)"></div>
-      <div class="color-dot" style="background:#16A34A;" onclick="setPenColor('#16A34A',this)"></div>
-    </div>
-
-    <select id="penSize" onchange="setPenSize(this.value)" style="padding:4px 6px;">
-      <option value="2">Fine</option>
-      <option value="4" selected>Medium</option>
-      <option value="8">Thick</option>
-    </select>
-
-    <div class="hist-group">
-      <button class="mini-btn" id="undoBtnDraw" onclick="undoDraw()" title="Undo drawing">↶ Undo</button>
-      <button class="mini-btn" id="redoBtnDraw" onclick="redoDraw()" title="Redo drawing">↷ Redo</button>
-    </div>
-    <button class="mini-btn danger" onclick="clearCanvas()">🗑️ Clear</button>
-    <div class="save-status" id="saveStatusDraw"><span class="dot"></span><span class="st-text">Saved</span></div>
-  </div>
-
-  <div class="page-content" id="pageContent">
-    <textarea id="typeArea" placeholder="Write something on this page..." oninput="handleTypeInput()"></textarea>
-    <canvas id="drawCanvas" style="display:none;"></canvas>
-
-    <div class="calc-drawer" id="calcDrawer">
-      <div class="calc-row">
-        <select id="calcCurr">
-          <option value="PKR">PKR (Rs)</option>
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-          <option value="GBP">GBP (£)</option>
-          <option value="INR">INR (₹)</option>
-          <option value="AED">AED (AED)</option>
-          <option value="SAR">SAR (SAR)</option>
-        </select>
-        <input type="number" id="calcA" placeholder="Amount 1" oninput="runCalc()">
+    <div id="stage">
+      <!-- INDEX -->
+      <div id="indexView" class="view">
+        <h2 id="indexTitle">Index</h2>
+        <p class="indexSub" id="indexSub">0 of 100 pages filled</p>
+        <div class="indexToolbar">
+          <input type="text" id="indexFilter" placeholder="Filter by label or tag…">
+          <button class="toolBtn" id="bookmarkFilterBtn">🔖 Bookmarked</button>
+          <button class="toolBtn" id="manageVolBtn">📚 Volumes</button>
+        </div>
+        <div class="sectionLabel">All Pages</div>
+        <div class="pageGrid" id="pageGrid"></div>
       </div>
-      <div class="calc-op">
-        <button class="active" onclick="setCalcOp('+',this)">+</button>
-        <button onclick="setCalcOp('-',this)">−</button>
-        <button onclick="setCalcOp('*',this)">×</button>
-        <button onclick="setCalcOp('/',this)">÷</button>
-      </div>
-      <div class="calc-row">
-        <input type="number" id="calcB" placeholder="Amount 2" oninput="runCalc()">
-      </div>
-      <div class="calc-result" id="calcResult">= 0</div>
-      <div class="calc-actions">
-        <button class="insert" onclick="insertCalcResult()">Insert into Page</button>
-        <button class="close" onclick="toggleCalc()">Close</button>
+
+      <!-- PAGE -->
+      <div id="pageView" class="view hidden" style="padding:0;">
+        <div class="pageHead">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button class="iconBtn" id="backToIndexBtn">📋</button>
+            <button class="iconBtn" id="prevPageBtn">◀</button>
+            <span class="pageNumBadge" id="pageNumBadge">Page 1</span>
+            <button class="iconBtn" id="nextPageBtn">▶</button>
+          </div>
+          <div class="modeToggle">
+            <button id="typeModeBtn" class="active">✍️ Type</button>
+            <button id="handModeBtn">🖌️ Hand</button>
+          </div>
+        </div>
+
+        <div class="pageToolsRow" id="typeToolsRow">
+          <button class="toolBtn" id="langToggleBtn">EN</button>
+          <button class="toolBtn" data-cmd="bold"><b>B</b></button>
+          <button class="toolBtn" data-cmd="italic"><i>I</i></button>
+          <button class="toolBtn" data-cmd="underline"><u>U</u></button>
+          <button class="toolBtn" data-cmd="insertUnorderedList">• List</button>
+          <button class="toolBtn" id="dictateBtn">🎙️ Dictate</button>
+          <button class="toolBtn" id="grammarBtn">✅ Grammar</button>
+          <button class="toolBtn" id="calcToggleBtn">🧮 Calc</button>
+          <button class="toolBtn" id="imgAttachBtn">📎 Attach</button>
+          <input type="file" id="imgFileInput" accept="image/*" class="hidden">
+          <button class="toolBtn" id="templateBtn">🧩 Template</button>
+        </div>
+
+        <div class="pageToolsRow hidden" id="handToolsRow">
+          <span style="font-size:12px; color:var(--ink-faint);">Color</span>
+          <div class="swatch selected" style="background:#2A2418" data-color="#2A2418"></div>
+          <div class="swatch" style="background:#7A2E2E" data-color="#7A2E2E"></div>
+          <div class="swatch" style="background:#1B2A44" data-color="#1B2A44"></div>
+          <div class="swatch" style="background:#4C6B54" data-color="#4C6B54"></div>
+          <select id="penSize"><option value="2">Fine</option><option value="4" selected>Medium</option><option value="8">Thick</option></select>
+          <button class="toolBtn" id="eraserBtn">🧹 Eraser</button>
+          <button class="toolBtn" id="undoDrawBtn">↶ Undo</button>
+          <button class="toolBtn" id="redoDrawBtn">↷ Redo</button>
+          <button class="toolBtn" id="clearDrawBtn">🗑️ Clear</button>
+        </div>
+
+        <div id="pageBody">
+          <div id="typeArea" contenteditable="true" dir="ltr" placeholder="Write here…"></div>
+          <div id="drawWrap" class="hidden"><canvas id="drawCanvas" height="320"></canvas></div>
+          <div id="calcPanel" class="hidden" style="margin-top:12px; background:var(--paper-dark); border:1px solid var(--paper-line); border-radius:10px; padding:12px;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <select id="calcCurrency">
+                <option>PKR</option><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>AED</option><option>SAR</option>
+              </select>
+              <input type="number" id="calcA" placeholder="Amount A" style="width:110px; padding:6px; border-radius:6px; border:1px solid var(--paper-line);">
+              <select id="calcOp"><option>+</option><option>−</option><option>×</option><option>÷</option></select>
+              <input type="number" id="calcB" placeholder="Amount B" style="width:110px; padding:6px; border-radius:6px; border:1px solid var(--paper-line);">
+              <button class="toolBtn" id="calcRunBtn">=</button>
+              <span id="calcResult" style="font-family:var(--font-mono); font-weight:700;">0</span>
+              <button class="toolBtn" id="calcInsertBtn">Insert into Page</button>
+              <button class="toolBtn" id="calcLiveBtn">🌐 Live Rates</button>
+              <span id="calcRateNote" style="font-size:11px; color:var(--ink-faint);"></span>
+            </div>
+          </div>
+          <div id="imgGallery" style="margin-top:10px; display:flex; flex-wrap:wrap;"></div>
+        </div>
+
+        <div class="pageMeta">
+          <input type="text" id="pageLabel" placeholder="Index label…" style="min-width:140px;">
+          <input type="text" id="tagInput" placeholder="Add tag + Enter">
+          <div id="tagList"></div>
+          <input type="date" id="pageDate">
+          <label style="font-size:12px; display:flex; align-items:center; gap:4px;"><input type="checkbox" id="reminderCheck"> ⏰ Remind me</label>
+        </div>
+
+        <div class="pageFooter">
+          <span id="wordCount">0 words</span>
+          <div style="display:flex; gap:6px;">
+            <button class="toolBtn" id="bookmarkBtn">🔖</button>
+            <button class="toolBtn" id="pageLockBtn">🔒</button>
+            <button class="toolBtn" id="pdfExportBtn">📄 PDF</button>
+            <button class="toolBtn" id="copyPageBtn">📋 Copy</button>
+            <button class="toolBtn" id="clearPageBtn">🗑️ Clear</button>
+          </div>
+          <span id="savedIndicator">Saved</span>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div class="tag-bar">
-    <input type="text" class="tag-chip-input" id="pageLabelInput" placeholder="Main index label (e.g., Shop Accounts)..." oninput="savePageMeta()">
-    <input type="date" class="date-input" id="pageDateInput" onchange="savePageMeta()">
-    <input type="text" class="tag-chip-input" id="newTagInput" placeholder="+ Tag &amp; Press Enter" onkeydown="handleTagKeyDown(event)">
-    <div class="tag-chips-wrap" id="tagChipsWrap"></div>
   </div>
 </div>
-
-<!-- ============ MODALS ============ -->
 
 <!-- SETTINGS MODAL -->
-<div class="modal-overlay" id="modalSettings">
-  <div class="modal-sheet">
-    <div class="modal-title-row">
-      <div class="modal-title">Settings &amp; Options</div>
-      <button class="mini-btn" onclick="closeModal('modalSettings')">✕</button>
-    </div>
-
-    <div class="settings-row">
-      <div>
-        <div class="settings-label">PIN Lock</div>
-        <div class="settings-sub">Protect register with a 4-digit PIN</div>
+<div class="modalOverlay hidden" id="settingsModal">
+  <div class="modalBox">
+    <div class="modalHead"><h3>Settings &amp; Options</h3><button class="iconBtn" data-close="settingsModal">✕</button></div>
+    <div class="modalBody">
+      <div class="settingRow">
+        <div class="settingLabel"><strong>PIN Lock</strong><span>Protect this register with a 4-digit PIN</span></div>
+        <button class="switch" id="pinSwitch"></button>
       </div>
-      <div class="switch" id="pinSwitch" onclick="togglePinSetting()">
-        <div class="knob"></div>
+      <div class="settingRow">
+        <div class="settingLabel"><strong>Dark Theme</strong><span>Easier on the eyes at night</span></div>
+        <button class="switch" id="darkSwitch"></button>
       </div>
-    </div>
-
-    <div class="settings-row">
-      <div>
-        <div class="settings-label">Dark Theme</div>
-        <div class="settings-sub">Easy on eyes for night writing</div>
+      <div class="settingRow">
+        <div class="settingLabel"><strong>Font Size</strong><span id="fontSizeVal">16px</span></div>
+        <input type="range" id="fontSizeSlider" min="13" max="22" value="16">
       </div>
-      <div class="switch" id="darkSwitch" onclick="toggleDarkMode()">
-        <div class="knob"></div>
-      </div>
-    </div>
-
-    <div style="margin-top:20px;">
-      <button class="btn-block purple" onclick="exportBackup()">📥 Export Backup (JSON)</button>
-      <button class="btn-block blue" onclick="importBackupTrigger()">📤 Import Backup (JSON)</button>
-      <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="handleImportFile(event)">
-      <button class="btn-block orange" onclick="openVolumes();closeModal('modalSettings');">📚 Manage Volumes</button>
-      <button class="btn-ghost" style="width:100%;margin-top:10px;" onclick="factoryReset()">⚠️ Reset All Data</button>
+      <button class="btn" id="exportBackupBtn">📥 Export Backup (JSON)</button>
+      <label class="btn ghost" style="text-align:center;">📤 Import Backup (JSON)<input type="file" id="importBackupInput" accept="application/json" class="hidden"></label>
+      <button class="btn danger" id="resetAllBtn">⚠️ Reset All Data</button>
     </div>
   </div>
 </div>
 
 <!-- VOLUMES MODAL -->
-<div class="modal-overlay" id="modalVolumes">
-  <div class="modal-sheet">
-    <div class="modal-title-row">
-      <div class="modal-title">Select Volume</div>
-      <button class="mini-btn" onclick="closeModal('modalVolumes')">✕</button>
+<div class="modalOverlay hidden" id="volModal">
+  <div class="modalBox">
+    <div class="modalHead"><h3>Manage Volumes</h3><button class="iconBtn" data-close="volModal">✕</button></div>
+    <div class="modalBody">
+      <div class="volList" id="volList"></div>
+      <button class="btn" id="newVolBtn">+ Create New Volume</button>
     </div>
-    <div id="volumesList"></div>
-    <button class="btn-block green" onclick="createNewVolume()" style="margin-top:12px;">+ Create New Volume</button>
   </div>
 </div>
 
 <!-- SEARCH MODAL -->
-<div class="modal-overlay" id="modalSearch">
-  <div class="modal-sheet">
-    <div class="modal-title-row">
-      <div class="modal-title">Full Text Search</div>
-      <button class="mini-btn" onclick="closeModal('modalSearch')">✕</button>
+<div class="modalOverlay hidden" id="searchModal">
+  <div class="modalBox">
+    <div class="modalHead"><h3>Full Text Search</h3><button class="iconBtn" data-close="searchModal">✕</button></div>
+    <div class="modalBody">
+      <input type="text" id="searchInput" placeholder="Search all pages, labels, tags…" style="padding:8px; border-radius:8px; border:1px solid var(--paper-line);">
+      <div id="searchResults" style="display:flex; flex-direction:column; gap:8px;"></div>
     </div>
-    <input type="text" class="search-box" id="fullSearchInput" placeholder="Search across all typed pages..." oninput="performFullSearch()">
-    <div id="searchResultsList"></div>
-  </div>
-</div>
-
-<!-- VERSIONS MODAL -->
-<div class="modal-overlay" id="modalVersions">
-  <div class="modal-sheet">
-    <div class="modal-title-row">
-      <div class="modal-title">Page Version History</div>
-      <button class="mini-btn" onclick="closeModal('modalVersions')">✕</button>
-    </div>
-    <div id="versionsList"></div>
   </div>
 </div>
 
 <!-- STATS MODAL -->
-<div class="modal-overlay" id="modalStats">
-  <div class="modal-sheet">
-    <div class="modal-title-row">
-      <div class="modal-title">Register Statistics</div>
-      <button class="mini-btn" onclick="closeModal('modalStats')">✕</button>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-num" id="statPagesFilled">0</div>
-        <div class="stat-label">Pages Filled</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="statTotalWords">0</div>
-        <div class="stat-label">Total Words</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="statBookmarks">0</div>
-        <div class="stat-label">Bookmarks</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="statLocked">0</div>
-        <div class="stat-label">Locked Pages</div>
+<div class="modalOverlay hidden" id="statsModal">
+  <div class="modalBox">
+    <div class="modalHead"><h3>Register Statistics</h3><button class="iconBtn" data-close="statsModal">✕</button></div>
+    <div class="modalBody">
+      <div class="statGrid">
+        <div class="statCard"><div class="num" id="statPages">0</div><div class="lbl">Pages Filled</div></div>
+        <div class="statCard"><div class="num" id="statWords">0</div><div class="lbl">Total Words</div></div>
+        <div class="statCard"><div class="num" id="statBookmarks">0</div><div class="lbl">Bookmarks</div></div>
+        <div class="statCard"><div class="num" id="statLocked">0</div><div class="lbl">Locked Pages</div></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- GRAMMAR CHECK MODAL -->
-<div class="modal-overlay" id="modalGrammar">
-  <div class="modal-sheet">
-    <div class="modal-title-row">
-      <div class="modal-title">Grammar &amp; Spelling Check</div>
-      <button class="mini-btn" onclick="closeModal('modalGrammar')">✕</button>
+<!-- TEMPLATE MODAL -->
+<div class="modalOverlay hidden" id="templateModal">
+  <div class="modalBox">
+    <div class="modalHead"><h3>Insert Template</h3><button class="iconBtn" data-close="templateModal">✕</button></div>
+    <div class="modalBody templateRow">
+      <button class="btn ghost" data-tpl="diary">📔 Diary Entry</button>
+      <button class="btn ghost" data-tpl="expense">💵 Expense Log</button>
+      <button class="btn ghost" data-tpl="todo">✅ To-Do List</button>
+      <button class="btn ghost" data-tpl="contact">👤 Contact Card</button>
+      <button class="btn ghost" data-tpl="meeting">🗒️ Meeting Notes</button>
     </div>
-    <div class="grammar-disclaimer">This sends your page text to the free LanguageTool.org service to check it. Only use this for pages you don't mind leaving your device.</div>
-    <div id="grammarResultsList"></div>
   </div>
 </div>
 
-<!-- MILESTONE TOAST -->
-<div class="milestone-toast" id="milestoneToast">
-  <div class="milestone-icon">🎉</div>
-  <div>
-    <div class="milestone-title">Milestone Unlocked</div>
-    <div class="milestone-text" id="milestoneText">Filled 10 pages!</div>
-  </div>
-</div>
+<div id="toast"></div>
 
 <script>
-/* ============ APPLICATION STATE ============ */
-let AppState = {
-  currentVol: 1,
-  volumes: { 1: "Volume 1" },
-  pages: {}, // format: { "vol1_p1": { typeText: "", drawData: "", label: "", date: "", tags: [], bookmarked: false, locked: false, isUrdu: false, versions: [] } }
-  pin: "",
-  pinEnabled: false,
-  darkMode: false,
-  fontScale: 1.0,
-  currentPage: 1,
-  currentMode: "type", // "type" or "draw"
-  drawTool: "pen",
-  penColor: "#2B2A33",
-  penSize: 4,
-  calcOp: "+",
-  typeUndoStack: [],
-  typeRedoStack: [],
-  drawUndoStack: [],
-  drawRedoStack: [],
-  enteredPin: "",
-  speechRec: null,
-  isListening: false
+(function(){
+"use strict";
+
+/* ====================== STORAGE HELPERS ====================== */
+async function sGet(key, fallback){
+  try{
+    const r = await window.storage.get(key,false);
+    if(!r) return fallback;
+    return JSON.parse(r.value);
+  }catch(e){ return fallback; }
+}
+async function sSet(key, val){
+  try{ await window.storage.set(key, JSON.stringify(val), false); }catch(e){ console.error('storage set failed', e); }
+}
+
+const DEFAULT_SETTINGS = {
+  pinEnabled:false, pin:'', dark:false, fontSize:16,
+  volumes:[{id:1,name:'Volume I',cover:'#7A2E2E'}], activeVolume:1
 };
 
-const TOTAL_PAGES = 100;
+let settings = null;
+let volume = null; // current volume data {id,name,cover,pages:{}}
+let currentPage = 1;
+let currentMode = 'type';
+let currentLang = 'en';
+let strokes = []; let redoStack = [];
+let drawing = false; let penColor = '#2A2418'; let penSize = 4; let eraseMode=false;
+let saveTimer = null;
+let unlockedThisSession = false;
 
-/* ============ SAFE LOCALSTORAGE HELPERS ============ */
-/* Wrap every localStorage call so that if storage is blocked or unavailable
-   (private-browsing edge cases, sandboxed previews, disabled storage, etc.)
-   the app degrades gracefully instead of throwing and freezing on a screen. */
-function safeGet(key) {
-  try { return localStorage.getItem(key); } catch (e) { return null; }
-}
-function safeSet(key, val) {
-  try { localStorage.setItem(key, val); return true; } catch (e) { return false; }
-}
-function safeRemove(key) {
-  try { localStorage.removeItem(key); } catch (e) {}
+const $ = id => document.getElementById(id);
+
+/* ====================== INIT ====================== */
+async function init(){
+  settings = await sGet('settings', DEFAULT_SETTINGS);
+  applyTheme();
+  volume = await sGet('volume-'+settings.activeVolume, {id:settings.activeVolume,name:'Volume I',cover:'#7A2E2E',pages:{}});
+  $('coverVolName').textContent = volume.name;
+  $('volTitleTop').textContent = volume.name;
+  wireEvents();
 }
 
-/* ============ AUDIO SYNTHESIS / SOUNDS ============ */
-let audioCtx = null;
-function getAudioCtx() {
-  if (!audioCtx) {
-    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-    catch (e) { audioCtx = null; }
+function applyTheme(){
+  document.body.classList.toggle('dark', !!settings.dark);
+  document.documentElement.style.setProperty('--typeFontSize', settings.fontSize+'px');
+  const ta = $('typeArea'); if(ta) ta.style.fontSize = settings.fontSize+'px';
+}
+
+/* ====================== LOCK ====================== */
+function requireLockIfNeeded(){
+  if(settings.pinEnabled && !unlockedThisSession){
+    $('lockScreen').classList.remove('hidden');
+    $('pinInput').value=''; $('pinInput').focus();
+    return true;
   }
-  return audioCtx;
-}
-function playPaperSound() {
-  try {
-    const ac = getAudioCtx();
-    if (!ac) return;
-    if (ac.state === 'suspended') ac.resume();
-    const osc = ac.createOscillator();
-    const gain = ac.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(120, ac.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(40, ac.currentTime + 0.15);
-    gain.gain.setValueAtTime(0.15, ac.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.15);
-    osc.connect(gain);
-    gain.connect(ac.destination);
-    osc.start();
-    osc.stop(ac.currentTime + 0.15);
-  } catch (e) {}
+  return false;
 }
 
-/* ============ INITIALIZATION ============ */
-window.addEventListener('DOMContentLoaded', () => {
-  loadStorage();
-  initCanvas();
-  initPinPad();
+$_ready(()=>{ init(); });
+function $_ready(fn){ if(document.readyState!=='loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
 
-  if (AppState.pinEnabled && AppState.pin) {
-    showScreen('screenLock');
-  } else {
-    const welcomeSeen = safeGet('myreg_welcome_seen');
-    if (!welcomeSeen) {
-      showScreen('screenWelcome');
-    } else {
-      showScreen('screenCover');
+/* ====================== EVENTS ====================== */
+function wireEvents(){
+
+  $('bookCover').addEventListener('click', ()=>{
+    if(requireLockIfNeeded()) return;
+    openBook();
+  });
+
+  $('unlockBtn').addEventListener('click', tryUnlock);
+  $('pinInput').addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+  $('forgotPinBtn').addEventListener('click', async ()=>{
+    if(confirm('This resets the PIN lock only — your pages stay safe. Continue?')){
+      settings.pinEnabled=false; settings.pin=''; await sSet('settings',settings);
+      $('lockScreen').classList.add('hidden'); unlockedThisSession=true; openBook();
+      toast('PIN lock removed');
     }
-  }
+  });
 
-  if (AppState.darkMode) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    document.getElementById('darkSwitch').classList.add('on');
-    document.getElementById('darkToggleIcon').textContent = '☀️';
-  }
+  $('closeBookBtn').addEventListener('click', ()=>{
+    $('bookShell').classList.add('hidden');
+    document.getElementById('coverStage').classList.remove('hidden');
+  });
 
-  updateFontScaleCSS();
-});
+  $('searchOpenBtn').addEventListener('click', ()=>{ openModal('searchModal'); $('searchInput').focus(); $('searchResults').innerHTML=''; });
+  $('statsOpenBtn').addEventListener('click', renderStats);
+  $('settingsOpenBtn').addEventListener('click', renderSettings);
+  $('manageVolBtn').addEventListener('click', renderVolumes);
+  $('newVolBtn').addEventListener('click', createVolume);
 
-function loadStorage() {
-  try {
-    const saved = safeGet('myreg_appstate');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      AppState = { ...AppState, ...parsed };
-    }
-  } catch (e) {
-    console.error("Failed to load storage", e);
-  }
-}
+  document.querySelectorAll('[data-close]').forEach(b=>{
+    b.addEventListener('click', ()=> closeModal(b.getAttribute('data-close')));
+  });
 
-function saveStorage() {
-  safeSet('myreg_appstate', JSON.stringify(AppState));
-}
-
-function getPageKey(vol, pageNum) {
-  return `vol${vol}_p${pageNum}`;
-}
-
-function getPageData(vol, pageNum) {
-  const key = getPageKey(vol, pageNum);
-  if (!AppState.pages[key]) {
-    AppState.pages[key] = {
-      typeText: "",
-      drawData: "",
-      label: "",
-      date: "",
-      tags: [],
-      bookmarked: false,
-      locked: false,
-      isUrdu: false,
-      versions: []
-    };
-  }
-  return AppState.pages[key];
-}
-
-/* ============ SCREEN NAVIGATION ============ */
-function showScreen(screenId) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const target = document.getElementById(screenId);
-  if (target) {
-    target.classList.add('active');
-  }
-  if (screenId === 'screenIndex') {
+  $('indexFilter').addEventListener('input', renderIndex);
+  $('bookmarkFilterBtn').addEventListener('click', ()=>{
+    $('bookmarkFilterBtn').classList.toggle('active');
     renderIndex();
-  } else if (screenId === 'screenPage') {
-    loadPageToUI(AppState.currentPage);
-  } else if (screenId === 'screenCover') {
-    updateCoverVolLabel();
-  }
-}
-
-function dismissWelcome() {
-  safeSet('myreg_welcome_seen', 'true');
-  showScreen('screenCover');
-}
-
-function openBook() {
-  playPaperSound();
-  showScreen('screenIndex');
-}
-
-function closeBook() {
-  playPaperSound();
-  showScreen('screenCover');
-}
-
-function updateCoverVolLabel() {
-  const label = AppState.volumes[AppState.currentVol] || `Volume ${AppState.currentVol}`;
-  document.getElementById('volLabel').textContent = `${label} ▾`;
-}
-
-/* ============ INDEX SCREEN ============ */
-function renderIndex() {
-  const grid = document.getElementById('pageGrid');
-  const list = document.getElementById('taggedList');
-  const filter = document.getElementById('indexFilter').value.toLowerCase().trim();
-
-  grid.innerHTML = "";
-  list.innerHTML = "";
-
-  let taggedCount = 0;
-
-  for (let i = 1; i <= TOTAL_PAGES; i++) {
-    const data = getPageData(AppState.currentVol, i);
-    const hasContent = (data.typeText && data.typeText.trim().length > 0) || (data.drawData && data.drawData.length > 0);
-    const hasLabel = data.label && data.label.trim().length > 0;
-    const hasTags = data.tags && data.tags.length > 0;
-
-    // Grid Cell
-    const cell = document.createElement('div');
-    cell.className = `page-cell ${hasContent || hasLabel ? 'filled' : ''} ${data.locked ? 'locked' : ''}`;
-    cell.textContent = i;
-    cell.onclick = () => openPage(i);
-    grid.appendChild(cell);
-
-    // Filter matching
-    const matchLabel = data.label && data.label.toLowerCase().includes(filter);
-    const matchTags = data.tags && data.tags.some(t => t.toLowerCase().includes(filter));
-    const matchContent = data.typeText && data.typeText.toLowerCase().includes(filter);
-
-    if ((hasLabel || hasTags || data.bookmarked) && (!filter || matchLabel || matchTags || matchContent)) {
-      taggedCount++;
-      const row = document.createElement('div');
-      row.className = "tagged-row";
-      row.onclick = () => openPage(i);
-
-      let tagsHtml = (data.tags || []).map(t => `<span class="chip-mini">#${t}</span>`).join('');
-      let ribbonHtml = data.bookmarked ? `<div class="ribbon"></div>` : '';
-
-      row.innerHTML = `
-        ${ribbonHtml}
-        <div class="tagged-num">${i}</div>
-        <div style="flex:1;">
-          <div class="tagged-label">${data.locked ? '🔒 Locked Page' : (data.label || 'Untitled Page')}</div>
-          <div class="tag-chips-mini" style="margin-top:4px;">${tagsHtml}</div>
-        </div>
-        <div class="tagged-date">${data.date || ''}</div>
-      `;
-      list.appendChild(row);
-    }
-  }
-
-  document.getElementById('taggedCount').textContent = `${taggedCount} pages`;
-  if (taggedCount === 0) {
-    list.innerHTML = `<div class="tagged-empty">No tagged or labeled pages found. Write a label or tag on any page to see it listed here!</div>`;
-  }
-}
-
-function jumpToPageInput() {
-  const val = parseInt(document.getElementById('jumpNum').value);
-  if (val >= 1 && val <= TOTAL_PAGES) {
-    openPage(val);
-  }
-}
-
-/* ============ PAGE EDITOR & FLIP ANIMATION ============ */
-function openPage(pageNum) {
-  const data = getPageData(AppState.currentVol, pageNum);
-  if (data.locked) {
-    promptPagePin(pageNum);
-    return;
-  }
-  AppState.currentPage = pageNum;
-  playPaperSound();
-  showScreen('screenPage');
-}
-
-function promptPagePin(pageNum) {
-  const pin = prompt("This page is locked. Enter 4-digit PIN:");
-  if (pin === AppState.pin) {
-    AppState.currentPage = pageNum;
-    playPaperSound();
-    showScreen('screenPage');
-  } else if (pin !== null) {
-    alert("Incorrect PIN!");
-  }
-}
-
-function loadPageToUI(pageNum) {
-  const data = getPageData(AppState.currentVol, pageNum);
-  document.getElementById('pageNumBadge').textContent = `Page ${pageNum}`;
-
-  // Mode setup
-  setMode(AppState.currentMode, false);
-
-  // Type area setup
-  const typeArea = document.getElementById('typeArea');
-  typeArea.value = data.typeText || "";
-  if (data.isUrdu) {
-    typeArea.classList.add('urdu');
-    document.getElementById('langBtn').textContent = 'اردو';
-  } else {
-    typeArea.classList.remove('urdu');
-    document.getElementById('langBtn').textContent = 'EN';
-  }
-
-  // Draw canvas setup
-  loadCanvasData(data.drawData);
-
-  // Word count setup
-  updateWordCount(typeArea.value);
-
-  // Meta setup
-  document.getElementById('pageLabelInput').value = data.label || "";
-  document.getElementById('pageDateInput').value = data.date || "";
-  renderTagChips(data.tags || []);
-
-  // Buttons state
-  document.getElementById('bookmarkBtn').classList.toggle('active', !!data.bookmarked);
-  document.getElementById('lockPageBtn').classList.toggle('active', !!data.locked);
-
-  // Clear history stacks for fresh page load
-  AppState.typeUndoStack = [];
-  AppState.typeRedoStack = [];
-  AppState.drawUndoStack = [];
-  AppState.drawRedoStack = [];
-  updateUndoRedoUI();
-}
-
-function flipPageAnimation(direction, callback) {
-  const container = document.getElementById('pageContent');
-  const leaf = document.createElement('div');
-  const data = getPageData(AppState.currentVol, AppState.currentPage);
-
-  leaf.className = `flip-leaf flip-${direction} ${data.isUrdu ? 'urdu' : ''}`;
-  leaf.textContent = data.typeText || "(Hand-written page content)";
-
-  container.appendChild(leaf);
-  playPaperSound();
-
-  requestAnimationFrame(() => {
-    leaf.classList.add('animating');
   });
 
-  setTimeout(() => {
-    leaf.remove();
-    if (callback) callback();
-  }, 520);
-}
-
-function prevPage() {
-  if (AppState.currentPage > 1) {
-    flipPageAnimation('prev', () => {
-      openPage(AppState.currentPage - 1);
-    });
-  }
-}
-
-function nextPage() {
-  if (AppState.currentPage < TOTAL_PAGES) {
-    flipPageAnimation('next', () => {
-      openPage(AppState.currentPage + 1);
-    });
-  }
-}
-
-/* ============ EDITING & SAVING ============ */
-function setMode(mode, save = true) {
-  AppState.currentMode = mode;
-  document.getElementById('btnModeType').classList.toggle('active', mode === 'type');
-  document.getElementById('btnModeDraw').classList.toggle('active', mode === 'draw');
-
-  const typeArea = document.getElementById('typeArea');
-  const canvas = document.getElementById('drawCanvas');
-  const typeSubbar = document.getElementById('typeSubbar');
-  const drawSubbar = document.getElementById('drawSubbar');
-
-  if (mode === 'type') {
-    typeArea.style.display = 'block';
-    canvas.style.display = 'none';
-    typeSubbar.style.display = 'flex';
-    drawSubbar.style.display = 'none';
-  } else {
-    typeArea.style.display = 'none';
-    canvas.style.display = 'block';
-    typeSubbar.style.display = 'none';
-    drawSubbar.style.display = 'flex';
-    resizeCanvas();
-  }
-  if (save) saveStorage();
-}
-
-let saveTimeout = null;
-function handleTypeInput() {
-  const text = document.getElementById('typeArea').value;
-  const data = getPageData(AppState.currentVol, AppState.currentPage);
-
-  // Push undo state
-  if (AppState.typeUndoStack.length === 0 || AppState.typeUndoStack[AppState.typeUndoStack.length - 1] !== text) {
-    AppState.typeUndoStack.push(data.typeText || "");
-    if (AppState.typeUndoStack.length > 30) AppState.typeUndoStack.shift();
-    AppState.typeRedoStack = [];
-    updateUndoRedoUI();
-  }
-
-  data.typeText = text;
-  triggerSaveIndicator('type');
-  updateWordCount(text);
-
-  clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => {
-    pushVersionHistory(data, text);
-    saveStorage();
-    checkMilestones();
-  }, 1000);
-}
-
-function updateWordCount(text) {
-  const badge = document.getElementById('wordCountBadge');
-  if (!badge) return;
-  const trimmed = (text || "").trim();
-  const words = trimmed.length === 0 ? 0 : trimmed.split(/\s+/).length;
-  const chars = (text || "").length;
-  badge.textContent = `${words} ${words === 1 ? 'word' : 'words'} · ${chars} chars`;
-}
-
-function triggerSaveIndicator(mode) {
-  const el = mode === 'type' ? document.getElementById('saveStatusType') : document.getElementById('saveStatusDraw');
-  if (!el) return;
-  el.className = "save-status saving";
-  el.querySelector('.st-text').textContent = "Saving...";
-
-  setTimeout(() => {
-    el.className = "save-status saved";
-    el.querySelector('.st-text').textContent = "Saved";
-  }, 400);
-}
-
-function toggleLang() {
-  const data = getPageData(AppState.currentVol, AppState.currentPage);
-  data.isUrdu = !data.isUrdu;
-  const typeArea = document.getElementById('typeArea');
-
-  if (data.isUrdu) {
-    typeArea.classList.add('urdu');
-    document.getElementById('langBtn').textContent = 'اردو';
-  } else {
-    typeArea.classList.remove('urdu');
-    document.getElementById('langBtn').textContent = 'EN';
-  }
-  saveStorage();
-}
-
-function changeFontSize(delta) {
-  AppState.fontScale = Math.max(0.7, Math.min(1.8, AppState.fontScale + delta));
-  updateFontScaleCSS();
-  saveStorage();
-}
-
-function updateFontScaleCSS() {
-  document.documentElement.style.setProperty('--page-font-scale', AppState.fontScale);
-}
-
-function clearPageText() {
-  if (confirm("Clear all text on this page?")) {
-    document.getElementById('typeArea').value = "";
-    handleTypeInput();
-  }
-}
-
-function savePageMeta() {
-  const data = getPageData(AppState.currentVol, AppState.currentPage);
-  data.label = document.getElementById('pageLabelInput').value;
-  data.date = document.getElementById('pageDateInput').value;
-  saveStorage();
-}
-
-function handleTagKeyDown(e) {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    const val = e.target.value.trim().replace(/^#/, '');
-    if (val) {
-      const data = getPageData(AppState.currentVol, AppState.currentPage);
-      if (!data.tags) data.tags = [];
-      if (!data.tags.includes(val)) {
-        data.tags.push(val);
-        renderTagChips(data.tags);
-        saveStorage();
-      }
-      e.target.value = "";
-    }
-  }
-}
-
-function renderTagChips(tags) {
-  const wrap = document.getElementById('tagChipsWrap');
-  wrap.innerHTML = tags.map((t, idx) => `
-    <div class="chip">
-      #${t}
-      <span class="x" onclick="removeTag(${idx})">✕</span>
-    </div>
-  `).join('');
-}
-
-function removeTag(idx) {
-  const data = getPageData(AppState.currentVol, AppState.currentPage);
-  data.tags.splice(idx, 1);
-  renderTagChips(data.tags);
-  saveStorage();
-}
-
-function toggleBookmark() {
-  const data = getPageData(AppState.currentVol, AppState.currentPage);
-  data.bookmarked = !data.bookmarked;
-  document.getElementById('bookmarkBtn').classList.toggle('active', !!data.bookmarked);
-  saveStorage();
-}
-
-function togglePageLock() {
-  if (!AppState.pin) {
-    alert("Please set up a PIN in Settings first!");
-    openSettings();
-    return;
-  }
-  const data = getPageData(AppState.currentVol, AppState.currentPage);
-  data.locked = !data.locked;
-  document.getElementById('lockPageBtn').classList.toggle('active', !!data.locked);
-  saveStorage();
-}
-
-function duplicatePage() {
-  const source = getPageData(AppState.currentVol, AppState.currentPage);
-  let targetPage = null;
-
-  for (let i = 1; i <= TOTAL_PAGES; i++) {
-    const d = getPageData(AppState.currentVol, i);
-    if (!d.typeText && !d.drawData && !d.label) {
-      targetPage = i;
-      break;
-    }
-  }
-
-  if (!targetPage) {
-    alert("No empty pages available to duplicate into!");
-    return;
-  }
-
-  AppState.pages[getPageKey(AppState.currentVol, targetPage)] = JSON.parse(JSON.stringify(source));
-  saveStorage();
-  alert(`Page duplicated successfully to Page ${targetPage}!`);
-}
-
-/* ============ UNDO / REDO TYPE ============ */
-function undoType() {
-  if (AppState.typeUndoStack.length > 0) {
-    const area = document.getElementById('typeArea');
-    AppState.typeRedoStack.push(area.value);
-    const prev = AppState.typeUndoStack.pop();
-    area.value = prev;
-    getPageData(AppState.currentVol, AppState.currentPage).typeText = prev;
-    saveStorage();
-    updateUndoRedoUI();
-  }
-}
-
-function redoType() {
-  if (AppState.typeRedoStack.length > 0) {
-    const area = document.getElementById('typeArea');
-    AppState.typeUndoStack.push(area.value);
-    const next = AppState.typeRedoStack.pop();
-    area.value = next;
-    getPageData(AppState.currentVol, AppState.currentPage).typeText = next;
-    saveStorage();
-    updateUndoRedoUI();
-  }
-}
-
-function updateUndoRedoUI() {
-  document.getElementById('undoBtnType').disabled = AppState.typeUndoStack.length === 0;
-  document.getElementById('redoBtnType').disabled = AppState.typeRedoStack.length === 0;
-  document.getElementById('undoBtnDraw').disabled = AppState.drawUndoStack.length === 0;
-  document.getElementById('redoBtnDraw').disabled = AppState.drawRedoStack.length === 0;
-}
-
-/* ============ DRAWING CANVAS ============ */
-let canvas, ctx, isDrawing = false, lastX = 0, lastY = 0;
-
-function initCanvas() {
-  canvas = document.getElementById('drawCanvas');
-  ctx = canvas.getContext('2d');
-
-  canvas.addEventListener('mousedown', startDrawing);
-  canvas.addEventListener('mousemove', draw);
-  canvas.addEventListener('mouseup', stopDrawing);
-  canvas.addEventListener('mouseleave', stopDrawing);
-
-  canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-  canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-  canvas.addEventListener('touchend', stopDrawing);
-}
-
-function resizeCanvas() {
-  if (!canvas) return;
-  const rect = canvas.getBoundingClientRect();
-  if (canvas.width !== rect.width || canvas.height !== rect.height) {
-    const temp = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-    ctx.putImageData(temp, 0, 0);
-  }
-}
-
-function setDrawTool(tool) {
-  AppState.drawTool = tool;
-  document.getElementById('toolPen').style.outline = tool === 'pen' ? '2px solid var(--accent)' : 'none';
-  document.getElementById('toolEraser').style.outline = tool === 'eraser' ? '2px solid var(--accent)' : 'none';
-}
-
-function setPenColor(color, el) {
-  AppState.penColor = color;
-  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-  if (el) el.classList.add('active');
-  setDrawTool('pen');
-}
-
-function setPenSize(size) {
-  AppState.penSize = parseInt(size);
-}
-
-function getCanvasCoords(e) {
-  const rect = canvas.getBoundingClientRect();
-  return {
-    x: e.clientX - rect.left,
-    y: e.clientY - rect.top
-  };
-}
-
-function startDrawing(e) {
-  isDrawing = true;
-  saveCanvasStateForUndo();
-  const coords = getCanvasCoords(e);
-  lastX = coords.x;
-  lastY = coords.y;
-}
-
-function draw(e) {
-  if (!isDrawing) return;
-  const coords = getCanvasCoords(e);
-
-  ctx.beginPath();
-  ctx.moveTo(lastX, lastY);
-  ctx.lineTo(coords.x, coords.y);
-
-  if (AppState.drawTool === 'eraser') {
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.lineWidth = AppState.penSize * 4;
-  } else {
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.strokeStyle = AppState.penColor;
-    ctx.lineWidth = AppState.penSize;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-  }
-
-  ctx.stroke();
-  lastX = coords.x;
-  lastY = coords.y;
-}
-
-function stopDrawing() {
-  if (isDrawing) {
-    isDrawing = false;
-    saveCanvasToState();
-  }
-}
-
-function handleTouchStart(e) {
-  e.preventDefault();
-  if (e.touches.length === 1) {
-    startDrawing(e.touches[0]);
-  }
-}
-
-function handleTouchMove(e) {
-  e.preventDefault();
-  if (e.touches.length === 1) {
-    draw(e.touches[0]);
-  }
-}
-
-function saveCanvasStateForUndo() {
-  if (AppState.drawUndoStack.length > 20) AppState.drawUndoStack.shift();
-  AppState.drawUndoStack.push(canvas.toDataURL());
-  AppState.drawRedoStack = [];
-  updateUndoRedoUI();
-}
-
-function undoDraw() {
-  if (AppState.drawUndoStack.length > 0) {
-    AppState.drawRedoStack.push(canvas.toDataURL());
-    const prev = AppState.drawUndoStack.pop();
-    loadCanvasData(prev);
-    saveCanvasToState();
-    updateUndoRedoUI();
-  }
-}
-
-function redoDraw() {
-  if (AppState.drawRedoStack.length > 0) {
-    AppState.drawUndoStack.push(canvas.toDataURL());
-    const next = AppState.drawRedoStack.pop();
-    loadCanvasData(next);
-    saveCanvasToState();
-    updateUndoRedoUI();
-  }
-}
-
-function saveCanvasToState() {
-  const dataUrl = canvas.toDataURL();
-  const pageData = getPageData(AppState.currentVol, AppState.currentPage);
-  pageData.drawData = dataUrl;
-  triggerSaveIndicator('draw');
-  saveStorage();
-  checkMilestones();
-}
-
-function loadCanvasData(dataUrl) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (dataUrl && dataUrl.length > 0) {
-    const img = new Image();
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0);
-    };
-    img.src = dataUrl;
-  }
-}
-
-function clearCanvas() {
-  if (confirm("Clear drawings on this page?")) {
-    saveCanvasStateForUndo();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    saveCanvasToState();
-  }
-}
-
-/* ============ VOICE DICTATION ============ */
-function toggleVoice() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert("Speech recognition is not supported in this browser.");
-    return;
-  }
-
-  const btn = document.getElementById('voiceBtn');
-
-  if (AppState.isListening) {
-    if (AppState.speechRec) AppState.speechRec.stop();
-    AppState.isListening = false;
-    btn.classList.remove('active');
-    btn.textContent = '🎙️ Dictate';
-  } else {
-    AppState.speechRec = new SpeechRecognition();
-    const data = getPageData(AppState.currentVol, AppState.currentPage);
-    AppState.speechRec.lang = data.isUrdu ? 'ur-PK' : 'en-US';
-    AppState.speechRec.continuous = true;
-    AppState.speechRec.interimResults = false;
-
-    AppState.speechRec.onresult = (event) => {
-      const transcript = event.results[event.results.length - 1][0].transcript;
-      const typeArea = document.getElementById('typeArea');
-      typeArea.value += (typeArea.value ? " " : "") + transcript;
-      handleTypeInput();
-    };
-
-    AppState.speechRec.onerror = () => {
-      AppState.isListening = false;
-      btn.classList.remove('active');
-      btn.textContent = '🎙️ Dictate';
-    };
-
-    AppState.speechRec.start();
-    AppState.isListening = true;
-    btn.classList.add('active');
-    btn.textContent = '🎙️ Listening...';
-  }
-}
-
-/* ============ GRAMMAR CHECK (LanguageTool.org) ============ */
-async function checkGrammar() {
-  const text = document.getElementById('typeArea').value;
-  const listEl = document.getElementById('grammarResultsList');
-  const modal = document.getElementById('modalGrammar');
-  const data = getPageData(AppState.currentVol, AppState.currentPage);
-
-  if (!text || !text.trim()) {
-    listEl.innerHTML = `<div class="grammar-empty">This page is empty — write something first.</div>`;
-    modal.classList.add('open');
-    return;
-  }
-
-  if (data.isUrdu) {
-    listEl.innerHTML = `<div class="grammar-empty">Grammar check currently supports English text only. Switch this page to EN mode (top toolbar) to use it.</div>`;
-    modal.classList.add('open');
-    return;
-  }
-
-  listEl.innerHTML = `<div class="grammar-loading">Checking with LanguageTool…</div>`;
-  modal.classList.add('open');
-
-  try {
-    const resp = await fetch('https://api.languagetool.org/v2/check', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ text: text, language: 'en-US' })
-    });
-
-    if (!resp.ok) throw new Error('Request failed: ' + resp.status);
-    const result = await resp.json();
-    renderGrammarResults(result.matches || [], text);
-  } catch (e) {
-    listEl.innerHTML = `<div class="grammar-empty">Couldn't reach the grammar checking service. Check your internet connection and try again.</div>`;
-  }
-}
-
-function renderGrammarResults(matches, originalText) {
-  const listEl = document.getElementById('grammarResultsList');
-
-  if (!matches.length) {
-    listEl.innerHTML = `<div class="grammar-empty">✅ No issues found — looks good!</div>`;
-    return;
-  }
-
-  listEl.innerHTML = matches.map(m => {
-    const category = (m.rule && m.rule.category && m.rule.category.name) || 'Issue';
-    const message = m.message || '';
-    const ctx = m.context || { text: '', offset: 0, length: 0 };
-    const before = ctx.text.slice(0, ctx.offset);
-    const bad = ctx.text.slice(ctx.offset, ctx.offset + ctx.length);
-    const after = ctx.text.slice(ctx.offset + ctx.length);
-    const suggestions = (m.replacements || []).slice(0, 5).map(r => r.value).filter(Boolean);
-    const offset = m.offset;
-    const length = m.length;
-
-    return `
-      <div class="grammar-issue">
-        <div class="gi-category">${escapeGrammarHtml(category)}</div>
-        <div class="gi-message">${escapeGrammarHtml(message)}</div>
-        <div class="gi-context">${escapeGrammarHtml(before)}<mark>${escapeGrammarHtml(bad)}</mark>${escapeGrammarHtml(after)}</div>
-        ${suggestions.length ? `<div class="gi-suggestions">${suggestions.map(s => `<button type="button" class="gi-suggestion" onclick="applyGrammarSuggestion(${offset}, ${length}, '${encodeURIComponent(s)}')">${escapeGrammarHtml(s)}</button>`).join('')}</div>` : ''}
-      </div>
-    `;
-  }).join('');
-}
-
-function applyGrammarSuggestion(offset, length, encodedValue) {
-  const value = decodeURIComponent(encodedValue);
-  const ta = document.getElementById('typeArea');
-  const current = ta.value;
-  ta.value = current.slice(0, offset) + value + current.slice(offset + length);
-  handleTypeInput();
-  closeModal('modalGrammar');
-}
-
-function escapeGrammarHtml(s) {
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : s;
-  return d.innerHTML;
-}
-
-/* ============ CALCULATOR DRAWER ============ */
-function toggleCalc() {
-  const drawer = document.getElementById('calcDrawer');
-  drawer.classList.toggle('open');
-  if (drawer.classList.contains('open')) {
-    runCalc();
-  }
-}
-
-function setCalcOp(op, el) {
-  AppState.calcOp = op;
-  document.querySelectorAll('.calc-op button').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  runCalc();
-}
-
-function runCalc() {
-  const curr = document.getElementById('calcCurr').value;
-  const a = parseFloat(document.getElementById('calcA').value) || 0;
-  const b = parseFloat(document.getElementById('calcB').value) || 0;
-  let res = 0;
-
-  switch (AppState.calcOp) {
-    case '+': res = a + b; break;
-    case '-': res = a - b; break;
-    case '*': res = a * b; break;
-    case '/': res = b !== 0 ? a / b : 0; break;
-  }
-
-  const formatted = `${curr} ${res.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
-  document.getElementById('calcResult').textContent = `= ${formatted}`;
-}
-
-function insertCalcResult() {
-  const curr = document.getElementById('calcCurr').value;
-  const a = document.getElementById('calcA').value;
-  const b = document.getElementById('calcB').value;
-  const resText = document.getElementById('calcResult').textContent.replace('= ', '');
-
-  const line = `${curr} ${a} ${AppState.calcOp} ${b} = ${resText}\n`;
-  const typeArea = document.getElementById('typeArea');
-  typeArea.value += (typeArea.value ? "\n" : "") + line;
-  handleTypeInput();
-  toggleCalc();
-}
-
-/* ============ VERSION HISTORY ============ */
-function pushVersionHistory(pageData, text) {
-  if (!pageData.versions) pageData.versions = [];
-  if (text && (pageData.versions.length === 0 || pageData.versions[pageData.versions.length - 1].text !== text)) {
-    pageData.versions.push({
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      text: text
-    });
-    if (pageData.versions.length > 10) pageData.versions.shift();
-  }
-}
-
-function toggleVersions() {
-  const modal = document.getElementById('modalVersions');
-  const list = document.getElementById('versionsList');
-  const data = getPageData(AppState.currentVol, AppState.currentPage);
-
-  list.innerHTML = "";
-  if (!data.versions || data.versions.length === 0) {
-    list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--muted);">No edit history for this page yet.</div>`;
-  } else {
-    data.versions.slice().reverse().forEach((v) => {
-      const item = document.createElement('div');
-      item.className = "version-item";
-      item.innerHTML = `
-        <div>
-          <div class="vtime">${v.time}</div>
-          <div class="vsnippet">${v.text}</div>
-        </div>
-        <button onclick="restoreVersion('${encodeURIComponent(v.text)}')">Restore</button>
-      `;
-      list.appendChild(item);
-    });
-  }
-
-  modal.classList.add('open');
-}
-
-function restoreVersion(encText) {
-  const text = decodeURIComponent(encText);
-  document.getElementById('typeArea').value = text;
-  handleTypeInput();
-  closeModal('modalVersions');
-}
-
-/* ============ SEARCH & STATS ============ */
-function openSearchModal() {
-  document.getElementById('modalSearch').classList.add('open');
-  document.getElementById('fullSearchInput').focus();
-}
-
-function performFullSearch() {
-  const query = document.getElementById('fullSearchInput').value.toLowerCase().trim();
-  const list = document.getElementById('searchResultsList');
-  list.innerHTML = "";
-
-  if (!query) return;
-
-  for (let i = 1; i <= TOTAL_PAGES; i++) {
-    const data = getPageData(AppState.currentVol, i);
-    if (data.typeText && data.typeText.toLowerCase().includes(query)) {
-      const idx = data.typeText.toLowerCase().indexOf(query);
-      const snippet = data.typeText.substring(Math.max(0, idx - 20), Math.min(data.typeText.length, idx + 40));
-
-      const res = document.createElement('div');
-      res.className = "search-result";
-      res.onclick = () => {
-        closeModal('modalSearch');
-        openPage(i);
-      };
-      res.innerHTML = `
-        <div class="sr-num">Page ${i} ${data.label ? '— ' + data.label : ''}</div>
-        <div class="sr-snippet">...${snippet.replace(new RegExp(query, 'gi'), m => `<mark>${m}</mark>`)}...</div>
-      `;
-      list.appendChild(res);
-    }
-  }
-
-  if (list.children.length === 0) {
-    list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--muted);">No matching text found.</div>`;
-  }
-}
-
-function openStats() {
-  let filled = 0, totalWords = 0, bookmarks = 0, locked = 0;
-
-  for (let i = 1; i <= TOTAL_PAGES; i++) {
-    const data = getPageData(AppState.currentVol, i);
-    const hasType = data.typeText && data.typeText.trim().length > 0;
-    const hasDraw = data.drawData && data.drawData.length > 0;
-
-    if (hasType || hasDraw) filled++;
-    if (hasType) {
-      const words = data.typeText.trim().split(/\s+/).filter(Boolean).length;
-      totalWords += words;
-    }
-    if (data.bookmarked) bookmarks++;
-    if (data.locked) locked++;
-  }
-
-  document.getElementById('statPagesFilled').textContent = filled;
-  document.getElementById('statTotalWords').textContent = totalWords;
-  document.getElementById('statBookmarks').textContent = bookmarks;
-  document.getElementById('statLocked').textContent = locked;
-
-  document.getElementById('modalStats').classList.add('open');
-}
-
-/* ============ MILESTONES ============ */
-function checkMilestones() {
-  let filled = 0;
-  for (let i = 1; i <= TOTAL_PAGES; i++) {
-    const d = getPageData(AppState.currentVol, i);
-    if ((d.typeText && d.typeText.trim().length > 0) || (d.drawData && d.drawData.length > 0)) filled++;
-  }
-
-  const milestones = [5, 10, 25, 50, 100];
-  if (milestones.includes(filled)) {
-    const key = `milestone_${AppState.currentVol}_${filled}`;
-    if (!safeGet(key)) {
-      safeSet(key, 'true');
-      showMilestoneToast(`You've filled ${filled} pages in this register!`);
-    }
-  }
-}
-
-function showMilestoneToast(text) {
-  const toast = document.getElementById('milestoneToast');
-  document.getElementById('milestoneText').textContent = text;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 3500);
-}
-
-/* ============ EXPORT & SHARE ============ */
-function exportPagePDF() {
-  window.print();
-}
-
-function sharePage() {
-  const data = getPageData(AppState.currentVol, AppState.currentPage);
-  const text = `[My Register — Vol ${AppState.currentVol}, Page ${AppState.currentPage}]\n${data.label ? 'Label: ' + data.label + '\n' : ''}\n${data.typeText}`;
-
-  if (navigator.share) {
-    navigator.share({
-      title: `Register Page ${AppState.currentPage}`,
-      text: text
-    }).catch(() => {});
-  } else {
-    navigator.clipboard.writeText(text);
-    alert("Page text copied to clipboard!");
-  }
-}
-
-/* ============ VOLUMES MANAGEMENT ============ */
-function openVolumes() {
-  const list = document.getElementById('volumesList');
-  list.innerHTML = "";
-
-  Object.keys(AppState.volumes).forEach(volId => {
-    const item = document.createElement('div');
-    item.className = `vol-item ${parseInt(volId) === AppState.currentVol ? 'current' : ''}`;
-    item.onclick = () => selectVolume(parseInt(volId));
-
-    let filled = 0;
-    for (let i = 1; i <= TOTAL_PAGES; i++) {
-      const d = getPageData(volId, i);
-      if ((d.typeText && d.typeText.trim().length > 0) || (d.drawData && d.drawData.length > 0)) filled++;
-    }
-
-    item.innerHTML = `
-      <div>
-        <div class="vol-name">${AppState.volumes[volId]}</div>
-        <div class="vol-count">${filled} / 100 pages filled</div>
-      </div>
-      <div>${parseInt(volId) === AppState.currentVol ? '✓ Active' : ''}</div>
-    `;
-    list.appendChild(item);
+  $('backToIndexBtn').addEventListener('click', showIndex);
+  $('prevPageBtn').addEventListener('click', ()=> gotoPage(Math.max(1,currentPage-1)));
+  $('nextPageBtn').addEventListener('click', ()=> gotoPage(Math.min(100,currentPage+1)));
+
+  $('typeModeBtn').addEventListener('click', ()=> setMode('type'));
+  $('handModeBtn').addEventListener('click', ()=> setMode('hand'));
+
+  $('langToggleBtn').addEventListener('click', ()=>{
+    currentLang = currentLang==='en' ? 'ur' : 'en';
+    $('langToggleBtn').textContent = currentLang==='en' ? 'EN' : 'اردو';
+    const ta = $('typeArea');
+    ta.setAttribute('dir', currentLang==='ur'?'rtl':'ltr');
+    scheduleSave();
   });
 
-  document.getElementById('modalVolumes').classList.add('open');
+  document.querySelectorAll('#typeToolsRow [data-cmd]').forEach(b=>{
+    b.addEventListener('click', ()=>{ document.execCommand(b.getAttribute('data-cmd'), false, null); $('typeArea').focus(); scheduleSave(); });
+  });
+
+  $('typeArea').addEventListener('input', ()=>{ updateWordCount(); scheduleSave(); });
+
+  $('dictateBtn').addEventListener('click', startDictation);
+  $('grammarBtn').addEventListener('click', runGrammarCheck);
+
+  $('calcToggleBtn').addEventListener('click', ()=> $('calcPanel').classList.toggle('hidden'));
+  $('calcRunBtn').addEventListener('click', runCalc);
+  $('calcInsertBtn').addEventListener('click', insertCalcResult);
+  $('calcLiveBtn').addEventListener('click', fetchLiveRates);
+
+  $('imgAttachBtn').addEventListener('click', ()=> $('imgFileInput').click());
+  $('imgFileInput').addEventListener('change', handleImageAttach);
+
+  $('templateBtn').addEventListener('click', ()=> openModal('templateModal'));
+  document.querySelectorAll('[data-tpl]').forEach(b=> b.addEventListener('click', ()=> insertTemplate(b.getAttribute('data-tpl'))));
+
+  // hand drawing
+  document.querySelectorAll('.swatch[data-color]').forEach(s=>{
+    s.addEventListener('click', ()=>{
+      document.querySelectorAll('.swatch[data-color]').forEach(x=>x.classList.remove('selected'));
+      s.classList.add('selected'); penColor = s.getAttribute('data-color'); eraseMode=false;
+      $('eraserBtn').classList.remove('active');
+    });
+  });
+  $('penSize').addEventListener('change', e=> penSize = parseInt(e.target.value));
+  $('eraserBtn').addEventListener('click', ()=>{ eraseMode=!eraseMode; $('eraserBtn').classList.toggle('active',eraseMode); });
+  $('undoDrawBtn').addEventListener('click', ()=>{ if(strokes.length){ redoStack.push(strokes.pop()); redrawCanvas(); scheduleSave(); } });
+  $('redoDrawBtn').addEventListener('click', ()=>{ if(redoStack.length){ strokes.push(redoStack.pop()); redrawCanvas(); scheduleSave(); } });
+  $('clearDrawBtn').addEventListener('click', ()=>{ if(confirm('Clear this drawing?')){ strokes=[]; redoStack=[]; redrawCanvas(); scheduleSave(); } });
+
+  setupCanvas();
+
+  // page meta
+  $('pageLabel').addEventListener('input', scheduleSave);
+  $('pageDate').addEventListener('change', scheduleSave);
+  $('reminderCheck').addEventListener('change', handleReminderToggle);
+  $('tagInput').addEventListener('keydown', e=>{
+    if(e.key==='Enter' && e.target.value.trim()){
+      addTag(e.target.value.trim()); e.target.value='';
+    }
+  });
+
+  $('bookmarkBtn').addEventListener('click', toggleBookmark);
+  $('pageLockBtn').addEventListener('click', togglePageLock);
+  $('pdfExportBtn').addEventListener('click', exportPagePDF);
+  $('copyPageBtn').addEventListener('click', copyPageText);
+  $('clearPageBtn').addEventListener('click', clearPage);
+
+  // settings modal
+  $('pinSwitch').addEventListener('click', togglePinSetting);
+  $('darkSwitch').addEventListener('click', async ()=>{
+    settings.dark=!settings.dark; await sSet('settings',settings); applyTheme(); renderSettings();
+  });
+  $('fontSizeSlider').addEventListener('input', async e=>{
+    settings.fontSize = parseInt(e.target.value); $('fontSizeVal').textContent = settings.fontSize+'px';
+    applyTheme(); await sSet('settings',settings);
+  });
+  $('exportBackupBtn').addEventListener('click', exportBackup);
+  $('importBackupInput').addEventListener('change', importBackup);
+  $('resetAllBtn').addEventListener('click', resetAll);
+
+  $('searchInput').addEventListener('input', doSearch);
 }
 
-function selectVolume(volId) {
-  AppState.currentVol = volId;
-  saveStorage();
-  closeModal('modalVolumes');
-  updateCoverVolLabel();
+/* ====================== UNLOCK ====================== */
+function tryUnlock(){
+  if($('pinInput').value === settings.pin){
+    unlockedThisSession = true;
+    $('lockScreen').classList.add('hidden');
+    openBook();
+  } else {
+    $('lockError').textContent = 'Incorrect PIN. Try again.';
+  }
+}
+
+/* ====================== BOOK / INDEX ====================== */
+function openBook(){
+  document.getElementById('coverStage').classList.add('hidden');
+  $('bookShell').classList.remove('hidden');
+  showIndex();
+}
+
+function showIndex(){
+  $('pageView').classList.add('hidden');
+  $('indexView').classList.remove('hidden');
   renderIndex();
 }
 
-function createNewVolume() {
-  const nextId = Object.keys(AppState.volumes).length + 1;
-  const name = prompt("Enter Volume Name:", `Volume ${nextId}`);
-  if (name) {
-    AppState.volumes[nextId] = name;
-    selectVolume(nextId);
-  }
-}
-
-/* ============ PIN LOCK & SETTINGS ============ */
-function openSettings() {
-  document.getElementById('pinSwitch').classList.toggle('on', AppState.pinEnabled);
-  document.getElementById('darkSwitch').classList.toggle('on', AppState.darkMode);
-  document.getElementById('modalSettings').classList.add('open');
-}
-
-function togglePinSetting() {
-  if (!AppState.pinEnabled) {
-    const newPin = prompt("Set a 4-digit numeric PIN:");
-    if (newPin && /^\d{4}$/.test(newPin)) {
-      AppState.pin = newPin;
-      AppState.pinEnabled = true;
-      document.getElementById('pinSwitch').classList.add('on');
-      saveStorage();
-      alert("PIN protection enabled!");
-    } else if (newPin) {
-      alert("PIN must be exactly 4 digits!");
+function renderIndex(){
+  const filterText = ($('indexFilter').value||'').toLowerCase();
+  const bookmarkOnly = $('bookmarkFilterBtn').classList.contains('active');
+  const grid = $('pageGrid'); grid.innerHTML='';
+  let filled = 0;
+  for(let i=1;i<=100;i++){
+    const p = volume.pages[i];
+    if(p && p.hasContent) filled++;
+    if(filterText){
+      const hay = ((p&&p.label)||'') + ' ' + ((p&&p.tags)||[]).join(' ');
+      if(!hay.toLowerCase().includes(filterText)) continue;
     }
-  } else {
-    AppState.pinEnabled = false;
-    AppState.pin = "";
-    document.getElementById('pinSwitch').classList.remove('on');
-    saveStorage();
-    alert("PIN protection disabled!");
+    if(bookmarkOnly && !(p&&p.bookmarked)) continue;
+    const cell = document.createElement('div');
+    cell.className = 'pageCell' + (p&&p.hasContent ? ' filled':'');
+    cell.innerHTML = `${i}` + (p&&p.bookmarked?'<span class="bkmk">🔖</span>':'') + (p&&p.locked?'<span class="lockdot">🔒</span>':'');
+    cell.title = p&&p.label ? p.label : '';
+    cell.addEventListener('click', ()=> gotoPage(i));
+    grid.appendChild(cell);
   }
+  $('indexSub').textContent = `${filled} of 100 pages filled — ${volume.name}`;
+  $('indexTitle').textContent = 'Index';
 }
 
-function toggleDarkMode() {
-  AppState.darkMode = !AppState.darkMode;
-  if (AppState.darkMode) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    document.getElementById('darkSwitch').classList.add('on');
-    document.getElementById('darkToggleIcon').textContent = '☀️';
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-    document.getElementById('darkSwitch').classList.remove('on');
-    document.getElementById('darkToggleIcon').textContent = '🌙';
-  }
-  saveStorage();
+/* ====================== PAGE VIEW ====================== */
+function gotoPage(n){
+  currentPage = n;
+  const p = getPageData(n);
+  $('indexView').classList.add('hidden');
+  $('pageView').classList.remove('hidden');
+  $('pageNumBadge').textContent = 'Page '+n;
+
+  currentMode = p.mode || 'type';
+  setMode(currentMode, true);
+
+  currentLang = p.lang || 'en';
+  $('langToggleBtn').textContent = currentLang==='en'?'EN':'اردو';
+  $('typeArea').setAttribute('dir', currentLang==='ur'?'rtl':'ltr');
+  $('typeArea').innerHTML = p.html || '';
+
+  strokes = p.strokes ? JSON.parse(JSON.stringify(p.strokes)) : [];
+  redoStack = [];
+  setTimeout(()=>{ resizeCanvas(); redrawCanvas(); }, 30);
+
+  $('pageLabel').value = p.label || '';
+  $('pageDate').value = p.date || '';
+  $('reminderCheck').checked = !!p.reminder;
+  renderTags(p.tags||[]);
+  renderImages(p.images||[]);
+
+  $('bookmarkBtn').classList.toggle('active', !!p.bookmarked);
+  $('pageLockBtn').classList.toggle('active', !!p.locked);
+  $('calcPanel').classList.add('hidden');
+
+  updateWordCount();
+  $('savedIndicator').textContent = 'Saved';
 }
 
-function initPinPad() {
-  const pad = document.getElementById('pinPad');
-  const dots = document.getElementById('pinDots');
-  pad.innerHTML = "";
-  dots.innerHTML = '<div class="pin-dot"></div>'.repeat(4);
+function getPageData(n){
+  if(!volume.pages[n]) volume.pages[n] = {label:'',tags:[],date:'',mode:'type',lang:'en',html:'',strokes:[],images:[],locked:false,bookmarked:false,hasContent:false,reminder:false};
+  return volume.pages[n];
+}
 
-  const keys = ['1','2','3','4','5','6','7','8','9','C','0','⌫'];
-  keys.forEach(k => {
-    const btn = document.createElement('button');
-    btn.className = "pin-key";
-    btn.textContent = k;
-    btn.onclick = () => handlePinKey(k);
-    pad.appendChild(btn);
+function setMode(mode, silent){
+  currentMode = mode;
+  $('typeModeBtn').classList.toggle('active', mode==='type');
+  $('handModeBtn').classList.toggle('active', mode==='hand');
+  $('typeToolsRow').classList.toggle('hidden', mode!=='type');
+  $('handToolsRow').classList.toggle('hidden', mode!=='hand');
+  $('typeArea').classList.toggle('hidden', mode!=='type');
+  $('drawWrap').classList.toggle('hidden', mode!=='hand');
+  if(mode==='hand') setTimeout(()=>{ resizeCanvas(); redrawCanvas(); }, 20);
+  if(!silent) scheduleSave();
+}
+
+function updateWordCount(){
+  const text = $('typeArea').innerText.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  $('wordCount').textContent = words + ' words';
+}
+
+/* ====================== TAGS ====================== */
+function renderTags(tags){
+  const box = $('tagList'); box.innerHTML='';
+  tags.forEach((t,idx)=>{
+    const pill = document.createElement('span'); pill.className='tagPill';
+    pill.innerHTML = `${escapeHtml(t)} <button data-idx="${idx}">✕</button>`;
+    pill.querySelector('button').addEventListener('click', ()=>{
+      const p = getPageData(currentPage); p.tags.splice(idx,1); renderTags(p.tags); scheduleSave();
+    });
+    box.appendChild(pill);
   });
 }
-
-function handlePinKey(key) {
-  if (key === 'C') {
-    AppState.enteredPin = "";
-  } else if (key === '⌫') {
-    AppState.enteredPin = AppState.enteredPin.slice(0, -1);
-  } else if (AppState.enteredPin.length < 4) {
-    AppState.enteredPin += key;
-  }
-
-  updatePinDots();
-
-  if (AppState.enteredPin.length === 4) {
-    setTimeout(() => {
-      if (AppState.enteredPin === AppState.pin) {
-        AppState.enteredPin = "";
-        updatePinDots();
-        showScreen('screenCover');
-      } else {
-        document.getElementById('lockError').textContent = "Incorrect PIN. Try again.";
-        AppState.enteredPin = "";
-        updatePinDots();
-      }
-    }, 150);
-  }
+function addTag(t){
+  const p = getPageData(currentPage);
+  p.tags = p.tags||[];
+  if(!p.tags.includes(t)) p.tags.push(t);
+  renderTags(p.tags); scheduleSave();
 }
 
-function updatePinDots() {
-  const dots = document.querySelectorAll('.pin-dot');
-  dots.forEach((d, idx) => {
-    d.classList.toggle('filled', idx < AppState.enteredPin.length);
-  });
-  if (AppState.enteredPin.length < 4) {
-    document.getElementById('lockError').textContent = "";
-  }
-}
-
-function forgotPin() {
-  if (confirm("Reset PIN protection? Your notes will NOT be erased.")) {
-    AppState.pinEnabled = false;
-    AppState.pin = "";
-    saveStorage();
-    showScreen('screenCover');
-  }
-}
-
-/* ============ BACKUP & RESTORE ============ */
-function exportBackup() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(AppState));
-  const dl = document.createElement('a');
-  dl.setAttribute("href", dataStr);
-  dl.setAttribute("download", `MyRegister_Backup_${new Date().toISOString().slice(0,10)}.json`);
-  document.body.appendChild(dl);
-  dl.click();
-  dl.remove();
-}
-
-function importBackupTrigger() {
-  document.getElementById('importFileInput').click();
-}
-
-function handleImportFile(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
+/* ====================== IMAGES ====================== */
+function handleImageAttach(e){
+  const file = e.target.files[0]; if(!file) return;
+  const img = new Image();
   const reader = new FileReader();
-  reader.onload = (event) => {
-    try {
-      const parsed = JSON.parse(event.target.result);
-      if (parsed.pages && parsed.volumes) {
-        AppState = parsed;
-        saveStorage();
-        alert("Backup imported successfully!");
-        location.reload();
-      } else {
-        alert("Invalid backup file structure!");
-      }
-    } catch (err) {
-      alert("Failed to parse backup file!");
+  reader.onload = ev =>{
+    img.onload = ()=>{
+      const maxW = 500;
+      const scale = Math.min(1, maxW/img.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width*scale; canvas.height = img.height*scale;
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg',0.7);
+      const p = getPageData(currentPage); p.images = p.images||[]; p.images.push(dataUrl);
+      renderImages(p.images); scheduleSave();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+}
+function renderImages(images){
+  const gal = $('imgGallery'); gal.innerHTML='';
+  images.forEach((src,idx)=>{
+    const wrap = document.createElement('div'); wrap.style.position='relative'; wrap.style.display='inline-block';
+    wrap.innerHTML = `<img src="${src}" class="imgThumb"><button style="position:absolute;top:2px;right:8px;background:#7A2E2E;color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;" data-idx="${idx}">✕</button>`;
+    wrap.querySelector('button').addEventListener('click', ()=>{
+      const p = getPageData(currentPage); p.images.splice(idx,1); renderImages(p.images); scheduleSave();
+    });
+    gal.appendChild(wrap);
+  });
+}
+
+/* ====================== TEMPLATES ====================== */
+const TEMPLATES = {
+  diary: `<p><b>📔 Diary — </b></p><p>Today I felt…</p><p>The best part of my day was…</p><p>Tomorrow I want to…</p>`,
+  expense: `<p><b>💵 Expense Log</b></p><ul><li>Item — Amount</li><li>Item — Amount</li></ul><p><b>Total:</b> </p>`,
+  todo: `<p><b>✅ To-Do</b></p><ul><li>Task one</li><li>Task two</li><li>Task three</li></ul>`,
+  contact: `<p><b>👤 Contact</b></p><p>Name: </p><p>Phone: </p><p>Notes: </p>`,
+  meeting: `<p><b>🗒️ Meeting Notes</b></p><p>Attendees: </p><p>Agenda: </p><p>Action items:</p><ul><li></li></ul>`
+};
+function insertTemplate(key){
+  $('typeArea').innerHTML += TEMPLATES[key];
+  closeModal('templateModal');
+  updateWordCount(); scheduleSave();
+}
+
+/* ====================== CALCULATOR ====================== */
+let liveRates = null;
+function baseRates(){
+  return {PKR:1, USD:0.0036, EUR:0.0033, GBP:0.0028, INR:0.30, AED:0.013, SAR:0.013};
+}
+async function fetchLiveRates(){
+  $('calcRateNote').textContent = 'Fetching…';
+  try{
+    const res = await fetch('https://api.frankfurter.app/latest?from=USD&to=PKR,EUR,GBP,INR,AED,SAR');
+    const data = await res.json();
+    const usdToPkr = data.rates.PKR;
+    liveRates = {PKR:1, USD:1/usdToPkr, EUR:data.rates.EUR/usdToPkr, GBP:data.rates.GBP/usdToPkr, INR:data.rates.INR/usdToPkr, AED:(data.rates.AED||3.67)/usdToPkr, SAR:(data.rates.SAR||3.75)/usdToPkr};
+    $('calcRateNote').textContent = 'Live rates loaded ('+data.date+')';
+    toast('Live exchange rates updated');
+  }catch(e){
+    $('calcRateNote').textContent = 'Offline — using approximate rates';
+  }
+}
+function runCalc(){
+  const cur = $('calcCurrency').value;
+  const a = parseFloat($('calcA').value)||0;
+  const b = parseFloat($('calcB').value)||0;
+  const op = $('calcOp').value;
+  let r=0;
+  if(op==='+') r=a+b; else if(op==='−') r=a-b; else if(op==='×') r=a*b; else r = b!==0 ? a/b : 0;
+  $('calcResult').textContent = r.toLocaleString(undefined,{maximumFractionDigits:2}) + ' ' + cur;
+}
+function insertCalcResult(){
+  const text = $('calcResult').textContent;
+  $('typeArea').innerHTML += `<p>🧮 ${text}</p>`;
+  updateWordCount(); scheduleSave();
+}
+
+/* ====================== VOICE DICTATE ====================== */
+function startDictation(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ toast('Voice dictation not supported in this browser'); return; }
+  const rec = new SR();
+  rec.lang = currentLang==='ur' ? 'ur-PK' : 'en-US';
+  rec.interimResults = false;
+  $('dictateBtn').classList.add('active'); $('dictateBtn').textContent='🎙️ Listening…';
+  rec.onresult = e=>{
+    const text = e.results[0][0].transcript;
+    $('typeArea').innerHTML += `<p>${escapeHtml(text)}</p>`;
+    updateWordCount(); scheduleSave();
+  };
+  rec.onend = ()=>{ $('dictateBtn').classList.remove('active'); $('dictateBtn').textContent='🎙️ Dictate'; };
+  rec.onerror = ()=>{ $('dictateBtn').classList.remove('active'); $('dictateBtn').textContent='🎙️ Dictate'; toast('Could not access microphone'); };
+  rec.start();
+}
+
+/* ====================== GRAMMAR CHECK ====================== */
+async function runGrammarCheck(){
+  if(!confirm("This sends this page's English text to the free LanguageTool.org service. Continue?")) return;
+  const text = $('typeArea').innerText;
+  try{
+    const res = await fetch('https://api.languagetool.org/v2/check',{
+      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:'text='+encodeURIComponent(text)+'&language=en-US'
+    });
+    const data = await res.json();
+    if(!data.matches || !data.matches.length){ toast('No issues found ✅'); return; }
+    const first = data.matches[0];
+    const suggestion = first.replacements && first.replacements[0] ? first.replacements[0].value : '(no suggestion)';
+    toast(`${data.matches.length} issue(s) found. e.g. "${first.message}" → try "${suggestion}"`);
+  }catch(e){ toast('Grammar check unavailable right now'); }
+}
+
+/* ====================== CANVAS DRAWING ====================== */
+function setupCanvas(){
+  const canvas = $('drawCanvas');
+  const getPos = e=>{
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return {x:(t.clientX-rect.left) * (canvas.width/rect.width), y:(t.clientY-rect.top) * (canvas.height/rect.height)};
+  };
+  const start = e=>{ e.preventDefault(); drawing=true; const pos=getPos(e); strokes.push({color:eraseMode?'#F4EEDA':penColor, size:eraseMode?penSize*4:penSize, pts:[pos]}); redoStack=[]; };
+  const move = e=>{ if(!drawing) return; e.preventDefault(); const pos=getPos(e); strokes[strokes.length-1].pts.push(pos); redrawCanvas(); };
+  const end = ()=>{ if(drawing){ drawing=false; scheduleSave(); } };
+  canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', move, {passive:false}); canvas.addEventListener('touchend', end);
+  window.addEventListener('resize', ()=>{ resizeCanvas(); redrawCanvas(); });
+}
+function resizeCanvas(){
+  const canvas = $('drawCanvas'); const wrap = $('drawWrap');
+  if(!wrap || wrap.classList.contains('hidden')) { canvas.width = canvas.clientWidth||600; return; }
+  canvas.width = wrap.clientWidth; canvas.height = 320;
+}
+function redrawCanvas(){
+  const canvas = $('drawCanvas'); if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--paper') || '#F4EEDA';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  strokes.forEach(s=>{
+    ctx.strokeStyle = s.color; ctx.lineWidth = s.size; ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath();
+    s.pts.forEach((p,i)=>{ if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); });
+    ctx.stroke();
+  });
+}
+
+/* ====================== SAVE ====================== */
+function scheduleSave(){
+  $('savedIndicator').textContent = 'Saving…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(savePage, 500);
+}
+async function savePage(){
+  const p = getPageData(currentPage);
+  p.mode = currentMode;
+  p.lang = currentLang;
+  p.html = $('typeArea').innerHTML;
+  p.strokes = strokes;
+  p.label = $('pageLabel').value;
+  p.date = $('pageDate').value;
+  p.reminder = $('reminderCheck').checked;
+  const textLen = $('typeArea').innerText.trim().length;
+  p.hasContent = !!(textLen || (strokes && strokes.length) || (p.images && p.images.length));
+  volume.pages[currentPage] = p;
+  await sSet('volume-'+volume.id, volume);
+  $('savedIndicator').textContent = 'Saved';
+  maybeMilestone();
+}
+
+function maybeMilestone(){
+  const filled = Object.values(volume.pages).filter(p=>p.hasContent).length;
+  if([10,25,50,100].includes(filled) && !volume['_ms_'+filled]){
+    volume['_ms_'+filled] = true;
+    toast('🎉 Milestone unlocked — filled '+filled+' pages!');
+  }
+}
+
+/* ====================== BOOKMARK / LOCK / CLEAR ====================== */
+function toggleBookmark(){
+  const p = getPageData(currentPage); p.bookmarked = !p.bookmarked;
+  $('bookmarkBtn').classList.toggle('active', p.bookmarked);
+  scheduleSave();
+}
+function togglePageLock(){
+  const p = getPageData(currentPage); p.locked = !p.locked;
+  $('pageLockBtn').classList.toggle('active', p.locked);
+  scheduleSave();
+  toast(p.locked ? 'Page locked' : 'Page unlocked');
+}
+function clearPage(){
+  if(!confirm('Clear this page? This cannot be undone.')) return;
+  volume.pages[currentPage] = {label:'',tags:[],date:'',mode:'type',lang:'en',html:'',strokes:[],images:[],locked:false,bookmarked:false,hasContent:false,reminder:false};
+  gotoPage(currentPage);
+  scheduleSave();
+}
+function copyPageText(){
+  const text = $('typeArea').innerText;
+  navigator.clipboard && navigator.clipboard.writeText(text).then(()=> toast('Page text copied')).catch(()=> toast('Copy failed'));
+}
+function handleReminderToggle(e){
+  if(e.target.checked){
+    if('Notification' in window){
+      Notification.requestPermission().then(perm=>{
+        if(perm==='granted') toast('Reminder set — stays active while this tab is open');
+        else toast('Enable notifications in your browser to get reminders');
+      });
+    } else toast('Notifications not supported in this browser');
+  }
+  scheduleSave();
+}
+
+/* ====================== PDF EXPORT ====================== */
+function loadScript(src){
+  return new Promise((resolve,reject)=>{
+    const s = document.createElement('script'); s.src=src; s.onload=resolve; s.onerror=reject; document.head.appendChild(s);
+  });
+}
+async function exportPagePDF(){
+  try{
+    if(!window.jspdf) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    const {jsPDF} = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(16); doc.text(volume.name+' — Page '+currentPage, 14,18);
+    doc.setFontSize(10); doc.text('Label: '+($('pageLabel').value||'—'),14,26);
+    doc.text('Date: '+($('pageDate').value||'—'),14,32);
+    doc.setFontSize(12);
+    const text = $('typeArea').innerText || '(hand-drawn page — see image)';
+    const lines = doc.splitTextToSize(text, 180);
+    let y=44;
+    doc.text(lines, 14, y);
+    y += lines.length*6 + 6;
+    if(currentMode==='hand'){
+      const canvas = $('drawCanvas');
+      const imgData = canvas.toDataURL('image/png');
+      doc.addImage(imgData,'PNG',14,y,180, 90);
     }
+    doc.save('my-register-page-'+currentPage+'.pdf');
+    toast('PDF exported');
+  }catch(e){ toast('Could not export PDF — try again'); }
+}
+
+/* ====================== SEARCH ====================== */
+function doSearch(){
+  const q = $('searchInput').value.toLowerCase().trim();
+  const box = $('searchResults'); box.innerHTML='';
+  if(!q) return;
+  Object.keys(volume.pages).forEach(num=>{
+    const p = volume.pages[num];
+    const text = (p.label||'') + ' ' + (p.tags||[]).join(' ') + ' ' + stripHtml(p.html||'');
+    if(text.toLowerCase().includes(q)){
+      const div = document.createElement('div'); div.className='searchResult';
+      const snippet = text.length>90 ? text.slice(0,90)+'…' : text;
+      div.innerHTML = `<b>Page ${num}</b> — ${escapeHtml(snippet)}`;
+      div.addEventListener('click', ()=>{ closeModal('searchModal'); gotoPage(parseInt(num)); });
+      box.appendChild(div);
+    }
+  });
+  if(!box.children.length) box.innerHTML = '<p style="font-size:13px;color:var(--ink-faint);">No matches found.</p>';
+}
+function stripHtml(html){ const d=document.createElement('div'); d.innerHTML=html; return d.innerText||''; }
+function escapeHtml(s){ return (s+'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ====================== SETTINGS ====================== */
+function renderSettings(){
+  $('pinSwitch').classList.toggle('on', settings.pinEnabled);
+  $('darkSwitch').classList.toggle('on', settings.dark);
+  $('fontSizeSlider').value = settings.fontSize;
+  $('fontSizeVal').textContent = settings.fontSize+'px';
+  openModal('settingsModal');
+}
+async function togglePinSetting(){
+  if(!settings.pinEnabled){
+    const pin = prompt('Set a 4-digit PIN:');
+    if(pin && /^\d{4}$/.test(pin)){ settings.pinEnabled=true; settings.pin=pin; await sSet('settings',settings); toast('PIN lock enabled'); }
+    else if(pin) toast('PIN must be exactly 4 digits');
+  } else {
+    settings.pinEnabled=false; settings.pin=''; await sSet('settings',settings); toast('PIN lock disabled');
+  }
+  renderSettings();
+}
+
+async function exportBackup(){
+  const blob = new Blob([JSON.stringify({settings,volume},null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = volume.name.replace(/\s+/g,'_')+'_backup.json'; a.click();
+  toast('Backup exported');
+}
+function importBackup(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async ev =>{
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(data.volume){
+        volume = data.volume;
+        await sSet('volume-'+volume.id, volume);
+        if(data.settings){
+          const exists = settings.volumes.find(v=>v.id===volume.id);
+          if(!exists) settings.volumes.push({id:volume.id,name:volume.name,cover:volume.cover||'#7A2E2E'});
+          settings.activeVolume = volume.id;
+          await sSet('settings', settings);
+        }
+        toast('Backup imported'); closeModal('settingsModal'); renderIndex();
+      } else toast('Invalid backup file');
+    }catch(err){ toast('Could not read backup file'); }
   };
   reader.readAsText(file);
+  e.target.value='';
+}
+async function resetAll(){
+  if(!confirm('This erases ALL volumes and pages permanently. Are you sure?')) return;
+  if(!confirm('Really sure? This cannot be undone.')) return;
+  settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+  await sSet('settings', settings);
+  volume = {id:1,name:'Volume I',cover:'#7A2E2E',pages:{}};
+  await sSet('volume-1', volume);
+  toast('All data reset');
+  closeModal('settingsModal');
+  location.reload();
 }
 
-function factoryReset() {
-  if (confirm("DANGER: Reset all register data? This cannot be undone.")) {
-    safeRemove('myreg_appstate');
-    location.reload();
+/* ====================== VOLUMES ====================== */
+function renderVolumes(){
+  const list = $('volList'); list.innerHTML='';
+  settings.volumes.forEach(v=>{
+    const row = document.createElement('div'); row.className='volRow';
+    row.innerHTML = `<div class="swatch" style="background:${v.cover}"></div><span>${escapeHtml(v.name)}${v.id===volume.id?' (active)':''}</span>`;
+    const openBtn = document.createElement('button'); openBtn.className='toolBtn'; openBtn.textContent='Open';
+    openBtn.addEventListener('click', ()=> switchVolume(v.id));
+    row.appendChild(openBtn);
+    if(settings.volumes.length>1){
+      const delBtn = document.createElement('button'); delBtn.className='toolBtn'; delBtn.textContent='🗑️';
+      delBtn.addEventListener('click', ()=> deleteVolume(v.id));
+      row.appendChild(delBtn);
+    }
+    list.appendChild(row);
+  });
+  openModal('volModal');
+}
+async function switchVolume(id){
+  settings.activeVolume = id; await sSet('settings', settings);
+  const meta = settings.volumes.find(v=>v.id===id);
+  volume = await sGet('volume-'+id, {id, name:meta.name, cover:meta.cover, pages:{}});
+  $('volTitleTop').textContent = volume.name;
+  closeModal('volModal');
+  showIndex();
+  toast('Switched to '+volume.name);
+}
+async function createVolume(){
+  const name = prompt('Name this new volume:', 'Volume '+(settings.volumes.length+1));
+  if(!name) return;
+  const colors = ['#7A2E2E','#1B2A44','#4C6B54','#5c3d1f','#3c3060'];
+  const cover = colors[settings.volumes.length % colors.length];
+  const id = Date.now();
+  settings.volumes.push({id,name,cover});
+  await sSet('settings', settings);
+  volume = {id,name,cover,pages:{}};
+  await sSet('volume-'+id, volume);
+  settings.activeVolume = id; await sSet('settings', settings);
+  $('volTitleTop').textContent = volume.name;
+  renderVolumes();
+  showIndex();
+  toast('Created '+name);
+}
+async function deleteVolume(id){
+  if(!confirm('Delete this volume and all its pages permanently?')) return;
+  settings.volumes = settings.volumes.filter(v=>v.id!==id);
+  if(settings.activeVolume===id){ settings.activeVolume = settings.volumes[0].id; }
+  await sSet('settings', settings);
+  if(volume.id===id){
+    const meta = settings.volumes.find(v=>v.id===settings.activeVolume);
+    volume = await sGet('volume-'+settings.activeVolume, {id:meta.id,name:meta.name,cover:meta.cover,pages:{}});
+    $('volTitleTop').textContent = volume.name;
   }
+  renderVolumes(); showIndex();
 }
 
-function closeModal(modalId) {
-  document.getElementById(modalId).classList.remove('open');
+/* ====================== STATS ====================== */
+function renderStats(){
+  const pages = Object.values(volume.pages).filter(p=>p.hasContent);
+  const words = pages.reduce((sum,p)=> sum + (stripHtml(p.html||'').trim() ? stripHtml(p.html).trim().split(/\s+/).length : 0), 0);
+  const bookmarks = pages.filter(p=>p.bookmarked).length;
+  const locked = pages.filter(p=>p.locked).length;
+  $('statPages').textContent = pages.length;
+  $('statWords').textContent = words;
+  $('statBookmarks').textContent = bookmarks;
+  $('statLocked').textContent = locked;
+  openModal('statsModal');
 }
+
+/* ====================== MODAL HELPERS ====================== */
+function openModal(id){ $(id).classList.remove('hidden'); }
+function closeModal(id){ $(id).classList.add('hidden'); }
+document.addEventListener('click', e=>{
+  if(e.target.classList && e.target.classList.contains('modalOverlay')) e.target.classList.add('hidden');
+});
+
+/* ====================== TOAST ====================== */
+let toastTimer;
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 3200);
+}
+
+})();
 </script>
 </body>
 </html>
