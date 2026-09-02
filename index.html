@@ -67,6 +67,8 @@ button{font-family:inherit; cursor:pointer;}
 }
 .btn:hover{background:var(--brass-light); transform:translateY(-1px);}
 .btn.ghost{background:transparent; border:1px solid rgba(244,238,218,.4); color:var(--paper);}
+.modalBody .btn.ghost{border-color:var(--paper-line); color:var(--ink-text); background:var(--paper-dark);}
+.modalBody .btn.ghost:hover{border-color:var(--brass);}
 .btn.danger{background:var(--maroon); color:#fff;}
 #lockError{color:#e08a8a; font-size:13px; min-height:16px;}
 
@@ -116,7 +118,10 @@ button{font-family:inherit; cursor:pointer;}
   display:flex; align-items:center; justify-content:space-between; padding:10px 16px;
   background:var(--ink-navy); color:var(--paper);
 }
-#topBar .brandMini{font-family:var(--font-display); font-weight:600; display:flex; align-items:center; gap:8px;}
+#topBar .brandMini{font-family:var(--font-display); font-weight:600; display:flex; align-items:center; gap:8px; min-width:0; flex:1 1 auto; overflow:hidden;}
+#topBar .brandMini span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+#topBar{flex-wrap:nowrap;}
+#topActions{flex:0 0 auto;}
 .iconBtn{
   background:transparent; border:none; color:var(--paper); font-size:17px; padding:6px 9px; border-radius:7px;
 }
@@ -133,7 +138,7 @@ button{font-family:inherit; cursor:pointer;}
 .indexToolbar{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; align-items:center;}
 .indexToolbar input[type=text]{
   flex:1; min-width:160px; padding:8px 12px; border-radius:8px; border:1px solid var(--paper-line); background:var(--paper-dark);
-  color:var(--ink-text); font-family:var(--font-body);
+  color:var(--ink-text); font-family:var(--font-body); font-size:16px;
 }
 .pageGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(64px,1fr)); gap:8px;}
 .pageCell{
@@ -156,6 +161,8 @@ button{font-family:inherit; cursor:pointer;}
 /* ---------- Page view ---------- */
 #pageView{display:flex; flex-direction:column; height:100%; padding:0;}
 .pageHead{display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid var(--paper-line); gap:10px; flex-wrap:wrap;}
+.pageHead .iconBtn{color:var(--ink-text); font-size:19px;}
+.pageHead .iconBtn:hover{background:rgba(42,36,24,.08);}
 .pageNumBadge{font-family:var(--font-mono); background:var(--ink-navy); color:var(--brass-light); padding:5px 12px; border-radius:20px; font-size:12px;}
 .modeToggle{display:flex; background:var(--paper-dark); border-radius:20px; padding:3px; gap:2px;}
 .modeToggle button{border:none; background:transparent; padding:6px 14px; border-radius:16px; font-size:13px; color:var(--ink-faint); font-weight:600;}
@@ -182,7 +189,7 @@ button{font-family:inherit; cursor:pointer;}
 .swatch.selected{border-color:var(--brass);}
 .pageMeta{display:flex; gap:10px; flex-wrap:wrap; padding:10px 20px; border-top:1px solid var(--paper-line); align-items:center;}
 .pageMeta input, .pageMeta select{
-  padding:6px 10px; border-radius:7px; border:1px solid var(--paper-line); background:var(--paper-dark); color:var(--ink-text); font-size:13px;
+  padding:8px 10px; border-radius:7px; border:1px solid var(--paper-line); background:var(--paper-dark); color:var(--ink-text); font-size:16px;
 }
 .tagPill{background:var(--sage); color:#fff; font-size:11px; padding:3px 9px; border-radius:12px; display:inline-flex; gap:5px; align-items:center;}
 .tagPill button{background:none; border:none; color:#fff; font-size:12px; padding:0;}
@@ -223,6 +230,25 @@ button{font-family:inherit; cursor:pointer;}
 @media (max-width:640px){
   .pageGrid{grid-template-columns:repeat(auto-fill,minmax(46px,1fr));}
   #bookCover{width:230px; height:320px;}
+  .toolBtn{padding:9px 12px; font-size:14px;}
+  .iconBtn{padding:9px 11px; font-size:19px;}
+  .modeToggle button{padding:9px 16px;}
+  #topActions{gap:2px;}
+  .pageHead{padding:10px 14px;}
+  .pageToolsRow{padding:8px 14px;}
+  #pageBody{padding:14px 16px;}
+  .pageMeta{padding:10px 14px;}
+  .pageMeta input, .pageMeta select{flex:1 1 auto; min-width:120px;}
+  .penOptions{padding:8px 14px;}
+  .swatch{width:28px; height:28px;}
+  .indexToolbar{gap:10px;}
+  .indexToolbar input[type=text]{width:100%;}
+  #searchOpenBtn, #statsOpenBtn, #settingsOpenBtn, #closeBookBtn{padding:9px 10px;}
+}
+@media (max-width:400px){
+  #topBar{padding:10px 12px;}
+  .brandMini{font-size:14px;}
+  #topActions .iconBtn{padding:8px 8px; font-size:17px;}
 }
 </style>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8575286384991001" crossorigin="anonymous"></script>
@@ -363,9 +389,9 @@ button{font-family:inherit; cursor:pointer;}
               <select id="calcCurrency">
                 <option>PKR</option><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>AED</option><option>SAR</option>
               </select>
-              <input type="number" id="calcA" placeholder="Amount A" style="width:110px; padding:6px; border-radius:6px; border:1px solid var(--paper-line);">
+              <input type="number" id="calcA" placeholder="Amount A" style="width:110px; padding:8px; border-radius:6px; border:1px solid var(--paper-line); font-size:16px;">
               <select id="calcOp"><option>+</option><option>−</option><option>×</option><option>÷</option></select>
-              <input type="number" id="calcB" placeholder="Amount B" style="width:110px; padding:6px; border-radius:6px; border:1px solid var(--paper-line);">
+              <input type="number" id="calcB" placeholder="Amount B" style="width:110px; padding:8px; border-radius:6px; border:1px solid var(--paper-line); font-size:16px;">
               <button class="toolBtn" id="calcRunBtn">=</button>
               <span id="calcResult" style="font-family:var(--font-mono); font-weight:700;">0</span>
               <button class="toolBtn" id="calcInsertBtn">Insert into Page</button>
@@ -440,7 +466,7 @@ button{font-family:inherit; cursor:pointer;}
   <div class="modalBox">
     <div class="modalHead"><h3>Full Text Search</h3><button class="iconBtn" data-close="searchModal">✕</button></div>
     <div class="modalBody">
-      <input type="text" id="searchInput" placeholder="Search all pages, labels, tags…" style="padding:8px; border-radius:8px; border:1px solid var(--paper-line);">
+      <input type="text" id="searchInput" placeholder="Search all pages, labels, tags…" style="padding:10px; border-radius:8px; border:1px solid var(--paper-line); font-size:16px;">
       <div id="searchResults" style="display:flex; flex-direction:column; gap:8px;"></div>
     </div>
   </div>
