@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%231B2A44'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle'%3E%F0%9F%93%94%3C/text%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>My Register — Digital Notebook</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -178,15 +179,17 @@ button{font-family:inherit; cursor:pointer;}
 #typeArea{
   min-height:260px; outline:none; line-height:1.7; font-size:16px; padding:14px;
   background:
-    repeating-linear-gradient(var(--paper) 0 31px, var(--paper-line) 31px 32px);
+    repeating-linear-gradient(var(--page-paper, var(--paper)) 0 31px, var(--page-paper-line, var(--paper-line)) 31px 32px);
   border-radius:8px; border:1px solid var(--paper-line);
 }
 #typeArea[dir=rtl]{font-family:'Noto Nastaliq Urdu','Fraunces',serif; font-size:19px; line-height:2.2;}
 #drawWrap{position:relative; border:1px solid var(--paper-line); border-radius:8px; overflow:hidden; touch-action:none;}
-#drawCanvas{display:block; width:100%; background:var(--paper); cursor:crosshair;}
+#drawCanvas{display:block; width:100%; background:var(--page-paper, var(--paper)); cursor:crosshair;}
 .penOptions{display:flex; gap:8px; align-items:center; padding:8px 20px; border-top:1px solid var(--paper-line); flex-wrap:wrap;}
 .swatch{width:22px; height:22px; border-radius:50%; border:2px solid transparent; cursor:pointer;}
 .swatch.selected{border-color:var(--brass);}
+.colorSwatchBtn{width:26px; height:26px; border-radius:50%; border:2px solid transparent; cursor:pointer; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12); padding:0;}
+.colorSwatchBtn.selected{border-color:var(--brass); box-shadow:inset 0 0 0 1px rgba(0,0,0,.12), 0 0 0 2px var(--paper);}
 .pageMeta{display:flex; gap:10px; flex-wrap:wrap; padding:10px 20px; border-top:1px solid var(--paper-line); align-items:center;}
 .pageMeta input, .pageMeta select{
   padding:8px 10px; border-radius:7px; border:1px solid var(--paper-line); background:var(--paper-dark); color:var(--ink-text); font-size:16px;
@@ -352,6 +355,7 @@ button{font-family:inherit; cursor:pointer;}
             <button id="typeModeBtn" class="active">✍️ Type</button>
             <button id="handModeBtn">🖌️ Hand</button>
           </div>
+          <button class="iconBtn" id="pageColorBtn" title="Page color">🎨</button>
         </div>
 
         <div class="pageToolsRow" id="typeToolsRow">
@@ -379,6 +383,20 @@ button{font-family:inherit; cursor:pointer;}
           <button class="toolBtn" id="undoDrawBtn">↶ Undo</button>
           <button class="toolBtn" id="redoDrawBtn">↷ Redo</button>
           <button class="toolBtn" id="clearDrawBtn">🗑️ Clear</button>
+        </div>
+
+        <div class="pageToolsRow hidden" id="colorPanel">
+          <span style="font-size:12px; color:var(--ink-faint);">Page color</span>
+          <button class="colorSwatchBtn selected" data-paper="#F4EEDA" data-line="#D9CCA3" style="background:#F4EEDA;" title="Classic Cream"></button>
+          <button class="colorSwatchBtn" data-paper="#FFFFFF" data-line="#E6E6E6" style="background:#FFFFFF;" title="Pure White"></button>
+          <button class="colorSwatchBtn" data-paper="#FFF6D6" data-line="#EBDDA0" style="background:#FFF6D6;" title="Soft Yellow"></button>
+          <button class="colorSwatchBtn" data-paper="#E3F3E8" data-line="#C3DFC9" style="background:#E3F3E8;" title="Mint Green"></button>
+          <button class="colorSwatchBtn" data-paper="#E4F0FA" data-line="#C3DCEF" style="background:#E4F0FA;" title="Sky Blue"></button>
+          <button class="colorSwatchBtn" data-paper="#FBEAEF" data-line="#EBC9D3" style="background:#FBEAEF;" title="Blush Pink"></button>
+          <button class="colorSwatchBtn" data-paper="#EDE7F8" data-line="#D2C7EC" style="background:#EDE7F8;" title="Lavender"></button>
+          <button class="colorSwatchBtn" data-paper="#FDEADB" data-line="#F0CDA6" style="background:#FDEADB;" title="Peach"></button>
+          <button class="colorSwatchBtn" data-paper="#ECECEC" data-line="#D2D2D2" style="background:#ECECEC;" title="Light Gray"></button>
+          <button class="colorSwatchBtn" data-paper="#E1F3F1" data-line="#BEE0DC" style="background:#E1F3F1;" title="Soft Teal"></button>
         </div>
 
         <div id="pageBody">
@@ -510,13 +528,13 @@ button{font-family:inherit; cursor:pointer;}
 /* ====================== STORAGE HELPERS ====================== */
 async function sGet(key, fallback){
   try{
-    const r = await window.storage.get(key,false);
-    if(!r) return fallback;
-    return JSON.parse(r.value);
+    const raw = window.localStorage.getItem('myregister:'+key);
+    if(raw === null) return fallback;
+    return JSON.parse(raw);
   }catch(e){ return fallback; }
 }
 async function sSet(key, val){
-  try{ await window.storage.set(key, JSON.stringify(val), false); }catch(e){ console.error('storage set failed', e); }
+  try{ window.localStorage.setItem('myregister:'+key, JSON.stringify(val)); }catch(e){ console.error('storage set failed', e); }
 }
 
 const DEFAULT_SETTINGS = {
@@ -653,6 +671,19 @@ function wireEvents(){
   $('redoDrawBtn').addEventListener('click', ()=>{ if(redoStack.length){ strokes.push(redoStack.pop()); redrawCanvas(); scheduleSave(); } });
   $('clearDrawBtn').addEventListener('click', ()=>{ if(confirm('Clear this drawing?')){ strokes=[]; redoStack=[]; redrawCanvas(); scheduleSave(); } });
 
+  $('pageColorBtn').addEventListener('click', ()=> $('colorPanel').classList.toggle('hidden'));
+  document.querySelectorAll('.colorSwatchBtn').forEach(sw=>{
+    sw.addEventListener('click', ()=>{
+      document.querySelectorAll('.colorSwatchBtn').forEach(x=>x.classList.remove('selected'));
+      sw.classList.add('selected');
+      applyPageColor(sw.getAttribute('data-paper'), sw.getAttribute('data-line'));
+      const p = getPageData(currentPage);
+      p.pageColor = {paper: sw.getAttribute('data-paper'), line: sw.getAttribute('data-line')};
+      scheduleSave();
+      redrawCanvas();
+    });
+  });
+
   setupCanvas();
 
   // page meta
@@ -754,6 +785,17 @@ function gotoPage(n){
   strokes = p.strokes ? JSON.parse(JSON.stringify(p.strokes)) : [];
   redoStack = [];
   setTimeout(()=>{ resizeCanvas(); redrawCanvas(); }, 30);
+
+  if(p.pageColor && p.pageColor.paper){
+    applyPageColor(p.pageColor.paper, p.pageColor.line);
+  } else {
+    applyPageColor(null, null);
+  }
+  document.querySelectorAll('.colorSwatchBtn').forEach(sw=>{
+    const match = p.pageColor ? sw.getAttribute('data-paper')===p.pageColor.paper : sw.getAttribute('data-paper')==='#F4EEDA';
+    sw.classList.toggle('selected', match);
+  });
+  $('colorPanel').classList.add('hidden');
 
   $('pageLabel').value = p.label || '';
   $('pageDate').value = p.date || '';
@@ -946,10 +988,25 @@ function resizeCanvas(){
   if(!wrap || wrap.classList.contains('hidden')) { canvas.width = canvas.clientWidth||600; return; }
   canvas.width = wrap.clientWidth; canvas.height = 320;
 }
+function applyPageColor(paper, line){
+  const body = $('pageBody');
+  if(paper && line){
+    body.style.setProperty('--page-paper', paper);
+    body.style.setProperty('--page-paper-line', line);
+  } else {
+    body.style.removeProperty('--page-paper');
+    body.style.removeProperty('--page-paper-line');
+  }
+}
+function currentPaperColor(){
+  const v = getComputedStyle($('pageBody')).getPropertyValue('--page-paper').trim();
+  if(v) return v;
+  return getComputedStyle(document.body).getPropertyValue('--paper').trim() || '#F4EEDA';
+}
 function redrawCanvas(){
   const canvas = $('drawCanvas'); if(!canvas) return;
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--paper') || '#F4EEDA';
+  ctx.fillStyle = currentPaperColor();
   ctx.fillRect(0,0,canvas.width,canvas.height);
   strokes.forEach(s=>{
     ctx.strokeStyle = s.color; ctx.lineWidth = s.size; ctx.lineCap='round'; ctx.lineJoin='round';
@@ -1077,6 +1134,7 @@ function escapeHtml(s){ return (s+'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'
 
 /* ====================== SETTINGS ====================== */
 function renderSettings(){
+  settings.dark = document.body.classList.contains('dark'); // stay in sync with the floating quick-toggle
   $('pinSwitch').classList.toggle('on', settings.pinEnabled);
   $('darkSwitch').classList.toggle('on', settings.dark);
   $('fontSizeSlider').value = settings.fontSize;
@@ -1219,5 +1277,7 @@ function toast(msg){
 
 })();
 </script>
+<script src="features/dark-mode.js"></script>
+<script src="features/cookie-consent.js"></script>
 </body>
 </html>
