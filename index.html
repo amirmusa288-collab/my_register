@@ -211,7 +211,24 @@ button{font-family:inherit; cursor:pointer;}
 .sectionLabel{font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--brass); margin:20px 0 10px;}
 
 /* ---------- Page view ---------- */
-#pageView{display:flex; flex-direction:column; height:100%; padding:0;}
+#pageView{display:flex; flex-direction:row; height:100%; padding:0; position:relative;}
+.pageMain{flex:1; display:flex; flex-direction:column; min-width:0; height:100%;}
+.pageTopMini{display:flex; align-items:center; gap:8px; padding:10px 14px; border-bottom:1px solid var(--paper-line); flex-wrap:wrap;}
+.pageFooterMini{display:flex; justify-content:space-between; padding:8px 20px; font-size:12px; color:var(--ink-faint); border-top:1px solid var(--paper-line);}
+#toolsSidebar{
+  width:280px; flex:0 0 280px; border-left:1px solid var(--paper-line); background:var(--paper-dark);
+  display:flex; flex-direction:column; gap:12px; padding:14px; overflow-y:auto; height:100%;
+}
+.sidebarBackdrop{display:none;}
+@media (max-width:900px){
+  #toolsSidebar{
+    position:fixed; top:0; right:0; bottom:0; width:82vw; max-width:320px; z-index:220;
+    transform:translateX(100%); transition:transform .25s ease; box-shadow:-8px 0 24px rgba(0,0,0,.3);
+  }
+  #toolsSidebar.open{transform:translateX(0);}
+  .sidebarBackdrop{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:210;}
+  .sidebarBackdrop.show{display:block;}
+}
 .pageHead{display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid var(--paper-line); gap:10px; flex-wrap:wrap;}
 .pageHead .iconBtn{color:var(--ink-text); font-size:19px;}
 .pageHead .iconBtn:hover{background:rgba(42,36,24,.08);}
@@ -232,7 +249,9 @@ button{font-family:inherit; cursor:pointer;}
   background:
     repeating-linear-gradient(var(--page-paper, var(--paper)) 0 31px, var(--page-paper-line, var(--paper-line)) 31px 32px);
   border-radius:8px; border:1px solid var(--paper-line);
+  color:var(--page-ink, var(--ink-text));
 }
+#typeArea *{color:inherit;}
 #typeArea[dir=rtl]{font-family:'Noto Nastaliq Urdu','Fraunces',serif; font-size:19px; line-height:2.2;}
 #drawWrap{position:relative; border:1px solid var(--paper-line); border-radius:8px; overflow:hidden; touch-action:none;}
 #drawCanvas{display:block; width:100%; background:var(--page-paper, var(--paper)); cursor:crosshair;}
@@ -402,101 +421,115 @@ button{font-family:inherit; cursor:pointer;}
 
       <!-- PAGE -->
       <div id="pageView" class="view hidden" style="padding:0;">
-        <div class="pageHead">
-          <div style="display:flex; align-items:center; gap:10px;">
+
+        <div class="pageMain">
+          <div class="pageTopMini">
             <button class="iconBtn" id="backToIndexBtn">📋</button>
             <button class="iconBtn" id="prevPageBtn">◀</button>
             <span class="pageNumBadge" id="pageNumBadge">Page 1</span>
             <button class="iconBtn" id="nextPageBtn">▶</button>
+            <button class="toolBtn" id="sidebarToggleBtn" style="margin-left:auto;">☰ Tools</button>
           </div>
+
+          <div id="pageBody">
+            <div id="typeArea" contenteditable="true" dir="ltr" placeholder="Write here…"></div>
+            <div id="drawWrap" class="hidden"><canvas id="drawCanvas" height="320"></canvas></div>
+            <div id="calcPanel" class="hidden" style="margin-top:12px; background:var(--paper-dark); border:1px solid var(--paper-line); border-radius:10px; padding:12px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <select id="calcCurrency">
+                  <option>PKR</option><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>AED</option><option>SAR</option>
+                </select>
+                <input type="number" id="calcA" placeholder="Amount A" style="width:110px; padding:8px; border-radius:6px; border:1px solid var(--paper-line); font-size:16px;">
+                <select id="calcOp"><option>+</option><option>−</option><option>×</option><option>÷</option></select>
+                <input type="number" id="calcB" placeholder="Amount B" style="width:110px; padding:8px; border-radius:6px; border:1px solid var(--paper-line); font-size:16px;">
+                <button class="toolBtn" id="calcRunBtn">=</button>
+                <span id="calcResult" style="font-family:var(--font-mono); font-weight:700;">0</span>
+                <button class="toolBtn" id="calcInsertBtn">Insert into Page</button>
+                <button class="toolBtn" id="calcLiveBtn">🌐 Live Rates</button>
+                <span id="calcRateNote" style="font-size:11px; color:var(--ink-faint);"></span>
+              </div>
+            </div>
+            <div id="imgGallery" style="margin-top:10px; display:flex; flex-wrap:wrap;"></div>
+          </div>
+
+          <div class="pageFooterMini">
+            <span id="wordCount">0 words</span>
+            <span id="savedIndicator">Saved</span>
+          </div>
+        </div>
+
+        <div class="sidebarBackdrop" id="sidebarBackdrop"></div>
+
+        <aside id="toolsSidebar">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="font-family:var(--font-display); font-size:15px;">Tools</strong>
+            <button class="iconBtn" id="sidebarCloseBtn">✕</button>
+          </div>
+
           <div class="modeToggle">
             <button id="typeModeBtn" class="active">✍️ Type</button>
             <button id="handModeBtn">🖌️ Hand</button>
           </div>
-          <button class="iconBtn" id="pageColorBtn" title="Page color">🎨</button>
-        </div>
 
-        <div class="pageToolsRow" id="typeToolsRow">
-          <button class="toolBtn" id="langToggleBtn">EN</button>
-          <button class="toolBtn" data-cmd="bold"><b>B</b></button>
-          <button class="toolBtn" data-cmd="italic"><i>I</i></button>
-          <button class="toolBtn" data-cmd="underline"><u>U</u></button>
-          <button class="toolBtn" data-cmd="insertUnorderedList">• List</button>
-          <button class="toolBtn" id="dictateBtn">🎙️ Dictate</button>
-          <button class="toolBtn" id="grammarBtn">✅ Grammar</button>
-          <button class="toolBtn" id="calcToggleBtn">🧮 Calc</button>
-          <button class="toolBtn" id="imgAttachBtn">📎 Attach</button>
-          <input type="file" id="imgFileInput" accept="image/*" class="hidden">
-          <button class="toolBtn" id="templateBtn">🧩 Template</button>
-        </div>
+          <button class="toolBtn" id="pageColorBtn" title="Page color">🎨 Page color</button>
 
-        <div class="pageToolsRow hidden" id="handToolsRow">
-          <span style="font-size:12px; color:var(--ink-faint);">Color</span>
-          <div class="swatch selected" style="background:#2A2418" data-color="#2A2418"></div>
-          <div class="swatch" style="background:#7A2E2E" data-color="#7A2E2E"></div>
-          <div class="swatch" style="background:#1B2A44" data-color="#1B2A44"></div>
-          <div class="swatch" style="background:#4C6B54" data-color="#4C6B54"></div>
-          <select id="penSize"><option value="2">Fine</option><option value="4" selected>Medium</option><option value="8">Thick</option></select>
-          <button class="toolBtn" id="eraserBtn">🧹 Eraser</button>
-          <button class="toolBtn" id="undoDrawBtn">↶ Undo</button>
-          <button class="toolBtn" id="redoDrawBtn">↷ Redo</button>
-          <button class="toolBtn" id="clearDrawBtn">🗑️ Clear</button>
-        </div>
-
-        <div class="pageToolsRow hidden" id="colorPanel">
-          <span style="font-size:12px; color:var(--ink-faint);">Page color</span>
-          <button class="colorSwatchBtn selected" data-paper="#F4EEDA" data-line="#D9CCA3" style="background:#F4EEDA;" title="Classic Cream"></button>
-          <button class="colorSwatchBtn" data-paper="#FFFFFF" data-line="#E6E6E6" style="background:#FFFFFF;" title="Pure White"></button>
-          <button class="colorSwatchBtn" data-paper="#FFF6D6" data-line="#EBDDA0" style="background:#FFF6D6;" title="Soft Yellow"></button>
-          <button class="colorSwatchBtn" data-paper="#E3F3E8" data-line="#C3DFC9" style="background:#E3F3E8;" title="Mint Green"></button>
-          <button class="colorSwatchBtn" data-paper="#E4F0FA" data-line="#C3DCEF" style="background:#E4F0FA;" title="Sky Blue"></button>
-          <button class="colorSwatchBtn" data-paper="#FBEAEF" data-line="#EBC9D3" style="background:#FBEAEF;" title="Blush Pink"></button>
-          <button class="colorSwatchBtn" data-paper="#EDE7F8" data-line="#D2C7EC" style="background:#EDE7F8;" title="Lavender"></button>
-          <button class="colorSwatchBtn" data-paper="#FDEADB" data-line="#F0CDA6" style="background:#FDEADB;" title="Peach"></button>
-          <button class="colorSwatchBtn" data-paper="#ECECEC" data-line="#D2D2D2" style="background:#ECECEC;" title="Light Gray"></button>
-          <button class="colorSwatchBtn" data-paper="#E1F3F1" data-line="#BEE0DC" style="background:#E1F3F1;" title="Soft Teal"></button>
-        </div>
-
-        <div id="pageBody">
-          <div id="typeArea" contenteditable="true" dir="ltr" placeholder="Write here…"></div>
-          <div id="drawWrap" class="hidden"><canvas id="drawCanvas" height="320"></canvas></div>
-          <div id="calcPanel" class="hidden" style="margin-top:12px; background:var(--paper-dark); border:1px solid var(--paper-line); border-radius:10px; padding:12px;">
-            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-              <select id="calcCurrency">
-                <option>PKR</option><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>AED</option><option>SAR</option>
-              </select>
-              <input type="number" id="calcA" placeholder="Amount A" style="width:110px; padding:8px; border-radius:6px; border:1px solid var(--paper-line); font-size:16px;">
-              <select id="calcOp"><option>+</option><option>−</option><option>×</option><option>÷</option></select>
-              <input type="number" id="calcB" placeholder="Amount B" style="width:110px; padding:8px; border-radius:6px; border:1px solid var(--paper-line); font-size:16px;">
-              <button class="toolBtn" id="calcRunBtn">=</button>
-              <span id="calcResult" style="font-family:var(--font-mono); font-weight:700;">0</span>
-              <button class="toolBtn" id="calcInsertBtn">Insert into Page</button>
-              <button class="toolBtn" id="calcLiveBtn">🌐 Live Rates</button>
-              <span id="calcRateNote" style="font-size:11px; color:var(--ink-faint);"></span>
-            </div>
+          <div class="pageToolsRow" id="typeToolsRow">
+            <button class="toolBtn" id="langToggleBtn">EN</button>
+            <button class="toolBtn" data-cmd="bold"><b>B</b></button>
+            <button class="toolBtn" data-cmd="italic"><i>I</i></button>
+            <button class="toolBtn" data-cmd="underline"><u>U</u></button>
+            <button class="toolBtn" data-cmd="insertUnorderedList">• List</button>
+            <button class="toolBtn" id="dictateBtn">🎙️ Dictate</button>
+            <button class="toolBtn" id="grammarBtn">✅ Grammar</button>
+            <button class="toolBtn" id="calcToggleBtn">🧮 Calc</button>
+            <button class="toolBtn" id="imgAttachBtn">📎 Attach</button>
+            <input type="file" id="imgFileInput" accept="image/*" class="hidden">
+            <button class="toolBtn" id="templateBtn">🧩 Template</button>
           </div>
-          <div id="imgGallery" style="margin-top:10px; display:flex; flex-wrap:wrap;"></div>
-        </div>
 
-        <div class="pageMeta">
-          <input type="text" id="pageLabel" placeholder="Index label…" style="min-width:140px;">
-          <input type="text" id="tagInput" placeholder="Add tag + Enter">
-          <div id="tagList"></div>
-          <input type="date" id="pageDate">
-          <label style="font-size:12px; display:flex; align-items:center; gap:4px;"><input type="checkbox" id="reminderCheck"> ⏰ Remind me</label>
-        </div>
-
-        <div class="pageFooter">
-          <span id="wordCount">0 words</span>
-          <div style="display:flex; gap:6px;">
-            <button class="toolBtn" id="bookmarkBtn">🔖</button>
-            <button class="toolBtn" id="pageLockBtn">🔒</button>
-            <button class="toolBtn" id="pdfExportBtn">📄 PDF</button>
-            <button class="toolBtn" id="copyPageBtn">📋 Copy</button>
-            <button class="toolBtn" id="clearPageBtn">🗑️ Clear</button>
+          <div class="pageToolsRow hidden" id="handToolsRow">
+            <span style="font-size:12px; color:var(--ink-faint);">Color</span>
+            <div class="swatch selected" style="background:#2A2418" data-color="#2A2418"></div>
+            <div class="swatch" style="background:#7A2E2E" data-color="#7A2E2E"></div>
+            <div class="swatch" style="background:#1B2A44" data-color="#1B2A44"></div>
+            <div class="swatch" style="background:#4C6B54" data-color="#4C6B54"></div>
+            <select id="penSize"><option value="2">Fine</option><option value="4" selected>Medium</option><option value="8">Thick</option></select>
+            <button class="toolBtn" id="eraserBtn">🧹 Eraser</button>
+            <button class="toolBtn" id="undoDrawBtn">↶ Undo</button>
+            <button class="toolBtn" id="redoDrawBtn">↷ Redo</button>
+            <button class="toolBtn" id="clearDrawBtn">🗑️ Clear</button>
           </div>
-          <span id="savedIndicator">Saved</span>
-        </div>
+
+          <div class="pageToolsRow hidden" id="colorPanel">
+            <span style="font-size:12px; color:var(--ink-faint);">Page color</span>
+            <button class="colorSwatchBtn selected" data-paper="#F4EEDA" data-line="#D9CCA3" style="background:#F4EEDA;" title="Classic Cream"></button>
+            <button class="colorSwatchBtn" data-paper="#FFFFFF" data-line="#E6E6E6" style="background:#FFFFFF;" title="Pure White"></button>
+            <button class="colorSwatchBtn" data-paper="#FFF6D6" data-line="#EBDDA0" style="background:#FFF6D6;" title="Soft Yellow"></button>
+            <button class="colorSwatchBtn" data-paper="#E3F3E8" data-line="#C3DFC9" style="background:#E3F3E8;" title="Mint Green"></button>
+            <button class="colorSwatchBtn" data-paper="#E4F0FA" data-line="#C3DCEF" style="background:#E4F0FA;" title="Sky Blue"></button>
+            <button class="colorSwatchBtn" data-paper="#FBEAEF" data-line="#EBC9D3" style="background:#FBEAEF;" title="Blush Pink"></button>
+            <button class="colorSwatchBtn" data-paper="#EDE7F8" data-line="#D2C7EC" style="background:#EDE7F8;" title="Lavender"></button>
+            <button class="colorSwatchBtn" data-paper="#FDEADB" data-line="#F0CDA6" style="background:#FDEADB;" title="Peach"></button>
+            <button class="colorSwatchBtn" data-paper="#ECECEC" data-line="#D2D2D2" style="background:#ECECEC;" title="Light Gray"></button>
+            <button class="colorSwatchBtn" data-paper="#E1F3F1" data-line="#BEE0DC" style="background:#E1F3F1;" title="Soft Teal"></button>
+          </div>
+
+          <div class="pageMeta" style="flex-direction:column; align-items:stretch;">
+            <input type="text" id="pageLabel" placeholder="Index label…">
+            <input type="text" id="tagInput" placeholder="Add tag + Enter">
+            <div id="tagList"></div>
+            <input type="date" id="pageDate">
+            <label style="font-size:12px; display:flex; align-items:center; gap:4px;"><input type="checkbox" id="reminderCheck"> ⏰ Remind me</label>
+          </div>
+
+          <div class="pageFooter" style="flex-direction:column; align-items:stretch; gap:8px; justify-content:flex-start;">
+            <button class="toolBtn" id="bookmarkBtn">🔖 Bookmark</button>
+            <button class="toolBtn" id="pageLockBtn">🔒 Lock page</button>
+            <button class="toolBtn" id="pdfExportBtn">📄 Export PDF</button>
+            <button class="toolBtn" id="copyPageBtn">📋 Copy text</button>
+            <button class="toolBtn" id="clearPageBtn">🗑️ Clear page</button>
+          </div>
+        </aside>
       </div>
     </div>
   </div>
@@ -669,6 +702,10 @@ function wireEvents(){
   $('settingsOpenBtn').addEventListener('click', renderSettings);
   $('manageVolBtn').addEventListener('click', renderVolumes);
   $('newVolBtn').addEventListener('click', createVolume);
+
+  $('sidebarToggleBtn').addEventListener('click', openSidebar);
+  $('sidebarCloseBtn').addEventListener('click', closeSidebar);
+  $('sidebarBackdrop').addEventListener('click', closeSidebar);
 
   document.querySelectorAll('[data-close]').forEach(b=>{
     b.addEventListener('click', ()=> closeModal(b.getAttribute('data-close')));
@@ -1051,9 +1088,12 @@ function applyPageColor(paper, line){
   if(paper && line){
     body.style.setProperty('--page-paper', paper);
     body.style.setProperty('--page-paper-line', line);
+    // all preset page colors are light, so keep the ink dark regardless of dark mode
+    body.style.setProperty('--page-ink', '#2A2418');
   } else {
     body.style.removeProperty('--page-paper');
     body.style.removeProperty('--page-paper-line');
+    body.style.removeProperty('--page-ink');
   }
 }
 function currentPaperColor(){
@@ -1317,6 +1357,10 @@ function renderStats(){
   $('statLocked').textContent = locked;
   openModal('statsModal');
 }
+
+/* ====================== SIDEBAR ====================== */
+function openSidebar(){ $('toolsSidebar').classList.add('open'); $('sidebarBackdrop').classList.add('show'); }
+function closeSidebar(){ $('toolsSidebar').classList.remove('open'); $('sidebarBackdrop').classList.remove('show'); }
 
 /* ====================== MODAL HELPERS ====================== */
 function openModal(id){ $(id).classList.remove('hidden'); }
