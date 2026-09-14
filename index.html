@@ -243,9 +243,9 @@ button{font-family:inherit; cursor:pointer;}
 }
 .toolBtn:hover{border-color:var(--brass);}
 .toolBtn.active{background:var(--brass); color:#241a06; border-color:var(--brass);}
-#pageBody{flex:1; overflow-y:auto; padding:18px 26px; position:relative;}
+#pageBody{flex:1; overflow-y:auto; padding:18px 26px; position:relative; display:flex; flex-direction:column;}
 #typeArea{
-  min-height:260px; outline:none; line-height:1.7; font-size:16px; padding:14px;
+  flex:1; min-height:100%; outline:none; line-height:1.7; font-size:16px; padding:14px;
   background:
     repeating-linear-gradient(var(--page-paper, var(--paper)) 0 31px, var(--page-paper-line, var(--paper-line)) 31px 32px);
   border-radius:8px; border:1px solid var(--paper-line);
@@ -253,8 +253,8 @@ button{font-family:inherit; cursor:pointer;}
 }
 #typeArea *{color:inherit;}
 #typeArea[dir=rtl]{font-family:'Noto Nastaliq Urdu','Fraunces',serif; font-size:19px; line-height:2.2;}
-#drawWrap{position:relative; border:1px solid var(--paper-line); border-radius:8px; overflow:hidden; touch-action:none;}
-#drawCanvas{display:block; width:100%; background:var(--page-paper, var(--paper)); cursor:crosshair;}
+#drawWrap{position:relative; border:1px solid var(--paper-line); border-radius:8px; overflow:hidden; touch-action:none; flex:1; min-height:260px; display:flex;}
+#drawCanvas{display:block; width:100%; height:100%; background:var(--page-paper, var(--paper)); cursor:crosshair;}
 .penOptions{display:flex; gap:8px; align-items:center; padding:8px 20px; border-top:1px solid var(--paper-line); flex-wrap:wrap;}
 .swatch{width:22px; height:22px; border-radius:50%; border:2px solid transparent; cursor:pointer;}
 .swatch.selected{border-color:var(--brass);}
@@ -1081,7 +1081,7 @@ function setupCanvas(){
 function resizeCanvas(){
   const canvas = $('drawCanvas'); const wrap = $('drawWrap');
   if(!wrap || wrap.classList.contains('hidden')) { canvas.width = canvas.clientWidth||600; return; }
-  canvas.width = wrap.clientWidth; canvas.height = 320;
+  canvas.width = wrap.clientWidth; canvas.height = wrap.clientHeight || 320;
 }
 function applyPageColor(paper, line){
   const body = $('pageBody');
