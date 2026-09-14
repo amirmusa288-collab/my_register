@@ -269,6 +269,12 @@ button{font-family:inherit; cursor:pointer;}
 .pageFooter{display:flex; justify-content:space-between; align-items:center; padding:8px 20px; font-size:12px; color:var(--ink-faint);}
 .imgThumb{max-width:140px; border-radius:6px; border:1px solid var(--paper-line); margin:6px 6px 0 0;}
 .templateRow{display:flex; gap:6px; flex-wrap:wrap;}
+.emojiTabs{display:flex; gap:2px; overflow-x:auto; padding-bottom:6px; border-bottom:1px solid var(--paper-line);}
+.emojiTabBtn{background:transparent; border:none; font-size:20px; padding:4px 7px; border-radius:8px; opacity:.5; flex:none;}
+.emojiTabBtn.active{background:var(--paper-dark); opacity:1;}
+.emojiGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(38px,1fr)); gap:2px; max-height:280px; overflow-y:auto;}
+.emojiCell{background:transparent; border:none; font-size:23px; padding:5px 0; border-radius:8px; line-height:1;}
+.emojiCell:hover{background:var(--paper-dark);}
 
 /* ---------- Modal ---------- */
 .modalOverlay{position:fixed; inset:0; background:rgba(10,14,26,.55); display:flex; align-items:center; justify-content:center; z-index:400; padding:16px;}
@@ -462,7 +468,7 @@ button{font-family:inherit; cursor:pointer;}
 
         <aside id="toolsSidebar">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="font-family:var(--font-display); font-size:15px;">Tools</strong>
+            <strong style="font-family:var(--font-display); font-size:15px;">🧰 Tools</strong>
             <button class="iconBtn" id="sidebarCloseBtn">✕</button>
           </div>
 
@@ -474,21 +480,22 @@ button{font-family:inherit; cursor:pointer;}
           <button class="toolBtn" id="pageColorBtn" title="Page color">🎨 Page color</button>
 
           <div class="pageToolsRow" id="typeToolsRow">
-            <button class="toolBtn" id="langToggleBtn">EN</button>
-            <button class="toolBtn" data-cmd="bold"><b>B</b></button>
-            <button class="toolBtn" data-cmd="italic"><i>I</i></button>
-            <button class="toolBtn" data-cmd="underline"><u>U</u></button>
-            <button class="toolBtn" data-cmd="insertUnorderedList">• List</button>
+            <button class="toolBtn" id="langToggleBtn">🌐 EN</button>
+            <button class="toolBtn" data-cmd="bold">🅱️ <b>Bold</b></button>
+            <button class="toolBtn" data-cmd="italic">🖊️ <i>Italic</i></button>
+            <button class="toolBtn" data-cmd="underline">📏 <u>Underline</u></button>
+            <button class="toolBtn" data-cmd="insertUnorderedList">📃 List</button>
             <button class="toolBtn" id="dictateBtn">🎙️ Dictate</button>
             <button class="toolBtn" id="grammarBtn">✅ Grammar</button>
             <button class="toolBtn" id="calcToggleBtn">🧮 Calc</button>
             <button class="toolBtn" id="imgAttachBtn">📎 Attach</button>
             <input type="file" id="imgFileInput" accept="image/*" class="hidden">
             <button class="toolBtn" id="templateBtn">🧩 Template</button>
+            <button class="toolBtn" id="emojiBtn">😊 Emoji</button>
           </div>
 
           <div class="pageToolsRow hidden" id="handToolsRow">
-            <span style="font-size:12px; color:var(--ink-faint);">Color</span>
+            <span style="font-size:12px; color:var(--ink-faint);">🖌️ Color</span>
             <div class="swatch selected" style="background:#2A2418" data-color="#2A2418"></div>
             <div class="swatch" style="background:#7A2E2E" data-color="#7A2E2E"></div>
             <div class="swatch" style="background:#1B2A44" data-color="#1B2A44"></div>
@@ -501,7 +508,7 @@ button{font-family:inherit; cursor:pointer;}
           </div>
 
           <div class="pageToolsRow hidden" id="colorPanel">
-            <span style="font-size:12px; color:var(--ink-faint);">Page color</span>
+            <span style="font-size:12px; color:var(--ink-faint);">🎨 Page color</span>
             <button class="colorSwatchBtn selected" data-paper="#F4EEDA" data-line="#D9CCA3" style="background:#F4EEDA;" title="Classic Cream"></button>
             <button class="colorSwatchBtn" data-paper="#FFFFFF" data-line="#E6E6E6" style="background:#FFFFFF;" title="Pure White"></button>
             <button class="colorSwatchBtn" data-paper="#FFF6D6" data-line="#EBDDA0" style="background:#FFF6D6;" title="Soft Yellow"></button>
@@ -515,10 +522,10 @@ button{font-family:inherit; cursor:pointer;}
           </div>
 
           <div class="pageMeta" style="flex-direction:column; align-items:stretch;">
-            <input type="text" id="pageLabel" placeholder="Index label…">
-            <input type="text" id="tagInput" placeholder="Add tag + Enter">
+            <input type="text" id="pageLabel" placeholder="🏷️ Index label…">
+            <input type="text" id="tagInput" placeholder="#️⃣ Add tag + Enter">
             <div id="tagList"></div>
-            <input type="date" id="pageDate">
+            <label style="font-size:12px; display:flex; align-items:center; gap:4px;">📅 <input type="date" id="pageDate" style="flex:1;"></label>
             <label style="font-size:12px; display:flex; align-items:center; gap:4px;"><input type="checkbox" id="reminderCheck"> ⏰ Remind me</label>
           </div>
 
@@ -610,6 +617,18 @@ button{font-family:inherit; cursor:pointer;}
   </div>
 </div>
 
+<!-- EMOJI MODAL (WhatsApp-style picker) -->
+<div class="modalOverlay hidden" id="emojiModal">
+  <div class="modalBox" style="width:min(360px,100%);">
+    <div class="modalHead"><h3>😊 Emoji</h3><button class="iconBtn" data-close="emojiModal">✕</button></div>
+    <div class="modalBody" style="gap:8px;">
+      <input type="text" id="emojiSearch" placeholder="🔍 Search emoji…" style="padding:8px 10px; border-radius:8px; border:1px solid var(--paper-line); font-size:14px; background:var(--paper-dark); color:var(--ink-text);">
+      <div class="emojiTabs" id="emojiTabs"></div>
+      <div class="emojiGrid" id="emojiGrid"></div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -650,6 +669,7 @@ async function init(){
   settings = await sGet('settings', DEFAULT_SETTINGS);
   applyTheme();
   volume = await sGet('volume-'+settings.activeVolume, {id:settings.activeVolume,name:'Volume I',cover:'#7A2E2E',pages:{}});
+  recentEmojis = await sGet('recentEmojis', []);
   $('coverVolName').textContent = volume.name;
   $('volTitleTop').textContent = volume.name;
   wireEvents();
@@ -726,7 +746,7 @@ function wireEvents(){
 
   $('langToggleBtn').addEventListener('click', ()=>{
     currentLang = currentLang==='en' ? 'ur' : 'en';
-    $('langToggleBtn').textContent = currentLang==='en' ? 'EN' : 'اردو';
+    $('langToggleBtn').textContent = currentLang==='en' ? '🌐 EN' : '🌐 اردو';
     const ta = $('typeArea');
     ta.setAttribute('dir', currentLang==='ur'?'rtl':'ltr');
     scheduleSave();
@@ -751,6 +771,13 @@ function wireEvents(){
 
   $('templateBtn').addEventListener('click', ()=> openModal('templateModal'));
   document.querySelectorAll('[data-tpl]').forEach(b=> b.addEventListener('click', ()=> insertTemplate(b.getAttribute('data-tpl'))));
+
+  $('emojiBtn').addEventListener('mousedown', e=> e.preventDefault());
+  $('emojiBtn').addEventListener('click', ()=>{
+    renderEmojiTabs(); renderEmojiGrid();
+    openModal('emojiModal');
+  });
+  $('emojiSearch').addEventListener('input', renderEmojiGrid);
 
   // hand drawing
   document.querySelectorAll('.swatch[data-color]').forEach(s=>{
@@ -873,7 +900,7 @@ function gotoPage(n){
   setMode(currentMode, true);
 
   currentLang = p.lang || 'en';
-  $('langToggleBtn').textContent = currentLang==='en'?'EN':'اردو';
+  $('langToggleBtn').textContent = currentLang==='en'?'🌐 EN':'🌐 اردو';
   $('typeArea').setAttribute('dir', currentLang==='ur'?'rtl':'ltr');
   $('typeArea').innerHTML = p.html || '';
 
@@ -980,6 +1007,86 @@ function renderImages(images){
     gal.appendChild(wrap);
   });
 }
+
+/* ====================== EMOJI PICKER ====================== */
+const EMOJI_CATEGORIES = {
+  '🕒': {name:'Recent', list:[]},
+  '😀': {name:'Smileys', list:['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','😎','🤓','🧐','😕','😟','🙁','☹️','😮','😯','😲','😳','🥺','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','💩','🤡','👻','👽','🤖','😺','😸','😹','😻','😼','😽','🙀','😿','😾'] },
+  '✋': {name:'Gestures', list:['👋','🤚','🖐️','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','👂','👃','🧠','👀','👁️','👅','👄'] },
+  '🐶': {name:'Animals', list:['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐽','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🐢','🐍','🦎','🐙','🦑','🦐','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🐘','🐪','🐫','🦒','🐃','🐂','🐄','🐎','🐖','🐑','🐐','🦌','🐕','🐈','🐓','🦃','🕊️','🐇','🐁','🐀','🐿️'] },
+  '🍔': {name:'Food', list:['🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🌽','🥕','🧄','🧅','🥔','🍠','🥐','🍞','🥖','🧀','🥚','🍳','🥞','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🥪','🌮','🌯','🥗','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🍤','🍙','🍚','🍥','🥠','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🧂','🥤','🧃','🧊','☕','🍵','🍶','🍾','🍷','🍸','🍹','🍺','🍻','🥂','🥃'] },
+  '⚽': {name:'Activities', list:['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🎱','🏓','🏸','🏒','🏑','🏏','🥅','⛳','🏹','🎣','🥊','🥋','🎽','🛹','🛷','⛸️','🎿','🏂','🏋️','🤼','🤸','⛹️','🤺','🏌️','🏇','🧘','🏄','🏊','🚣','🚵','🚴','🏆','🥇','🥈','🥉','🏅','🎖️','🎫','🎪','🤹','🎭','🎨','🎬','🎤','🎧','🎼','🎹','🥁','🎷','🎺','🎸','🎻','🎲','🎯','🎳','🎮','🎰','🧩'] },
+  '🚗': {name:'Travel', list:['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚐','🚚','🚛','🚜','🛵','🏍️','🚲','🛴','🚨','🚔','🚘','🚖','🚡','🚠','🚂','🚆','🚇','✈️','🛫','🛬','🚀','🛸','🚁','⛵','🚤','🛳️','🚢','⚓','⛽','🚧','🚦','🚥','🗺️','🗽','🗼','🏰','🎡','🎢','🎠','⛲','🏖️','🏝️','🏜️','🌋','⛰️','🏔️','🗻','🏕️','⛺','🏠','🏡','🏢','🏬','🏥','🏦','🏨','🏫','⛪','🕌','🕍','🛕'] },
+  '💡': {name:'Objects', list:['⌚','📱','💻','⌨️','🖥️','🖨️','🖱️','🕹️','💽','💾','💿','📷','📸','🎥','📞','☎️','📺','📻','🎙️','🧭','⏰','🕰️','📡','🔋','🔌','💡','🔦','🕯️','💸','💵','💰','💳','🧾','💎','⚖️','🧰','🔧','🔨','🛠️','🔩','⚙️','🔪','🗝️','🔒','🔓','🔮','📿','⏳','✂️','📌','📎','📏','📐','📖','📕','📗','📘','📙','📔','📒','📝','✏️','🖊️','🖋️','📁','📂','🗂️','📅','📆','📇','📋','📊','📈','📉'] },
+  '❤️': {name:'Symbols', list:['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','☮️','✝️','☪️','🕉️','☸️','🔯','☯️','♻️','✅','❌','⭕','🛑','⛔','❗','❓','‼️','⁉️','⚠️','🔥','💯','💢','💤','💨','💦','💧','⭐','🌟','✨','🎉','🎊','🎁','🔔','🔕','📢','📣'] },
+  '🚩': {name:'Flags', list:['🏁','🚩','🎌','🏳️','🇵🇰','🇺🇸','🇬🇧','🇸🇦','🇦🇪','🇮🇳','🇨🇦','🇦🇺','🇩🇪','🇫🇷','🇮🇹','🇪🇸','🇨🇳','🇯🇵','🇰🇷','🇹🇷','🇧🇩','🇪🇬','🇶🇦'] }
+};
+const EMOJI_SEARCH_MAP = {
+  smile:'😀', laugh:'😂', joy:'😂', wink:'😉', love:'😍', heart:'❤️', kiss:'😘', cool:'😎',
+  cry:'😢', sad:'😢', angry:'😠', think:'🤔', sleep:'😴', sick:'🤒', party:'🥳', shock:'😱',
+  clap:'👏', pray:'🙏', hug:'🤗', thumbsup:'👍', 'thumbs up':'👍', ok:'👌', good:'👍', bad:'👎',
+  wave:'👋', point:'👉', muscle:'💪', fire:'🔥', star:'⭐', sun:'☀️', moon:'🌙', rain:'🌧️',
+  cake:'🎂', pizza:'🍕', coffee:'☕', tea:'🍵', burger:'🍔', dog:'🐶', cat:'🐱', car:'🚗',
+  plane:'✈️', gift:'🎁', money:'💰', check:'✅', cross:'❌', warning:'⚠️', bell:'🔔',
+  music:'🎵', hundred:'💯', clock:'⏰', book:'📖', pencil:'✏️', pin:'📌', lock:'🔒', key:'🔑',
+  pakistan:'🇵🇰', usa:'🇺🇸', uk:'🇬🇧'
+};
+let savedRange = null;
+let currentEmojiCat = '😀';
+let recentEmojis = [];
+
+function renderEmojiTabs(){
+  const box = $('emojiTabs'); if(!box) return; box.innerHTML='';
+  Object.keys(EMOJI_CATEGORIES).forEach(key=>{
+    const btn = document.createElement('button');
+    btn.className = 'emojiTabBtn' + (key===currentEmojiCat ? ' active' : '');
+    btn.textContent = key; btn.title = EMOJI_CATEGORIES[key].name;
+    btn.addEventListener('mousedown', e=> e.preventDefault());
+    btn.addEventListener('click', ()=>{ currentEmojiCat = key; renderEmojiTabs(); renderEmojiGrid(); });
+    box.appendChild(btn);
+  });
+}
+function renderEmojiGrid(){
+  const grid = $('emojiGrid'); if(!grid) return; grid.innerHTML='';
+  const q = ($('emojiSearch').value||'').trim().toLowerCase();
+  let list;
+  if(q){
+    const seen = new Set();
+    Object.keys(EMOJI_SEARCH_MAP).forEach(name=>{ if(name.includes(q)) seen.add(EMOJI_SEARCH_MAP[name]); });
+    list = Array.from(seen);
+  } else if(currentEmojiCat==='🕒'){
+    list = recentEmojis;
+  } else {
+    list = EMOJI_CATEGORIES[currentEmojiCat].list;
+  }
+  if(!list.length){
+    grid.innerHTML = '<p style="grid-column:1/-1;font-size:12px;color:var(--ink-faint);">'+(q ? 'No results' : 'No recent emoji yet')+'</p>';
+    return;
+  }
+  list.forEach(em=>{
+    const btn = document.createElement('button'); btn.className='emojiCell'; btn.textContent = em;
+    btn.addEventListener('mousedown', e=> e.preventDefault());
+    btn.addEventListener('click', ()=> insertEmoji(em));
+    grid.appendChild(btn);
+  });
+}
+async function insertEmoji(em){
+  const ta = $('typeArea');
+  ta.focus();
+  const sel = window.getSelection();
+  if(savedRange){ sel.removeAllRanges(); sel.addRange(savedRange); }
+  document.execCommand('insertText', false, em);
+  if(sel.rangeCount>0) savedRange = sel.getRangeAt(0).cloneRange();
+  updateWordCount(); scheduleSave();
+  recentEmojis = [em, ...recentEmojis.filter(x=>x!==em)].slice(0,30);
+  await sSet('recentEmojis', recentEmojis);
+  if(currentEmojiCat==='🕒') renderEmojiGrid();
+}
+document.addEventListener('selectionchange', ()=>{
+  const ta = document.getElementById('typeArea'); if(!ta) return;
+  const sel = window.getSelection();
+  if(sel.rangeCount>0 && ta.contains(sel.anchorNode)){ savedRange = sel.getRangeAt(0).cloneRange(); }
+});
 
 /* ====================== TEMPLATES ====================== */
 const TEMPLATES = {
